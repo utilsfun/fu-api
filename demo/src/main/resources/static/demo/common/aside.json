@@ -1,0 +1,26 @@
+[
+  {
+    "type": "nav",
+    "stacked": true,
+    "links": [
+      {
+        "label": "页面1",
+        "to": "#",
+        "children": [
+          {
+            "label": "qa",
+            "to": "/a"
+          },
+          {
+            "label": "b",
+            "to": "/b"
+          }
+        ]
+      },
+      {
+        "label": "页面2",
+        "to": "?id=2"
+      }
+    ]
+  }
+]

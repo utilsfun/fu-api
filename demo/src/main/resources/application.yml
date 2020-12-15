@@ -1,0 +1,22 @@
+server:
+  port: 9090
+  tomcat:
+    max-threads: 1000
+    max-connections: 20000
+    max-http-header-size: 655360
+    max-http-post-size: -1
+    uri-encoding: UTF-8
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: fu-api-demo
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  thymeleaf:
+    prefix: classpath:/templates/
+

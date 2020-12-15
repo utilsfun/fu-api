@@ -1,0 +1,64 @@
+{
+  "type": "page",
+  "name": "page1",
+  "title": "表单页面",
+  "className": "full-wrapper",
+  "body": [{
+
+    "type": "form",
+    "name": "form1",
+    "mode": "horizontal",
+    "script": "alert('a');",
+    "data": {
+      "email": "alert(1);"
+    },
+    "api": "/saveForm",
+    "controls": [
+      {
+        "label": "Name",
+        "type": "text",
+        "name": "name"
+      },
+      {
+        "label": "Email",
+        "type": "email",
+        "name": "email"
+      }
+    ,{
+        "type": "tpl",
+        "name": "tpl1",
+        "script": "alert('tpl1');",
+        "raw": "<a href='javascript:eval(me.getComponentByName(\"page1.form1.tpl1\").props.script);'> bbbb </a>"
+      },{
+        "label": "进入介绍页1",
+        "type": "button",
+        "level": "info",
+        "actionType": "url",
+        "link": "javascript:alert('进入介绍页1');",
+        "blank":false
+
+      }
+    ]
+  }
+  ,{
+      "type": "tpl",
+      "raw": "<a href='javascript:eval(me.getComponentByName(\"page1.form1\").props.script);'> aaaa </a>"
+    }
+
+  ,{
+      "type": "tpl",
+      "raw": "<a href='javascript:f1();'> b </a>"
+    }
+  ,{
+      "type": "html",
+      "id": "s0dfsdklf02",
+      "name": "tpl2",
+      "raw": "abc <br/> <script type='text/javascript'> function f1(){ alert(1); };alert(1); </script>"
+    }
+  ,{
+      "type": "tpl",
+      "name": "tpl4",
+      "tpl": "<% this.fn1 = function(a){alert('fn1:' + a)}; %> <a href=\"javascript:this.fn1('tpl4');\"> tpl4 </a>"
+    }
+  ]
+}

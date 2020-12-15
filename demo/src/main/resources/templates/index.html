@@ -1,0 +1,93 @@
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <title>amis demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="stylesheet" href="/amis/sdk.min.css" />
+    <style>
+    html,
+    body,
+    .app-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .full-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body class="amis-scope">
+    <div id="root" class="app-wrapper"></div>
+    <script src="/amis/sdk.min.js"></script>
+    <script type="text/javascript">
+
+    var me;
+    const pageUrl = window.location.href.replace("\.html",".page");
+    function getComponentById(context,id){
+      let components = context.getComponents();
+
+      if (components){
+        components.forEach(element => {
+          if (element.props.id == id){
+            return element;
+          }else{
+            return getComponentById(element.context,id);
+          }
+        });
+      }
+    }
+
+    var amisConfig = {
+
+            // 全局 api 适配器。
+            // api 自己也可以配置适配器，这里最好只处理通用逻辑。
+            responseAdpater(api, response, query, request) {
+              console.log(api);
+              console.log(response);
+              console.log(query);
+              console.log(request);
+              return response;
+            }
+          };
+
+    (function () {
+
+      $.ajax({
+        //请求方式
+        type: "GET",
+        //请求的媒体类型
+        contentType: "application/json;charset=UTF-8",
+        //请求地址
+        url: pageUrl,
+        //请求成功
+        success: function (result) {
+          console.log(result);
+          let amis = amisRequire('amis/embed');
+          // 通过替换下面这个配置来生成不同页面
+          me = amis.embed("#root", result.data,{},amisConfig );
+
+        },
+        //请求失败，包含具体的错误信息
+        error: function (e) {
+          console.log(e.status);
+          console.log(e.responseText);
+          document.write(e.responseText);
+        }
+      });
+
+
+    })();
+  </script>
+</body>
+
+</html>
