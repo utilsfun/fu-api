@@ -4,8 +4,7 @@
     "stacked": true,
     "links": [
       {
-        "label": "页面1",
-        "to": "#",
+        "label": "主页",
         "children": [
           {
             "label": "qa",
@@ -18,9 +17,18 @@
         ]
       },
       {
-        "label": "页面2",
-        "to": "?id=2"
+        "label": "主页",
+        "to": "/${contextPath}/index.html"
+      },
+      {
+        "label": "测试1",
+        "to": "/${contextPath}/test1.html"
+      },
+      {
+        "label": "测试2",
+        "to": "/${contextPath}/test2.html"
       }
+
     ]
   }
 ]

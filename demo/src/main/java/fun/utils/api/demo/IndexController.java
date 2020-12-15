@@ -25,12 +25,16 @@ public class IndexController {
         result.put("status",0);
         result.put("msg",0);
 
-        JSONObject data = JSON.parseObject(this.getClass().getResourceAsStream("/static/demo/"+path1+".json"),JSONObject.class);
+        JSONObject page = JSON.parseObject(this.getClass().getResourceAsStream("/static/demo/"+path1+".json"),JSONObject.class);
 
         JSON aside = JSON.parseObject(this.getClass().getResourceAsStream("/static/demo/common/aside.json"),JSON.class);
-        data.put("aside",aside);
+        page.put("aside",aside);
 
-        result.put("data",data);
+        JSON data = JSON.parseObject(this.getClass().getResourceAsStream("/static/demo/common/data.json"),JSON.class);
+        page.put("data",data);
+
+
+        result.put("data",page);
         return result;
     }
 
