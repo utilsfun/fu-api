@@ -33,6 +33,7 @@
 
     var me;
     const pageUrl = window.location.href.replace("\.html",".page");
+
     function getComponentById(context,id){
       let components = context.getComponents();
 
@@ -75,7 +76,7 @@
           let amis = amisRequire('amis/embed');
           // 通过替换下面这个配置来生成不同页面
           me = amis.embed("#root", result.data,{},amisConfig );
-
+          // document.title = result.data.title;
         },
         //请求失败，包含具体的错误信息
         error: function (e) {
