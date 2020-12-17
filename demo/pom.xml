@@ -101,6 +101,11 @@
         <artifactId>slf4j-api</artifactId>
       </dependency>
 
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <type>pom</type>
+      </dependency>
     </dependencies>
 
     <build>

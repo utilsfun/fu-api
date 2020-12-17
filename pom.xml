@@ -21,6 +21,12 @@
     </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>3.0.7</version>
+            <type>pom</type>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -98,6 +104,14 @@
                 <version>27.1-jre</version>
             </dependency>
 
+
+            <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>3.0.7</version>
+                <type>pom</type>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

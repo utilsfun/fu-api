@@ -28,12 +28,9 @@ public class ApiParameter {
 
     public boolean readOnly = false; //	是否只读,只读时不能传入参数,只取默认值，false:不只读; true:只读
 
-    public String example ;	//属性的示例值
+    public String example ;	//示例值
 
     public JSONObject validation; //参数验证
-    {
 
-        validation.get
-    }
 
 }

@@ -1,0 +1,18 @@
+{
+  // code表示结果代码
+  $name:'HellO',
+  code:1,
+  msg:"返回结果说明",
+  code2:0xFF,
+  a:.007,
+  b:7.,
+  f:-.32e-3,
+  p:Infinity,
+  n:-Infinity,
+  b:NaN
+  /*
+      json5的多行注释
+      真是好爽啊，
+      完全就是为Panda api而设计的
+  */
+}
