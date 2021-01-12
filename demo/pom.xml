@@ -106,9 +106,24 @@
         <artifactId>groovy-all</artifactId>
         <type>pom</type>
       </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+      <dependency>
+        <groupId>com.google.zxing</groupId>
+        <artifactId>core</artifactId>
+      </dependency>
+
+
+      <dependency>
+        <groupId>fun.utils</groupId>
+        <artifactId>fu-api-core</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+
     </dependencies>
 
     <build>
+      <finalName>${project.artifactId}</finalName>
       <plugins>
         <plugin>
           <groupId>org.springframework.boot</groupId>

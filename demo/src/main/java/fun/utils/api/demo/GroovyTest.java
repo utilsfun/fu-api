@@ -2,6 +2,8 @@ package fun.utils.api.demo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.common.detector.WhiteRectangleDetector;
+import com.google.zxing.qrcode.QRCodeReader;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 import groovy.util.GroovyScriptEngine;
