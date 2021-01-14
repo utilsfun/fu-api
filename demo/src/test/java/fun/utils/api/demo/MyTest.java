@@ -2,11 +2,10 @@ package fun.utils.api.demo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.core.common.groovy.GroovyScript;
-import fun.utils.api.core.common.groovy.GroovyVariable;
-import fun.utils.api.core.common.groovy.GroovyRunner;
-import fun.utils.api.core.common.groovy.GroovyUtils;
+
+import fun.utils.api.core.common.script.*;
 import lombok.Data;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Map;
@@ -14,7 +13,20 @@ import java.util.Map;
 public class MyTest {
 
 
-    @Test
+    GroovyService groovyService;
+
+
+    @Before
+    public void init () throws Exception {
+        groovyService = new GroovyService();
+
+        groovyService.setOnGetSourceById(id -> {
+            return null;
+        });
+    }
+
+
+        @Test
     public void test () throws Exception {
 
         @Data
@@ -43,7 +55,7 @@ public class MyTest {
         JSONObject variables = new JSONObject();
         variables.put("a",1);
         variables.put("b",2);
-        GroovyRunner runner = GroovyUtils.getRunner(groovyScript);
+        GroovyRunner runner = groovyService.getRunner(groovyScript);
 
         long bTime = System.currentTimeMillis();
 
@@ -73,7 +85,7 @@ public class MyTest {
         Map<String, GroovyVariable> declaredParameters = method.getDeclaredVariables();
         declaredParameters.put("a",GroovyUtils.parameterOf("int"));
         declaredParameters.put("b",GroovyUtils.parameterOf("integer"));
-        method.setScript("return context.s + a + b;");
+        method.setSource("return context.s + a + b;");
         method.setReturnType("Integer");
 
 
@@ -85,7 +97,7 @@ public class MyTest {
         JSONObject parameters = new JSONObject();
         parameters.put("a",1);
         parameters.put("b",2);
-        GroovyRunner runner = GroovyUtils.getRunner(method);
+        GroovyRunner runner = groovyService.getRunner(method);
 
         long bTime = System.currentTimeMillis();
 

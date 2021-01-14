@@ -1,4 +1,4 @@
-package fun.utils.api.core.common.groovy;
+package fun.utils.api.core.common.script;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

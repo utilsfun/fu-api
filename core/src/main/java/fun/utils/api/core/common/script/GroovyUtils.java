@@ -1,14 +1,12 @@
-package fun.utils.api.core.common.groovy;
+package fun.utils.api.core.common.script;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.DigestUtils;
 
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -121,7 +119,7 @@ public class GroovyUtils {
     public static GroovyScript scriptOf(String script) {
         GroovyScript result = new GroovyScript();
         result.setId(hash(script));
-        result.setScript(script);
+        result.setSource(script);
         result.setVersion("v:"+System.currentTimeMillis());
         return result;
     }
@@ -135,29 +133,6 @@ public class GroovyUtils {
     public static String hash(Object object) {
         String hash = DigestUtils.md5DigestAsHex(JSON.toJSONString(object).getBytes());
         return hash;
-    }
-
-    public static GroovyRunner getRunner(GroovyScript method) throws Exception{
-        GroovyRunner runner = cacheRunner.get(method.getId(),()-> new GroovyRunner(method));
-        if (runner.getVersion().equals(method.getVersion())) {
-            return runner;
-        }else{
-            return reloadRunner(method);
-        }
-    }
-
-    public static GroovyRunner reloadRunner(GroovyScript method) throws Exception{
-        cacheRunner.invalidate(method.getId());
-        GroovyRunner runner = cacheRunner.get(method.getId(),()-> new GroovyRunner(method));
-        return runner;
-    }
-
-    public static void expireRunner(String id) throws Exception{
-        cacheRunner.invalidate(id);
-    }
-
-    public static void expireRunner(GroovyScript method) throws Exception{
-        cacheRunner.invalidate(method.getId());
     }
 
 
