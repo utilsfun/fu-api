@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Application {
 
-    public  ApplicationPO applicationPO; //应用定义
+    public ApplicationPO applicationPO; //应用定义
 
     public List<ParameterPO> parameters; //公共参数
     public List<DocumentPO> documents; //文档

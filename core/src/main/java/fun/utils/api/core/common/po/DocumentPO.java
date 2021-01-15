@@ -18,6 +18,6 @@ public class DocumentPO {
 
     public String content;  //内容体
 
-    public String permission  ; //权限 公开（public），保护（protected），私有（private）
+    public String permission; //权限 公开（public），保护（protected），私有（private）
 
 }

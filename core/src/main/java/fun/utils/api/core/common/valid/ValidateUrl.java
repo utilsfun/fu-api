@@ -7,6 +7,6 @@ public class ValidateUrl extends Validation {
 
     public ValidateUrl(String message) {
         this.type = "@Url";
-        this.message = StringUtils.defaultIfBlank(message,"${title}值应为有效的URL地址");
+        this.message = StringUtils.defaultIfBlank(message, "${title}值应为有效的URL地址");
     }
 }

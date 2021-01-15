@@ -9,7 +9,7 @@ public class ValidatePattern extends Validation {
     public ValidatePattern(String regex, String message) {
         this.type = "@Pattern";
         this.data = new JSONObject();
-        this.data.put("regex",regex);
-        this.message = StringUtils.defaultIfBlank(message,"${title}值应符合指定格式");
+        this.data.put("regex", regex);
+        this.message = StringUtils.defaultIfBlank(message, "${title}值应符合指定格式");
     }
 }

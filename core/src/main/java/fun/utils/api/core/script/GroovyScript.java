@@ -1,17 +1,15 @@
-package fun.utils.api.core.common.script;
+package fun.utils.api.core.script;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Data
 @EqualsAndHashCode
-public class GroovyScript extends GroovySource{
+public class GroovyScript extends GroovySource {
 
     private Map<String, GroovyVariable> declaredVariables = new HashMap<>();
 

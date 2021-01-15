@@ -28,7 +28,6 @@
         "label": "测试2",
         "to": "/${contextPath}/test2.html"
       }
-
     ]
   }
 ]

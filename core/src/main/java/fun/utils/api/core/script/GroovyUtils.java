@@ -1,11 +1,10 @@
-package fun.utils.api.core.common.script;
+package fun.utils.api.core.script;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.util.DigestUtils;
-
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -14,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 public class GroovyUtils {
 
-    private final static ConcurrentMap<String,Class<?>> classMappings = new ConcurrentHashMap<>();
-    private final static Cache<String,GroovyRunner> cacheRunner = CacheBuilder.newBuilder().maximumSize(2000).expireAfterAccess(2,TimeUnit.MINUTES).build();
+    private final static ConcurrentMap<String, Class<?>> classMappings = new ConcurrentHashMap<>();
+    private final static Cache<String, GroovyRunner> cacheRunner = CacheBuilder.newBuilder().maximumSize(2000).expireAfterAccess(2, TimeUnit.MINUTES).build();
 
     static {
         Class<?>[] classes = new Class[]{
@@ -91,15 +90,15 @@ public class GroovyUtils {
                 com.alibaba.fastjson.JSONArray.class,
         };
 
-        for(Class clazz : classes){
-            if (clazz !=null && TypeUtils.getClassFromMapping(clazz.getSimpleName()) == null) {
+        for (Class clazz : classes) {
+            if (clazz != null && TypeUtils.getClassFromMapping(clazz.getSimpleName()) == null) {
                 TypeUtils.addMapping(clazz.getSimpleName(), clazz);
                 classMappings.put(clazz.getSimpleName(), clazz);
             }
         }
 
-        for(Class clazz : classes){
-            if (clazz !=null && TypeUtils.getClassFromMapping(clazz.getSimpleName().toLowerCase()) == null) {
+        for (Class clazz : classes) {
+            if (clazz != null && TypeUtils.getClassFromMapping(clazz.getSimpleName().toLowerCase()) == null) {
                 TypeUtils.addMapping(clazz.getSimpleName().toLowerCase(), clazz);
                 classMappings.put(clazz.getSimpleName(), clazz);
             }
@@ -107,9 +106,9 @@ public class GroovyUtils {
 
     }
 
-    public static Class<?> loadClass(String className){
+    public static Class<?> loadClass(String className) {
         Class<?> clazz = classMappings.get(className);
-        if(clazz != null){
+        if (clazz != null) {
             return clazz;
         }
         return TypeUtils.loadClass(className);
@@ -120,7 +119,7 @@ public class GroovyUtils {
         GroovyScript result = new GroovyScript();
         result.setId(hash(script));
         result.setSource(script);
-        result.setVersion("v:"+System.currentTimeMillis());
+        result.setVersion("v:" + System.currentTimeMillis());
         return result;
     }
 

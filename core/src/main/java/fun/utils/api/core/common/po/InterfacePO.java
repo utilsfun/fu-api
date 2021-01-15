@@ -17,7 +17,7 @@ public class InterfacePO {
 
     public String group; //分组名称
 
-    public int sort ;// 排序 ,仅用于接口文档
+    public int sort;// 排序 ,仅用于接口文档
 
     public String title; //标题,仅用于接口文档
 
@@ -29,8 +29,8 @@ public class InterfacePO {
 
     public String httpMethod; //http 方法 get/put/post/delete
 
-    public String requestExample ;	//调用示例 支持mock变量
-    public String responseExample ; //返回示例 支持mock变量
+    public String requestExample;    //调用示例 支持mock变量
+    public String responseExample; //返回示例 支持mock变量
 
 
     public String implementType; //实现类型 sql/url/groovy/bean/javascript

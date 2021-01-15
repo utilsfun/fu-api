@@ -1,9 +1,6 @@
 package fun.utils.api.demo;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.google.zxing.common.detector.WhiteRectangleDetector;
-import com.google.zxing.qrcode.QRCodeReader;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 import groovy.util.GroovyScriptEngine;
@@ -14,10 +11,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class GroovyTest {
-
-    static class A {
-        public String name = "A";
-    }
 
     public static void test1() throws ScriptException {
 
@@ -62,7 +55,6 @@ public class GroovyTest {
         System.out.println(JSON.toJSONString(result, true));
 
     }
-
 
     public static void test2() throws ScriptException, IOException, NoSuchMethodException {
 
@@ -113,7 +105,6 @@ public class GroovyTest {
 
     }
 
-
     public static void test4() throws ScriptException, IOException, NoSuchMethodException {
 
         GroovyScriptEngine groovyScriptEngine = new GroovyScriptEngine("");
@@ -147,5 +138,9 @@ public class GroovyTest {
         test4();
 
 
+    }
+
+    static class A {
+        public String name = "A";
     }
 }

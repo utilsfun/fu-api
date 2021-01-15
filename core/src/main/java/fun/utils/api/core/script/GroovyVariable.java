@@ -1,10 +1,7 @@
-package fun.utils.api.core.common.script;
+package fun.utils.api.core.script;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @Data
 @EqualsAndHashCode

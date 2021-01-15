@@ -1,4 +1,4 @@
-package fun.utils.api.core.common.script;
+package fun.utils.api.core.script;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
@@ -7,7 +7,10 @@ import groovy.lang.Script;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UnknownFormatConversionException;
 
 public class GroovyRunner {
 
@@ -23,38 +26,7 @@ public class GroovyRunner {
     private String id;
 
 
-    private void parseSources(Set<String> allIds, Set<GroovySource> allSources, List<String> sourceIds) throws Exception {
-        for (String id: sourceIds){
-            if (!allIds.contains(id)){
-                allIds.add(id);
-                GroovySource groovySource = groovyService.getSource(id);
-                allSources.add(groovySource);
-                parseSources(allIds,allSources,groovySource.getSourceIds());
-            }
-        }
-    }
-
-    private String formatImport(String source) throws Exception {
-       return source.replaceFirst("^[\\s]*import[\\s]*","").replaceAll("[\\s]*;?[\\s]*$","");
-    }
-
-    private String formatCommentText(String source) throws Exception {
-        if (StringUtils.isNotBlank(source)) {
-            return "/* " + source.replaceAll("\\*/", "") + " */ \r\n";
-        }else{
-            return "";
-        }
-    }
-
-    private String formatCommentLine(String source) throws Exception {
-        if (StringUtils.isNotBlank(source)) {
-            return "//" + source.replaceAll("[\r\n]+", "") + "\r\n";
-        }else{
-            return "";
-        }
-    }
-
-    public GroovyRunner(GroovyService groovyService ,GroovyScript groovyScript) throws Exception {
+    public GroovyRunner(GroovyService groovyService, GroovyScript groovyScript) throws Exception {
         this.groovyService = groovyService;
         this.groovyScript = groovyScript;
         this.id = groovyScript.getId();
@@ -64,14 +36,14 @@ public class GroovyRunner {
         Set<String> sourceIds = new HashSet<>();
         Set<GroovySource> sources = new HashSet<>();
 
-        parseSources(sourceIds,sources,groovyScript.getSourceIds());
+        parseSources(sourceIds, sources, groovyScript.getSourceIds());
 
-        for (String src: groovyScript.getImports()){
+        for (String src : groovyScript.getImports()) {
             imports.add(formatImport(src));
         }
 
-        for (GroovySource groovySource: sources){
-            for (String src: groovySource.getImports()){
+        for (GroovySource groovySource : sources) {
+            for (String src : groovySource.getImports()) {
                 imports.add(formatImport(src));
             }
         }
@@ -79,14 +51,14 @@ public class GroovyRunner {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append(formatCommentLine("id:"+groovyScript.getId()));
-        sb.append(formatCommentLine("title:"+groovyScript.getTitle()));
-        sb.append(formatCommentLine("version:"+groovyScript.getVersion()));
+        sb.append(formatCommentLine("id:" + groovyScript.getId()));
+        sb.append(formatCommentLine("title:" + groovyScript.getTitle()));
+        sb.append(formatCommentLine("version:" + groovyScript.getVersion()));
         sb.append("\r\n");
         sb.append("/* ******** imports ******** */");
         sb.append("\r\n");
 
-        for (String s:imports){
+        for (String s : imports) {
             if (StringUtils.isNotBlank(s)) {
                 sb.append("import " + s + ";\r\n");
             }
@@ -96,7 +68,7 @@ public class GroovyRunner {
         sb.append("/* ******** Sources ******** */");
         sb.append("\r\n");
 
-        for (GroovySource groovySource: sources){
+        for (GroovySource groovySource : sources) {
 
             sb.append(formatCommentLine(groovySource.getTitle()));
             sb.append(formatCommentText(groovySource.getNote()));
@@ -127,7 +99,38 @@ public class GroovyRunner {
 
     }
 
-    public Object execute(Object context,JSONObject variables) throws Exception {
+    private void parseSources(Set<String> allIds, Set<GroovySource> allSources, List<String> sourceIds) throws Exception {
+        for (String id : sourceIds) {
+            if (!allIds.contains(id)) {
+                allIds.add(id);
+                GroovySource groovySource = groovyService.getSource(id);
+                allSources.add(groovySource);
+                parseSources(allIds, allSources, groovySource.getSourceIds());
+            }
+        }
+    }
+
+    private String formatImport(String source) throws Exception {
+        return source.replaceFirst("^[\\s]*import[\\s]*", "").replaceAll("[\\s]*;?[\\s]*$", "");
+    }
+
+    private String formatCommentText(String source) throws Exception {
+        if (StringUtils.isNotBlank(source)) {
+            return "/* " + source.replaceAll("\\*/", "") + " */ \r\n";
+        } else {
+            return "";
+        }
+    }
+
+    private String formatCommentLine(String source) throws Exception {
+        if (StringUtils.isNotBlank(source)) {
+            return "//" + source.replaceAll("[\r\n]+", "") + "\r\n";
+        } else {
+            return "";
+        }
+    }
+
+    public Object execute(Object context, JSONObject variables) throws Exception {
 
         Binding binding = new Binding();
         binding.setVariable("context", context);

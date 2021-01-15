@@ -23,9 +23,9 @@ public class ParameterPO {
 
     public String note; // 参数说明,仅用于接口文档
 
-    public int sort ;// 排序 ,仅用于接口文档
+    public int sort;// 排序 ,仅用于接口文档
 
-    public String position ; //取值位置  query header cookie form body 默认"body" , 为子参数不填,时同上级
+    public String position; //取值位置  query header cookie form body 默认"body" , 为子参数不填,时同上级
 
     public String defaultValue; // 默认值；
 
@@ -38,7 +38,7 @@ public class ParameterPO {
     public boolean hidden = false; // 是否隐藏，隐藏时文档中不显示参数,但可以传入 false:不隐藏; true:隐藏
     public boolean readOnly = false; //	是否只读,只读时不能传入参数,只取默认值，false:不只读; true:只读
 
-    public List<String> examples ;	//示例值 支持mock变量
+    public List<String> examples;    //示例值 支持mock变量
     public List<Validation> validations; //参数验证
 
 

@@ -19,10 +19,10 @@ public class ApplicationPO {
 
     public String version;  //版本号
 
-    public String owner ; // 作者;
+    public String owner; // 作者;
 
-    public Date updateTime ; // 更新时间;
-    public List<String> updateLog ; // 更新日志;
+    public Date updateTime; // 更新时间;
+    public List<String> updateLog; // 更新日志;
 
     public List<ErrorCode> errorCodes; //公共错误码
 
