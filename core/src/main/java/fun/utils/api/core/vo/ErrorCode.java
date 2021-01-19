@@ -8,6 +8,6 @@ public class ErrorCode {
 
     public int code;
 
-    public int message;
+    public String message;
 
 }
