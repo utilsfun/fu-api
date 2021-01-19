@@ -16,6 +16,7 @@ public class ApiProperties {
     @Data
     public static class Application {
         private String path;
+        private String executor;
         private RequestMappingInfo requestMappingInfo;
     }
 

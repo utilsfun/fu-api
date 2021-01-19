@@ -20,16 +20,18 @@ public class ApiAutoConfiguration {
     private ApiProperties apiProperties;
 
     @Autowired
-    private WebApplicationContext wac;
+    private WebApplicationContext webApplicationContext;
 
     @Autowired
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @Bean(destroyMethod = "destroy")
     @ConditionalOnMissingBean(ApiService.class)
-    ApiService apiService() throws  NoSuchMethodException {
+    ApiService apiService() throws NoSuchMethodException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+
         log.info("Initialize ApiService");
-        return new ApiService(apiProperties,requestMappingHandlerMapping);
+        return new ApiService(webApplicationContext,apiProperties,requestMappingHandlerMapping);
+
     }
 
 }

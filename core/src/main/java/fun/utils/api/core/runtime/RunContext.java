@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
@@ -25,11 +26,8 @@ public class RunContext {
     @Getter
     public final long enterTime = System.currentTimeMillis();
 
-    @Getter
-    public String id; //接口会话Id
-
-    @Getter
-    public RestTemplate restTemplate;
+    @Getter @Setter
+    public RestTemplate restTemplate = new RestTemplate();
 
     @Getter
     public WebApplicationContext webApplicationContext;
@@ -52,6 +50,9 @@ public class RunContext {
     @Getter @Setter
     public JSONObject result;
 
+    @Getter
+    public Logger logger;
+
     protected final Map<String, JdbcTemplate> jdbcTemplates = new HashMap<>();
     protected final Map<String, RedisTemplate> redisTemplates = new HashMap<>();
     protected final Map<String, Object> attributes = new HashMap<>();
@@ -61,6 +62,7 @@ public class RunContext {
     }
 
     public RunContext(RestTemplate restTemplate, WebApplicationContext webApplicationContext, RunInterface runInterface, JSONObject parameters, HttpServletResponse response, HttpServletRequest request) {
+
         this.restTemplate = restTemplate;
         this.webApplicationContext = webApplicationContext;
         this.runInterface = runInterface;
@@ -68,6 +70,10 @@ public class RunContext {
         this.parameters = parameters;
         this.response = response;
         this.request = request;
+
+        String myName = runInterface.getRunApplication().getName() + "." + runInterface.getName();
+        this.logger = LoggerFactory.getLogger(myName);
+
     }
 
 
@@ -163,28 +169,25 @@ public class RunContext {
 
     /* ********** logger ********** */
 
-    public Logger getLog(){
-        return log;
-    }
 
     public void logError(String message, Object... objects){
-        log.error(message,objects);
-    }
-
-    public void logTrace(String message, Object... objects){
-        log.trace(message,objects);
+        logger.error(message,objects);
     }
 
     public void logWarn(String message, Object... objects){
-        log.warn(message,objects);
+        logger.warn(message,objects);
     }
 
     public void logInfo(String message, Object... objects){
-        log.info(message,objects);
+        logger.info(message,objects);
     }
 
     public void logDebug(String message, Object... objects){
-        log.debug(message,objects);
+        logger.debug(message,objects);
+    }
+
+    public void logTrace(String message, Object... objects){
+        logger.trace(message,objects);
     }
 
 }

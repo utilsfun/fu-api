@@ -1,9 +1,14 @@
 package fun.utils.api.core.runtime;
 
-import org.checkerframework.checker.initialization.qual.Initialized;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+
+@Slf4j
 public class ApiRunner {
 
+    @Setter @Getter
     RunContext runContext;
 
     public void doInitialize() throws Exception{
@@ -45,5 +50,7 @@ public class ApiRunner {
         onReturn();
 
     }
+
+
 
 }
