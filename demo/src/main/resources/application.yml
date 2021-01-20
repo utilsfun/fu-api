@@ -16,7 +16,35 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure,org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 
   thymeleaf:
     prefix: classpath:/templates/
+
+fu-api:
+  datasource:
+    url: jdbc:mysql://rm-wz9c07bgnhh23pjm4ko.mysql.rds.aliyuncs.com/fuapi?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=GMT%2B8&useSSL=false&allowMultiQueries=true
+    username: db_root
+    password: db@@2020
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initial-size: 1
+    min-idle: 1
+    max-active: 5
+    max-wait: 60000
+    time-between-eviction-runsMillis: 60000
+    min-evictable-idle-timeMillis: 300000
+    validation-query: select 'x' FROM DUAL
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    pool-prepared-statements: true
+    max-open-prepared-statements: 20
+    max-pool-prepared-statement-per-connection-size: 20
+    filters: stat,wall,slf4j
+    connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    use-global-data-source-stat: true
+
+  applications:
+    - path: demo
 
