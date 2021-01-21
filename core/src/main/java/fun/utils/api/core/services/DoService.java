@@ -10,8 +10,8 @@ import fun.utils.api.core.persistence.FilterDO;
 import fun.utils.api.core.persistence.ParameterDO;
 import fun.utils.api.core.runtime.RunApplication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -45,39 +45,74 @@ public class DoService {
 
 
         conversionService = new DefaultConversionService();
-        conversionService.addConverter(new FastJsonConverter());
+
 
 
 //        conversionService.addConverter(new JsonObjectConverter(conversionService));
 //        conversionService.addConverter(new JsonArrayConverter(conversionService));
 
+        conversionService.addConverter(new GenericConverter() {
 
+           @Override
+           public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
+               return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, Object.class));
+           }
 
-//        conversionService.addConverter(new GenericConverter() {
-//
-//           @Override
-//           public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
-//               return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, Object.class));
-//           }
-//
-//           @Override
-//           @Nullable
-//           public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-//               if (source == null) {
-//                   return null;
-//               }
-//
-//               String string = (String) source;
-//               return TypeUtils.castToJavaBean(string, targetType.getType());
-//
-//           }
-//       });
+           @Override
+           @Nullable
+           public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+               try {
+                   return TypeUtils.castToJavaBean((String) source, targetType.getType());
+               } catch (Exception e) {
+                   return TypeUtils.castToJavaBean(JSON.parse((String) source), targetType.getType());
+               }
+           }
+
+       });
+
+        conversionService.addConverter(new GenericConverter() {
+
+            @Override
+            public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
+                return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, Map.class));
+            }
+
+            @Override
+            @Nullable
+            public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+                return TypeUtils.castToJavaBean(JSON.parse((String) source), targetType.getType());
+            }
+
+        });
+
+        conversionService.addConverter(new ListConverter());
 
 //        conversionService.addConverter(new GenericConverter() {
 //
 //            @Override
 //            public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
 //                return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, List.class));
+//            }
+//
+//            @Override
+//            @Nullable
+//            public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+//                if (source == null) {
+//                    return null;
+//                }
+//
+//                String string = (String) source;
+//                TypeDescriptor targetElementType = targetType.getElementTypeDescriptor();
+//                return JSON.parseArray(string, targetElementType.getType());
+//
+//            }
+//        });
+
+//        conversionService.addConverter(new GenericConverter() {
+//
+//            @Override
+//            public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
+//                return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, Map.class));
 //            }
 //
 //            @Override
