@@ -1,5 +1,6 @@
 package fun.utils.api.core.controller;
 
+import com.alibaba.fastjson.JSON;
 import fun.utils.api.core.services.DoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class ApiDefaultExecutor implements ApiExecutor {
 
         String subPath = "/" + UriComponentsBuilder.fromUriString(url).build().getPathSegments().get(0);
 
-        return doService.getRunApplication(app.getPath());
+        return JSON.toJSONString(doService.getRunApplication(app.getPath()),true);
 
     }
 }

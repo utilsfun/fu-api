@@ -1,6 +1,5 @@
 package fun.utils.api.core.common.valid;
 
-import fun.utils.api.core.vo.Validation;
 import org.apache.commons.lang3.StringUtils;
 
 public class ValidateEmail extends Validation {

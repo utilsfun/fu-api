@@ -2,6 +2,7 @@ package fun.utils.api.core.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,10 +13,12 @@ public class ApiController {
 
     private final ApiProperties.Application app;
     private final ApiExecutor executor;
+    private final WebApplicationContext webApplicationContext;
 
-    public ApiController(ApiProperties.Application app, ApiExecutor executor) {
+    public ApiController(WebApplicationContext webApplicationContext,ApiProperties.Application app, ApiExecutor executor) {
         this.app = app;
         this.executor = executor;
+        this.webApplicationContext = webApplicationContext;
         log.info("Create ApiSimpleController {}",app.getPath());
     }
 

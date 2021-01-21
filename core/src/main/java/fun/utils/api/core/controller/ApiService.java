@@ -36,7 +36,7 @@ public class ApiService implements DisposableBean {
 
             String executorClass = StringUtils.defaultIfBlank(app.getExecutor(),ApiDefaultExecutor.class.getName());
             ApiExecutor executor = (ApiExecutor) Class.forName(executorClass).newInstance();
-            ApiController controller = new ApiController(app,executor);
+            ApiController controller = new ApiController(wac,app,executor);
             wac.getAutowireCapableBeanFactory().autowireBean(executor);
 
             String path = app.getPath();

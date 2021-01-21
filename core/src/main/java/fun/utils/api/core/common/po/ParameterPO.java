@@ -1,6 +1,6 @@
 package fun.utils.api.core.common.po;
 
-import fun.utils.api.core.vo.Validation;
+import fun.utils.api.core.common.valid.Validation;
 import lombok.Data;
 import lombok.NonNull;
 
