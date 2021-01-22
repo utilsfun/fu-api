@@ -26,11 +26,6 @@ public class ApiController {
     @ResponseBody
     public Object request(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String url = request.getRequestURI();
-        url = url.replaceFirst(request.getServletContext().getContextPath() + app.getPath(), "");
-
-        String subPath = "/" + UriComponentsBuilder.fromUriString(url).build().getPathSegments().get(0);
-
         return executor.doExecute(app ,request);
 
     }

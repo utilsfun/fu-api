@@ -1,22 +1,27 @@
 package fun.utils.api.core.runtime;
 
-import com.alibaba.fastjson.JSONObject;
-import lombok.Getter;
-import lombok.Setter;
+
+import fun.utils.api.core.persistence.DocumentDO;
+import fun.utils.api.core.persistence.FilterDO;
+import fun.utils.api.core.persistence.InterfaceDO;
+import fun.utils.api.core.persistence.ParameterDO;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 @Slf4j
+@Data
 public class RunInterface {
 
-    @Getter @Setter
     public String name;
-
-    @Getter @Setter
-    public JSONObject config;
-
-    @Getter @Setter
     public RunApplication runApplication;
 
+    public InterfaceDO interfaceDO;
+
+    private List<DocumentDO> documents;
+    private List<FilterDO> filters;
+    private List<ParameterDO> parameters;
 
 
 }

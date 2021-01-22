@@ -14,10 +14,12 @@ import java.util.List;
 public class RunApplication {
 
     private String name;
-    private ApplicationDO application;
+    private ApplicationDO applicationDO;
 
     private List<DocumentDO> documents;
     private List<FilterDO> filters;
     private List<ParameterDO> parameters;
+
+    private List<String> interfaceNames;
 
 }

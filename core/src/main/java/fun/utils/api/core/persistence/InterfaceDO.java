@@ -1,17 +1,17 @@
 package fun.utils.api.core.persistence;
 
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.core.runtime.ErrorCode;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * Description:接口应用表
+ * Description:接口方法表
  */
+
 @Data
-public class ApplicationDO {
+public class InterfaceDO {
 
     /**
      * 【编号】自增长编号
@@ -19,9 +19,19 @@ public class ApplicationDO {
     private long id;
 
     /**
-     * 【名称】唯一
+     * 【应用ID】
+     */
+    private long applicationId;
+
+    /**
+     * 【名称】 应用 + 名称 唯一
      */
     private String name;
+
+    /**
+     * 【分组名称】
+     */
+    private String group;
 
     /**
      * 【标题】
@@ -34,9 +44,34 @@ public class ApplicationDO {
     private String note;
 
     /**
-     * 【作者】
+     * 【排序】
      */
-    private String owner;
+    private int sort;
+
+    /**
+     * 【方法】get/put/post/delete
+     */
+    private String method;
+
+    /**
+     * 【调用示例】支持mock变量
+     */
+    private String requestExample;
+
+    /**
+     * 【返回示例】支持mock变量
+     */
+    private String responseExample;
+
+    /**
+     * 【实现类型】groovy/bean,...
+     */
+    private String implementType;
+
+    /**
+     * 【实现代码】
+     */
+    private String implementCode;
 
     /**
      * 【配置】 json
@@ -46,7 +81,8 @@ public class ApplicationDO {
     /**
      * 【错误码】
      */
-    private List<ErrorCode> errorCodes;
+    private String errorCodes;
+
     /**
      * 【版本号】
      */
@@ -71,6 +107,4 @@ public class ApplicationDO {
     private List<Long> documentIds;
     private List<Long> parameterIds;
     private List<Long> filterIds;
-    private List<String> interfaceNames;
-
 }

@@ -66,7 +66,7 @@ public class RunContext {
         this.restTemplate = restTemplate;
         this.webApplicationContext = webApplicationContext;
         this.runInterface = runInterface;
-        this.config = runInterface.getConfig();
+        this.config = runInterface.getInterfaceDO().getConfig();
         this.parameters = parameters;
         this.response = response;
         this.request = request;

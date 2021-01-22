@@ -1,7 +1,7 @@
 package fun.utils.api.core.controller;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import fun.utils.api.core.services.DoService;
+import fun.utils.api.core.services.RunService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -58,10 +58,10 @@ public class ApiAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DoService.class)
-    DoService doService(){
+    @ConditionalOnMissingBean(RunService.class)
+    RunService doService(){
         log.info("Initialize DoService");
-        return new DoService();
+        return new RunService();
     }
 
 }

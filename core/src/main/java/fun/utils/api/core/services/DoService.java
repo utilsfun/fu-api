@@ -1,216 +1,150 @@
 package fun.utils.api.core.services;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.util.TypeUtils;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import fun.utils.api.core.persistence.ApplicationDO;
-import fun.utils.api.core.persistence.DocumentDO;
-import fun.utils.api.core.persistence.FilterDO;
-import fun.utils.api.core.persistence.ParameterDO;
+import fun.utils.api.core.persistence.*;
 import fun.utils.api.core.runtime.RunApplication;
+import fun.utils.api.core.runtime.RunInterface;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.lang.Nullable;
 
-
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class DoService {
 
 
-    private final Cache<String, RunApplication> runApplicationCache;
+    private final Cache<String, ApplicationDO> applicationCache;
+    private final Cache<String, InterfaceDO> interfaceCache;
+    private final Cache<String, DocumentDO> documentCache;
+    private final Cache<String, FilterDO> filterCache;
+    private final Cache<String, ParameterDO> parameterCache;
+
+    private final BeanPropertyRowMapper<ApplicationDO> applicationRowMapper;
+    private final BeanPropertyRowMapper<InterfaceDO> interfaceRowMapper;
+    private final BeanPropertyRowMapper<DocumentDO> documentRowMapper;
+    private final BeanPropertyRowMapper<FilterDO> filterRowMapper;
+    private final BeanPropertyRowMapper<ParameterDO> parameterRowMapper;
+
+
+    private final DefaultConversionService defaultConversionService  = new DefaultConversionService();
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private GenericConversionService conversionService;
-
-    private BeanPropertyRowMapper<ApplicationDO> applicationRowMapper;
-    private BeanPropertyRowMapper<DocumentDO> documentRowMapper;
-    private BeanPropertyRowMapper<FilterDO> filterRowMapper;
-    private BeanPropertyRowMapper<ParameterDO> parameterRowMapper;
-
     public DoService() {
 
-        runApplicationCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(10, TimeUnit.SECONDS).build();
+        applicationCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(10, TimeUnit.SECONDS).build();
+        interfaceCache = CacheBuilder.newBuilder().maximumSize(200).expireAfterAccess(10, TimeUnit.SECONDS).build();
+        documentCache = CacheBuilder.newBuilder().maximumSize(500).expireAfterAccess(10, TimeUnit.SECONDS).build();
+        filterCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(10, TimeUnit.SECONDS).build();
+        parameterCache = CacheBuilder.newBuilder().maximumSize(5000).expireAfterAccess(10, TimeUnit.SECONDS).build();
 
+        GenericConversionService conversionService = new DefaultConversionService();
 
-        conversionService = new DefaultConversionService();
+        conversionService.addConverter(new JsonObjectConverter(defaultConversionService));
+        conversionService.addConverter(new JsonArrayConverter(defaultConversionService));
 
-
-
-//        conversionService.addConverter(new JsonObjectConverter(conversionService));
-//        conversionService.addConverter(new JsonArrayConverter(conversionService));
-
-        conversionService.addConverter(new GenericConverter() {
-
-           @Override
-           public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
-               return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, Object.class));
-           }
-
-           @Override
-           @Nullable
-           public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-               try {
-                   return TypeUtils.castToJavaBean((String) source, targetType.getType());
-               } catch (Exception e) {
-                   return TypeUtils.castToJavaBean(JSON.parse((String) source), targetType.getType());
-               }
-           }
-
-       });
-
-        conversionService.addConverter(new GenericConverter() {
-
+        conversionService.addConverter(new Converter<String, JSON>() {
             @Override
-            public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
-                return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, Map.class));
+            public JSON convert(String s) {
+                return (JSON)JSON.parse(s);
             }
-
-            @Override
-            @Nullable
-            public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-                return TypeUtils.castToJavaBean(JSON.parse((String) source), targetType.getType());
-            }
-
         });
 
-        conversionService.addConverter(new ListConverter());
+        conversionService.addConverter(new Converter<String, JSONArray>() {
+            @Override
+            public JSONArray convert(String s) {
+                return JSON.parseArray(s);
+            }
+        });
 
-//        conversionService.addConverter(new GenericConverter() {
-//
-//            @Override
-//            public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
-//                return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, List.class));
-//            }
-//
-//            @Override
-//            @Nullable
-//            public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-//                if (source == null) {
-//                    return null;
-//                }
-//
-//                String string = (String) source;
-//                TypeDescriptor targetElementType = targetType.getElementTypeDescriptor();
-//                return JSON.parseArray(string, targetElementType.getType());
-//
-//            }
-//        });
-
-//        conversionService.addConverter(new GenericConverter() {
-//
-//            @Override
-//            public Set<GenericConverter.ConvertiblePair> getConvertibleTypes() {
-//                return Collections.singleton(new GenericConverter.ConvertiblePair(String.class, Map.class));
-//            }
-//
-//            @Override
-//            @Nullable
-//            public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-//                if (source == null) {
-//                    return null;
-//                }
-//
-//                String string = (String) source;
-//                TypeDescriptor targetElementType = targetType.getElementTypeDescriptor();
-//                return JSON.parseArray(string, targetElementType.getType());
-//
-//            }
-//        });
-
-//
-//        conversionService.addConverter(new Converter<String, List<String>>() {
-//            @Override
-//            public List<String> convert(String s) {
-//                if (JSONValidator.from(s).validate()){
-//                    return JSON.parseArray(s,String.class);
-//                }else{
-//                    return Arrays.asList(StringUtils.split(s,","));
-//                }
-//            }
-//        });
-
-//        conversionService.addConverter(new Converter<String, List<Validation>>() {
-//            @Override
-//            public List<Validation> convert(String s) {
-//                return JSON.parseArray(s, Validation.class);
-//            }
-//        });
-
-//        conversionService.addConverter(new Converter<String, JSON>() {
-//            @Override
-//            public JSON convert(String s) {
-//                return (JSON)JSON.parse(s);
-//            }
-//        });
-//
-//        conversionService.addConverter(new Converter<String, JSONArray>() {
-//            @Override
-//            public JSONArray convert(String s) {
-//                return JSON.parseArray(s);
-//            }
-//        });
-//
-//        conversionService.addConverter(new Converter<String, JSONObject>() {
-//            @Override
-//            public JSONObject convert(String s) {
-//                return JSON.parseObject(s);
-//            }
-//        });
+        conversionService.addConverter(new Converter<String, JSONObject>() {
+            @Override
+            public JSONObject convert(String s) {
+                return JSON.parseObject(s);
+            }
+        });
 
 
-        applicationRowMapper = BeanPropertyRowMapper.newInstance(ApplicationDO.class,conversionService);
-
-        documentRowMapper = BeanPropertyRowMapper.newInstance(DocumentDO.class,conversionService);
-
-        filterRowMapper = BeanPropertyRowMapper.newInstance(FilterDO.class,conversionService);
-
-        parameterRowMapper = BeanPropertyRowMapper.newInstance(ParameterDO.class,conversionService);
-
+        applicationRowMapper = BeanPropertyRowMapper.newInstance(ApplicationDO.class, conversionService);
+        interfaceRowMapper = BeanPropertyRowMapper.newInstance(InterfaceDO.class, conversionService);
+        documentRowMapper = BeanPropertyRowMapper.newInstance(DocumentDO.class, conversionService);
+        filterRowMapper = BeanPropertyRowMapper.newInstance(FilterDO.class, conversionService);
+        parameterRowMapper = BeanPropertyRowMapper.newInstance(ParameterDO.class, conversionService);
 
     }
 
-    public RunApplication getRunApplication(String name) throws ExecutionException {
-        return  runApplicationCache.get(name,()-> loadApplicationByName(name));
+
+    public ApplicationDO getApplicationDO(String applicationName) throws ExecutionException {
+        return  applicationCache.get(applicationName,()-> loadApplicationDO(applicationName));
     }
 
+    public ApplicationDO loadApplicationDO(String applicationName) {
+        StringBuffer sqlBuffer = new StringBuffer();
+        sqlBuffer.append(" select id,name,title,note,owner,config,error_codes,version,status,gmt_create,gmt_modified ");
+        sqlBuffer.append(" ,(select group_concat(id ORDER BY `title` SEPARATOR ',') from `api_document` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS document_ids ");
+        sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS parameter_ids ");
+        sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_filter` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS filter_ids ");
+        sqlBuffer.append(" ,(select group_concat(name ORDER BY `sort` SEPARATOR ',') from `api_interface` WHERE `status` = 0 and `application_id` = api_application.id GROUP BY `application_id` ) AS interface_names ");
+        sqlBuffer.append(" from api_application ");
+        sqlBuffer.append(" where status = 0 and name = ? ");
 
-    public RunApplication loadApplicationByName(String name) throws ExecutionException {
+        return jdbcTemplate.queryForObject(sqlBuffer.toString(),applicationRowMapper, applicationName);
+    }
 
-        RunApplication runApplication = new RunApplication();
-        runApplication.setName(name);
+    public InterfaceDO getInterfaceDO(String applicationName,String interfaceName) throws ExecutionException {
+        return interfaceCache.get(applicationName + "/" + interfaceName ,()-> loadInterfaceDO(applicationName,interfaceName));
+    }
 
-        String appSql = " select id,name,title,note,owner,version,status,gmt_create,gmt_modified from api_application where name = ? " ;
-        ApplicationDO applicationDO = jdbcTemplate.queryForObject(appSql,applicationRowMapper, name);
-        runApplication.setApplication(applicationDO);
+    public InterfaceDO loadInterfaceDO(String applicationName,String interfaceName) throws ExecutionException {
 
-        String documentSql = " select id,parent_type,parent_id,title,note,format,content,permission,status,gmt_create,gmt_modified from api_document where parent_type = 'application' and parent_id = ? " ;
-        List<DocumentDO> documentDOList = jdbcTemplate.query(documentSql,documentRowMapper, applicationDO.getId());
-        runApplication.setDocuments(documentDOList);
+        ApplicationDO applicationDO = getApplicationDO(applicationName);
 
-        String filterSql = " select id,parent_type,parent_id,title,config,sort,implement_type,implement_code,point,status,gmt_create,gmt_modified from api_filter where parent_type = 'application' and parent_id = ? order by sort " ;
-        List<FilterDO> filterDOList = jdbcTemplate.query(filterSql,filterRowMapper, applicationDO.getId());
-        runApplication.setFilters(filterDOList);
+        StringBuffer sqlBuffer = new StringBuffer();
+        sqlBuffer.append(" select id,application_id,name,group,title,note,sort,method,request_example,response_example,config,implement_type,implement_code,error_codes,version,status,gmt_create,gmt_modified ");
+        sqlBuffer.append(" ,(select group_concat(id ORDER BY `title` SEPARATOR ',') from `api_document` WHERE `status` = 0 and `parent_type` = 'interface' and `parent_id` = api_interface.id GROUP BY `parent_id` ) AS document_ids ");
+        sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'interface' and `parent_id` = api_interface.id GROUP BY `parent_id` ) AS parameter_ids ");
+        sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_filter` WHERE `status` = 0 and `parent_type` = 'interface' and `parent_id` = api_interface.id GROUP BY `parent_id` ) AS filter_ids ");
+        sqlBuffer.append(" from api_interface ");
+        sqlBuffer.append(" where status = 0 and application_id = ?  and name = ? ");
 
-        String parameterSql = " select id,parent_type,parent_id,name,alias,title,sort,position,default_value,data_type,is_array,is_required,is_hidden,is_read_only,examples,validations,status,gmt_create,gmt_modified from api_parameter where parent_type = 'application' and parent_id = ? order by sort " ;
-        List<ParameterDO> parameterDOList = jdbcTemplate.query(parameterSql,parameterRowMapper, applicationDO.getId());
+        return jdbcTemplate.queryForObject(sqlBuffer.toString(),interfaceRowMapper,applicationDO.getId(), interfaceName);
+    }
 
-        runApplication.setParameters(parameterDOList);
+    public DocumentDO getDocumentDO(String id) throws ExecutionException {
+        return  documentCache.get(id,()-> loadDocumentDO(id));
+    }
 
+    public DocumentDO loadDocumentDO(String id)  {
+        String documentSql = " select id,parent_type,parent_id,title,note,format,content,permission,status,gmt_create,gmt_modified from api_document where status = 0 and id = ? " ;
+        return jdbcTemplate.queryForObject(documentSql,documentRowMapper,id);
+    }
 
-        return runApplication;
+    public FilterDO getFilterDO(String id) throws ExecutionException {
+        return  filterCache.get(id,()-> loadFilterDO(id));
+    }
 
+    public FilterDO loadFilterDO(String id)  {
+        String filterSql = " select id,parent_type,parent_id,title,config,sort,implement_type,implement_code,point,status,gmt_create,gmt_modified from api_filter where status = 0 and id = ? " ;
+        return jdbcTemplate.queryForObject(filterSql,filterRowMapper,id);
+    }
+
+    public ParameterDO getParameterDO(String id) throws ExecutionException {
+        return  parameterCache.get(id,()-> loadParameterDO(id));
+    }
+
+    public ParameterDO loadParameterDO(String id)  {
+        String parameterSql = " select id,parent_type,parent_id,name,alias,title,sort,position,default_value,data_type,is_array,is_required,is_hidden,is_read_only,examples,validations,status,gmt_create,gmt_modified from api_parameter where status = 0 and id = ? " ;
+        return jdbcTemplate.queryForObject(parameterSql,parameterRowMapper,id);
     }
 
 }

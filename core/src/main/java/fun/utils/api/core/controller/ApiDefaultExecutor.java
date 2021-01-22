@@ -1,10 +1,11 @@
 package fun.utils.api.core.controller;
 
 import com.alibaba.fastjson.JSON;
-import fun.utils.api.core.services.DoService;
+import fun.utils.api.core.services.RunService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,17 +18,22 @@ public class ApiDefaultExecutor implements ApiExecutor {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private DoService doService;
+    private RunService doService;
 
     @Override
     public Object doExecute(ApiProperties.Application app, HttpServletRequest request) throws ExecutionException {
 
-        String url = request.getRequestURI();
-        url = url.replaceFirst(request.getServletContext().getContextPath() + app.getPath(), "");
 
-        String subPath = "/" + UriComponentsBuilder.fromUriString(url).build().getPathSegments().get(0);
 
-        return JSON.toJSONString(doService.getRunApplication(app.getPath()),true);
+        String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
+        UriComponents uc =  UriComponentsBuilder.fromUriString(url).build();
+
+        String applicationName = uc.getPathSegments().get(0);
+        String interfaceName = uc.getPathSegments().get(1);
+
+        System.out.println( applicationName + "/" + interfaceName );
+
+        return JSON.toJSON(doService.getRunApplication(applicationName));
 
     }
 }

@@ -1,6 +1,6 @@
 package fun.utils.api.core.common.po;
 
-import fun.utils.api.core.vo.ErrorCode;
+import fun.utils.api.core.runtime.ErrorCode;
 import lombok.Data;
 
 import java.util.Date;

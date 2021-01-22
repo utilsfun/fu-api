@@ -1,4 +1,4 @@
-package fun.utils.api.core.common.valid;
+package fun.utils.api.core.runtime;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;

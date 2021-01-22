@@ -17,29 +17,23 @@ package fun.utils.api.core.services;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONValidator;
+import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.util.TypeUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 public class JsonObjectConverter implements GenericConverter {
 
-    private final ConversionService conversionService;
+    private final ConversionService defConversionService;
 
 
-    public JsonObjectConverter(ConversionService conversionService) {
-        this.conversionService = conversionService;
+    public JsonObjectConverter(ConversionService defConversionService) {
+        this.defConversionService = defConversionService;
     }
 
 
@@ -51,13 +45,16 @@ public class JsonObjectConverter implements GenericConverter {
     @Override
     @Nullable
     public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-        if (source == null) {
-            return null;
+
+        if (defConversionService.canConvert(sourceType, targetType)) {
+            return defConversionService.convert(source, sourceType, targetType);
+        } else {
+            if (ParserConfig.getGlobalInstance().get(targetType.getType()) == null) {
+                return JSON.parseObject(JSON.toJSONString(source), targetType.getType());
+            } else {
+                return TypeUtils.castToJavaBean(source, targetType.getType());
+            }
         }
-
-        String string = (String) source;
-        return TypeUtils.castToJavaBean(string, targetType.getType());
-
     }
 
 }

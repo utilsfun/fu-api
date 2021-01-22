@@ -1,5 +1,6 @@
 package fun.utils.api.core.persistence;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 import java.util.Date;
@@ -33,7 +34,7 @@ public class FilterDO {
     /**
      * 【配置】 json
      */
-    private String config;
+    private JSONObject config;
 
     /**
      * 【排序】
