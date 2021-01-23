@@ -1,7 +1,7 @@
 package fun.utils.api.core.controller;
 
 import com.alibaba.fastjson.JSON;
-import fun.utils.api.core.services.RunService;
+import fun.utils.api.core.services.DoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,7 +18,7 @@ public class ApiDefaultExecutor implements ApiExecutor {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private RunService doService;
+    private DoService doService;
 
     @Override
     public Object doExecute(ApiProperties.Application app, HttpServletRequest request) throws ExecutionException {
@@ -33,7 +33,7 @@ public class ApiDefaultExecutor implements ApiExecutor {
 
         System.out.println( applicationName + "/" + interfaceName );
 
-        return JSON.toJSON(doService.getRunApplication(applicationName));
+        return JSON.toJSON(doService.getApplicationDO(applicationName));
 
     }
 }

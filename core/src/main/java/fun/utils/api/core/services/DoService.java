@@ -111,6 +111,7 @@ public class DoService {
 
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append(" select id,application_id,name,group,title,note,sort,method,request_example,response_example,config,implement_type,implement_code,error_codes,version,status,gmt_create,gmt_modified ");
+        sqlBuffer.append(" ,(select name from `api_application` WHERE `id` = api_interface.application_id) AS application_name ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `title` SEPARATOR ',') from `api_document` WHERE `status` = 0 and `parent_type` = 'interface' and `parent_id` = api_interface.id GROUP BY `parent_id` ) AS document_ids ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'interface' and `parent_id` = api_interface.id GROUP BY `parent_id` ) AS parameter_ids ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_filter` WHERE `status` = 0 and `parent_type` = 'interface' and `parent_id` = api_interface.id GROUP BY `parent_id` ) AS filter_ids ");
@@ -120,31 +121,35 @@ public class DoService {
         return jdbcTemplate.queryForObject(sqlBuffer.toString(),interfaceRowMapper,applicationDO.getId(), interfaceName);
     }
 
-    public DocumentDO getDocumentDO(String id) throws ExecutionException {
-        return  documentCache.get(id,()-> loadDocumentDO(id));
+    public DocumentDO getDocumentDO(Long id) throws ExecutionException {
+        return  documentCache.get(String.valueOf(id),()-> loadDocumentDO(id));
     }
 
-    public DocumentDO loadDocumentDO(String id)  {
+    public DocumentDO loadDocumentDO(Long id)  {
         String documentSql = " select id,parent_type,parent_id,title,note,format,content,permission,status,gmt_create,gmt_modified from api_document where status = 0 and id = ? " ;
         return jdbcTemplate.queryForObject(documentSql,documentRowMapper,id);
     }
 
-    public FilterDO getFilterDO(String id) throws ExecutionException {
-        return  filterCache.get(id,()-> loadFilterDO(id));
+    public FilterDO getFilterDO(Long id) throws ExecutionException {
+        return  filterCache.get(String.valueOf(id),()-> loadFilterDO(id));
     }
 
-    public FilterDO loadFilterDO(String id)  {
+    public FilterDO loadFilterDO(Long id)  {
         String filterSql = " select id,parent_type,parent_id,title,config,sort,implement_type,implement_code,point,status,gmt_create,gmt_modified from api_filter where status = 0 and id = ? " ;
         return jdbcTemplate.queryForObject(filterSql,filterRowMapper,id);
     }
 
-    public ParameterDO getParameterDO(String id) throws ExecutionException {
-        return  parameterCache.get(id,()-> loadParameterDO(id));
+    public ParameterDO getParameterDO(Long id) throws ExecutionException {
+        return  parameterCache.get(String.valueOf(id),()-> loadParameterDO(id));
     }
 
-    public ParameterDO loadParameterDO(String id)  {
-        String parameterSql = " select id,parent_type,parent_id,name,alias,title,sort,position,default_value,data_type,is_array,is_required,is_hidden,is_read_only,examples,validations,status,gmt_create,gmt_modified from api_parameter where status = 0 and id = ? " ;
-        return jdbcTemplate.queryForObject(parameterSql,parameterRowMapper,id);
+    public ParameterDO loadParameterDO(Long id)  {
+        StringBuffer sqlBuffer = new StringBuffer();
+        sqlBuffer.append(" select id,parent_type,parent_id,name,alias,title,sort,position,default_value,data_type,is_array,is_required,is_hidden,is_read_only,examples,validations,status,gmt_create,gmt_modified ");
+        sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'parameter' and `parent_id` = api_parameter.id GROUP BY `parent_id` ) AS parameter_ids ");
+        sqlBuffer.append(" from api_parameter ");
+        sqlBuffer.append(" where status = 0 and id = ? ");
+        return jdbcTemplate.queryForObject(sqlBuffer.toString(),parameterRowMapper,id);
     }
 
 }

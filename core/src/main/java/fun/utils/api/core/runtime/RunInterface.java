@@ -1,10 +1,7 @@
 package fun.utils.api.core.runtime;
 
 
-import fun.utils.api.core.persistence.DocumentDO;
-import fun.utils.api.core.persistence.FilterDO;
-import fun.utils.api.core.persistence.InterfaceDO;
-import fun.utils.api.core.persistence.ParameterDO;
+import fun.utils.api.core.persistence.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +12,8 @@ import java.util.List;
 public class RunInterface {
 
     public String name;
-    public RunApplication runApplication;
 
+    public ApplicationDO applicationDO;
     public InterfaceDO interfaceDO;
 
     private List<DocumentDO> documents;

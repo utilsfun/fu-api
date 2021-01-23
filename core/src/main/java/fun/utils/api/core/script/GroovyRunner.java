@@ -2,6 +2,7 @@ package fun.utils.api.core.script;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
+import fun.utils.api.core.util.ClassUtils;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 import lombok.Getter;
@@ -92,7 +93,7 @@ public class GroovyRunner {
         runner = groovyService.getShell().parse(sb.toString());
 
         String returnType = StringUtils.defaultIfBlank(groovyScript.getReturnType(), "String");
-        returnClass = GroovyUtils.loadClass(returnType);
+        returnClass = ClassUtils.loadClass(returnType);
         if (returnClass == null) {
             throw new UnknownFormatConversionException("返回类型'" + returnType + "'不可识别");
         }
@@ -142,7 +143,7 @@ public class GroovyRunner {
             Object sourceValue = null;
 
             String dataType = StringUtils.defaultIfBlank(parameter.getDataType(), "String");
-            Class dataClass = GroovyUtils.loadClass(dataType);
+            Class dataClass = ClassUtils.loadClass(dataType);
 
             if (dataClass == null) {
                 throw new UnknownFormatConversionException("参数类型'" + dataType + "'不可识别");

@@ -16,7 +16,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 
-public class ParamsTools {
+public class RequestTools {
 
 
     public static JSONObject getJsonByInput(HttpServletRequest request) {

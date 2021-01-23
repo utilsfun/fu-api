@@ -19,9 +19,14 @@ public class InterfaceDO {
     private long id;
 
     /**
-     * 【应用ID】
+     * 【应用Id】
      */
     private long applicationId;
+
+    /**
+     * 【应用Name】
+     */
+    private long applicationName;
 
     /**
      * 【名称】 应用 + 名称 唯一

@@ -2,6 +2,8 @@ package fun.utils.api.core.runtime;
 
 
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.api.core.persistence.ApplicationDO;
+import fun.utils.api.core.persistence.InterfaceDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,34 +26,40 @@ import java.util.Map;
 public class RunContext {
 
     @Getter
-    public final long enterTime = System.currentTimeMillis();
+    private final long enterTime = System.currentTimeMillis();
 
     @Getter @Setter
-    public RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Getter
-    public WebApplicationContext webApplicationContext;
+    private WebApplicationContext webApplicationContext;
 
     @Getter
-    public RunInterface runInterface;
+    private ApplicationDO applicationDO;
 
     @Getter
-    public JSONObject config;
+    private InterfaceDO interfaceDO;
 
     @Getter
-    public JSONObject parameters;
-
-    @Getter
-    public HttpServletResponse response;
-
-    @Getter
-    public HttpServletRequest request;
+    private JSONObject config;
 
     @Getter @Setter
-    public JSONObject result;
+    private JSONObject input;
+
+    @Getter @Setter
+    private JSONObject parameters;
 
     @Getter
-    public Logger logger;
+    private HttpServletResponse response;
+
+    @Getter
+    private HttpServletRequest request;
+
+    @Getter @Setter
+    private JSONObject result;
+
+    @Getter
+    private Logger logger;
 
     protected final Map<String, JdbcTemplate> jdbcTemplates = new HashMap<>();
     protected final Map<String, RedisTemplate> redisTemplates = new HashMap<>();
@@ -61,17 +69,17 @@ public class RunContext {
 
     }
 
-    public RunContext(RestTemplate restTemplate, WebApplicationContext webApplicationContext, RunInterface runInterface, JSONObject parameters, HttpServletResponse response, HttpServletRequest request) {
+    public RunContext(RestTemplate restTemplate, WebApplicationContext webApplicationContext,ApplicationDO applicationDO, InterfaceDO interfaceDO, HttpServletResponse response, HttpServletRequest request) {
 
         this.restTemplate = restTemplate;
         this.webApplicationContext = webApplicationContext;
-        this.runInterface = runInterface;
-        this.config = runInterface.getInterfaceDO().getConfig();
-        this.parameters = parameters;
+        this.interfaceDO = interfaceDO;
+        this.applicationDO = applicationDO;
+        this.config = interfaceDO.getConfig();
         this.response = response;
         this.request = request;
 
-        String myName = runInterface.getRunApplication().getName() + "." + runInterface.getName();
+        String myName = interfaceDO.getApplicationName() + "." + interfaceDO.getName();
         this.logger = LoggerFactory.getLogger(myName);
 
     }
