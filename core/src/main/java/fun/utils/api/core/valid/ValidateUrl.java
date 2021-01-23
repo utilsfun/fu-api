@@ -1,4 +1,4 @@
-package fun.utils.api.core.common.valid;
+package fun.utils.api.core.valid;
 
 import fun.utils.api.core.runtime.Validation;
 import org.apache.commons.lang3.StringUtils;

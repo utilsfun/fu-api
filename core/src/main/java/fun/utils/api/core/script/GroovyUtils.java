@@ -6,15 +6,31 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.util.DigestUtils;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class GroovyUtils {
 
-
-    private final static Cache<String, GroovyRunner> cacheRunner = CacheBuilder.newBuilder().maximumSize(2000).expireAfterAccess(2, TimeUnit.MINUTES).build();
+    public static GroovySource sourceOf(String id, String source) {
+        GroovySource result  = new GroovyScript();
+        result.setId(id);
+        List<String> imports = result.getImports();
+        Pattern pattern = Pattern.compile("[\\s]*import[\\s]*([a-z0-9A-Z\\.]+)[\\s]*;?[\\s]*(\\/\\/.+)?[\r\n]+");
+        Matcher matcher = pattern.matcher(source);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            imports.add(matcher.group(1));
+            matcher.appendReplacement(sb, "");
+        }
+        matcher.appendTail(sb);
+        result.setSource(sb.toString());
+        return result;
+    }
 
     public static GroovyScript scriptOf(String script) {
         GroovyScript result = new GroovyScript();

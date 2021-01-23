@@ -56,7 +56,7 @@ public class RunContext {
     private HttpServletRequest request;
 
     @Getter @Setter
-    private JSONObject result;
+    private Object result;
 
     @Getter
     private Logger logger;

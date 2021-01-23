@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.core.exception.ApiException;
+import fun.utils.api.core.persistence.ApplicationDO;
+import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.persistence.ParameterDO;
+import fun.utils.api.core.script.*;
 import fun.utils.api.core.services.DoService;
 import fun.utils.api.core.util.ClassUtils;
 import fun.utils.api.core.util.RequestTools;
@@ -16,33 +19,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class ApiRunner {
 
     private final DoService doService;
-    private final RunContext runContext;
+    private final GroovyService groovyService;
 
-    public ApiRunner(DoService doService, RunContext runContext) {
+    private final RunContext runContext;
+    private final ApplicationDO applicationDO;
+    private final InterfaceDO interfaceDO;
+
+    public ApiRunner(DoService doService, GroovyService groovyService, RunContext runContext) {
         this.doService = doService;
+        this.groovyService = groovyService;
         this.runContext = runContext;
+        this.applicationDO = runContext.getApplicationDO();
+        this.interfaceDO = runContext.getInterfaceDO();
     }
 
     public void doInitialize() throws Exception {
-
+        //打包原始数据到 input 对象
         runContext.setInput(RequestTools.getJsonByInput(runContext.getRequest()));
-
-        List<Long> parameterIds = new ArrayList<>();
-
-        parameterIds.addAll(runContext.getApplicationDO().getParameterIds());
-        parameterIds.addAll(runContext.getInterfaceDO().getParameterIds());
-
-        JSONObject parameters = new JSONObject();
-
-
-        //打包参数到 parameters 对象
-
     }
 
     public void onEnter() throws Exception {
@@ -55,6 +55,12 @@ public class ApiRunner {
     public void doValidate() throws Exception {
 
         //运行 参数验证
+        List<Long> parameterIds = new ArrayList<>();
+        parameterIds.addAll(applicationDO.getParameterIds());
+        parameterIds.addAll(interfaceDO.getParameterIds());
+        JSONObject parameters = new JSONObject();
+        genParameters(runContext.getInput(),parameters,parameterIds,runContext.getRequest());
+        runContext.setParameters(parameters);
 
     }
 
@@ -67,6 +73,25 @@ public class ApiRunner {
     public void execute() throws Exception {
 
         //运行 interface 方法
+
+        if ("groovy".equalsIgnoreCase(interfaceDO.getImplementType())){
+
+            GroovyScript  method  = new GroovyScript();
+            method.setId(String.valueOf(interfaceDO.getId()));
+            method.setConfig(interfaceDO.getConfig());
+            method.setVersion(interfaceDO.getGmtModified().toString());
+            method.setTitle(interfaceDO.getTitle());
+
+            String groovy = interfaceDO.getImplementCode();
+            GroovySource groovySource = GroovyUtils.sourceOf(method.getId(),groovy);
+            method.getImports().addAll(groovySource.getImports());
+            method.setSource(groovySource.getSource());
+
+            GroovyRunner groovyRunner = groovyService.getRunner(method);
+            Object result = groovyRunner.execute(runContext,runContext.getParameters());
+            runContext.setResult(result);
+
+        }
 
     }
 
@@ -205,16 +230,9 @@ public class ApiRunner {
                 } else {
                     parameters.put(parameterDO.getName(), JSONArray.toJSON(valueArray.get(0)));
                 }
-
             }
-
-
         }
-
-
     }
-
-
 }
 
 

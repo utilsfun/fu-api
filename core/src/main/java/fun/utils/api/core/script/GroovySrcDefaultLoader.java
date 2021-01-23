@@ -41,19 +41,9 @@ public class GroovySrcDefaultLoader implements Callback<String, GroovySource> {
         if (url != null) {
 
             String groovy = IOUtils.toString(url, Charset.defaultCharset()).trim();
-
-            List<String> imports = result.getImports();
-
-            Pattern pattern = Pattern.compile("[\\s]*import[\\s]*([a-z0-9A-Z\\.]+)[\\s]*;?[\\s]*(\\/\\/.+)?[\r\n]+");
-            Matcher matcher = pattern.matcher(groovy);
-            StringBuffer sb = new StringBuffer();
-            while (matcher.find()) {
-                imports.add(matcher.group(1));
-                matcher.appendReplacement(sb, "");
-            }
-            matcher.appendTail(sb);
-
-            result.setSource(sb.toString());
+            GroovySource groovySource = GroovyUtils.sourceOf(null,groovy);
+            result.getImports().addAll(groovySource.getImports());
+            result.setSource(groovySource.getSource());
         }
 
         return result;

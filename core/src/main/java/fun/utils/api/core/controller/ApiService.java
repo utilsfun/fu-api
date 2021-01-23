@@ -26,7 +26,7 @@ public class ApiService implements DisposableBean {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    public ApiService(WebApplicationContext wac,ApiProperties properties , RequestMappingHandlerMapping requestMappingHandlerMapping) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public ApiService(WebApplicationContext wac,ApiProperties properties,RequestMappingHandlerMapping requestMappingHandlerMapping) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
         this.webApplicationContext = wac;
         this.properties = properties;
