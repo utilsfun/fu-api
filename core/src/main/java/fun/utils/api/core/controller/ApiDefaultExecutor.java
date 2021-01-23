@@ -24,7 +24,6 @@ public class ApiDefaultExecutor implements ApiExecutor {
     public Object doExecute(ApiProperties.Application app, HttpServletRequest request) throws ExecutionException {
 
 
-
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
         UriComponents uc =  UriComponentsBuilder.fromUriString(url).build();
 
@@ -34,6 +33,8 @@ public class ApiDefaultExecutor implements ApiExecutor {
         System.out.println( applicationName + "/" + interfaceName );
 
         return JSON.toJSON(doService.getApplicationDO(applicationName));
+
+
 
     }
 }

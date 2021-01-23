@@ -21,9 +21,7 @@ public class RequestTools {
 
     public static JSONObject getJsonByInput(HttpServletRequest request) {
 
-
         JSONObject result = new JSONObject();
-
         String method = request.getMethod().toLowerCase();
         result.put("method", method);
 
@@ -44,13 +42,11 @@ public class RequestTools {
         }
         result.put("headers", headers);
 
-
         JSONObject cookies = new JSONObject();
         for (Cookie cookie : request.getCookies()) {
             cookies.put(cookie.getName(), cookie.getValue());
         }
         result.put("cookies", cookies);
-
 
         JSONObject parameters = new JSONObject();
         Enumeration<String> paramNames = request.getHeaderNames();
@@ -65,10 +61,7 @@ public class RequestTools {
         }
         result.put("parameters", parameters);
 
-
         JSONObject body = new JSONObject();
-
-
         JSONObject queryBody = new JSONObject();
 
         try {
@@ -77,7 +70,6 @@ public class RequestTools {
                 src = URLDecoder.decode(src, "utf8");
                 queryBody = JSON.parseObject(src);
             }
-
         } catch (Exception e) {
         }
 
@@ -92,7 +84,6 @@ public class RequestTools {
                 }
             } catch (Exception e) {
             }
-
         } else {
             fromBody.putAll(getJsonByParameters(request));
         }
@@ -101,9 +92,7 @@ public class RequestTools {
         body.putAll(fromBody);
 
         result.put("body", body);
-
         return result;
-
     }
 
     public static JSONObject getJsonByParameters(HttpServletRequest request) {
