@@ -3,6 +3,7 @@ package fun.utils.api.core.persistence;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class InterfaceDO {
     /**
      * 【应用Name】
      */
-    private long applicationName;
+    private String applicationName;
 
     /**
      * 【名称】 应用 + 名称 唯一
@@ -36,7 +37,7 @@ public class InterfaceDO {
     /**
      * 【分组名称】
      */
-    private String group;
+    private String groupName;
 
     /**
      * 【标题】
@@ -110,6 +111,30 @@ public class InterfaceDO {
 
 
     private List<Long> documentIds;
+
+    public List<Long> getDocumentIds(){
+        if (documentIds == null){
+            documentIds = new ArrayList<>();
+        }
+        return documentIds;
+    }
+
+
     private List<Long> parameterIds;
-    private List<Long> filterIds;
+
+    public List<Long> getParameterIds(){
+        if (parameterIds == null){
+            parameterIds = new ArrayList<>();
+        }
+        return parameterIds;
+    }
+
+    private List<Long> filterIds ;
+    public List<Long> getFilterIds(){
+        if (filterIds == null){
+            filterIds = new ArrayList<>();
+        }
+        return filterIds;
+    }
+
 }

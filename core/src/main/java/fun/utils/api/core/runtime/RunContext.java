@@ -19,7 +19,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -29,16 +31,28 @@ public class RunContext {
     private final long enterTime = System.currentTimeMillis();
 
     @Getter @Setter
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     @Getter
-    private WebApplicationContext webApplicationContext;
+    private final WebApplicationContext webApplicationContext;
 
     @Getter
-    private ApplicationDO applicationDO;
+    private final ApplicationDO applicationDO;
 
     @Getter
-    private InterfaceDO interfaceDO;
+    private final InterfaceDO interfaceDO;
+
+    @Getter
+    private final HttpServletResponse response;
+
+    @Getter
+    private final HttpServletRequest request;
+
+    @Getter
+    private final Logger logger;
+
+    @Getter
+    private final List<Long> parameterIds = new ArrayList<>();
 
     @Getter
     private JSONObject config;
@@ -50,24 +64,19 @@ public class RunContext {
     private JSONObject parameters;
 
     @Getter
-    private HttpServletResponse response;
-
-    @Getter
-    private HttpServletRequest request;
+    private final Map<String,String> responseHeaders = new HashMap<>();
 
     @Getter @Setter
     private Object result;
 
-    @Getter
-    private Logger logger;
+    @Getter @Setter
+    private boolean isVoid = false;
 
     protected final Map<String, JdbcTemplate> jdbcTemplates = new HashMap<>();
     protected final Map<String, RedisTemplate> redisTemplates = new HashMap<>();
     protected final Map<String, Object> attributes = new HashMap<>();
 
-    private RunContext(){
 
-    }
 
     public RunContext(RestTemplate restTemplate, WebApplicationContext webApplicationContext,ApplicationDO applicationDO, InterfaceDO interfaceDO, HttpServletResponse response, HttpServletRequest request) {
 
@@ -78,6 +87,20 @@ public class RunContext {
         this.config = interfaceDO.getConfig();
         this.response = response;
         this.request = request;
+
+
+        for (Long parameterId:applicationDO.getParameterIds()) {
+          if (!parameterIds.contains(parameterId)){
+              parameterIds.add(parameterId);
+          }
+        }
+
+        for (Long parameterId:interfaceDO.getParameterIds()) {
+            if (!parameterIds.contains(parameterId)){
+                parameterIds.add(parameterId);
+            }
+        }
+
 
         String myName = interfaceDO.getApplicationName() + "." + interfaceDO.getName();
         this.logger = LoggerFactory.getLogger(myName);
@@ -167,12 +190,13 @@ public class RunContext {
     /* ********** spring bean ********** */
 
     public <T> T getBean(String beanId, Class<T> clazz) {
-        return getWebApplicationContext().getBean(beanId,  clazz);
+        return webApplicationContext.getBean(beanId,  clazz);
     }
 
     public <T> T getBean(Class<T> clazz) {
-        return getWebApplicationContext().getBean(clazz);
+        return webApplicationContext.getBean(clazz);
     }
+
 
 
     /* ********** logger ********** */
@@ -196,6 +220,13 @@ public class RunContext {
 
     public void logTrace(String message, Object... objects){
         logger.trace(message,objects);
+    }
+
+
+    /* ********** responseHeaders  ********** */;
+
+    public void putHeader(String key,String value){
+        responseHeaders.put(key,value);
     }
 
 }

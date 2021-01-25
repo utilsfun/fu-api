@@ -46,6 +46,13 @@ public class GroovyUtils {
         return result;
     }
 
+    public static GroovyVariable parameterOf(String dataType,boolean isArray) {
+        GroovyVariable result = new GroovyVariable();
+        result.setDataType(dataType);
+        result.setArray(isArray);
+        return result;
+    }
+
     public static String hash(Object object) {
         String hash = DigestUtils.md5DigestAsHex(JSON.toJSONString(object).getBytes());
         return hash;

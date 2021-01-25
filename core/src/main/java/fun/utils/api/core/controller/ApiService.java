@@ -26,18 +26,16 @@ public class ApiService implements DisposableBean {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    public ApiService(WebApplicationContext wac,ApiProperties properties,RequestMappingHandlerMapping requestMappingHandlerMapping) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public ApiService(WebApplicationContext webApplicationContext,ApiProperties properties,RequestMappingHandlerMapping requestMappingHandlerMapping) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
-        this.webApplicationContext = wac;
+        this.webApplicationContext = webApplicationContext;
         this.properties = properties;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
 
         for (ApiProperties.Application app : properties.getApplications()) {
 
-            String executorClass = StringUtils.defaultIfBlank(app.getExecutor(),ApiDefaultExecutor.class.getName());
-            ApiExecutor executor = (ApiExecutor) Class.forName(executorClass).newInstance();
-            ApiController controller = new ApiController(wac,app,executor);
-            wac.getAutowireCapableBeanFactory().autowireBean(executor);
+            ApiController controller = new ApiController(app);
+            webApplicationContext.getAutowireCapableBeanFactory().autowireBean(controller);
 
             String path = app.getPath();
             RequestMappingInfo requestMappingInfo = RequestMappingInfo.paths(path + "/**").build();

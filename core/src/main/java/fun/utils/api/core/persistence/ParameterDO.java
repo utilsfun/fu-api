@@ -3,6 +3,7 @@ package fun.utils.api.core.persistence;
 import fun.utils.api.core.runtime.Validation;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -110,5 +111,12 @@ public class ParameterDO {
 
 
     private List<Long> parameterIds;
+
+    public List<Long> getParameterIds(){
+        if (parameterIds == null){
+            parameterIds = new ArrayList<>();
+        }
+        return parameterIds;
+    }
 
 }

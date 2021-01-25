@@ -29,7 +29,7 @@ public class MyTest {
             private int s = 3;
         }
 
-        GroovyScript groovyScript = GroovyUtils.scriptOf("System.out.println(toJSONString(context)); return context.s + a + b;");
+        GroovyScript groovyScript = GroovyUtils.scriptOf("System.out.println(toJSONString($context)); System.out.println(toJSONString($config)); System.out.println(toJSONString(c)); return $context.s + a + b;");
 
         groovyScript.setTitle("title");
         groovyScript.getImports().add("import com.alibaba.fastjson.* ; ");
@@ -42,6 +42,10 @@ public class MyTest {
         declaredParameters.put("a", GroovyUtils.parameterOf("int"));
         declaredParameters.put("b", GroovyUtils.parameterOf("integer"));
 
+        GroovyVariable  variableC = GroovyUtils.parameterOf("integer");
+        variableC.setArray(true);
+        declaredParameters.put("c", variableC);
+
         groovyScript.setReturnType("Integer");
 
 
@@ -53,6 +57,7 @@ public class MyTest {
         JSONObject variables = new JSONObject();
         variables.put("a", 1);
         variables.put("b", 2);
+        variables.put("c", "[1,2,3]");
         GroovyRunner runner = groovyService.getRunner(groovyScript);
 
         long bTime = System.currentTimeMillis();

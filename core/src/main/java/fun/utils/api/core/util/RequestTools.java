@@ -49,7 +49,7 @@ public class RequestTools {
         result.put("cookies", cookies);
 
         JSONObject parameters = new JSONObject();
-        Enumeration<String> paramNames = request.getHeaderNames();
+        Enumeration<String> paramNames = request.getParameterNames();
         while (paramNames.hasMoreElements()) {
             String paramName = paramNames.nextElement();
             String[] paramValues = request.getParameterValues(paramName);
@@ -74,9 +74,10 @@ public class RequestTools {
         }
 
         JSONObject fromBody = new JSONObject();
-        ContentType contentType = ContentType.parse(request.getContentType());
 
-        if (contentType.getMimeType().matches("application/json|text/json|text/plain")) {
+        if (request.getContentType() != null
+                && ContentType.parse(request.getContentType()).getMimeType().matches("application/json|text/json|text/plain")
+                && request.getContentLength() > 0 ) {
             try {
                 String src = IOUtils.toString(request.getInputStream(), "utf8");
                 if (StringUtils.isNotBlank(src)) {

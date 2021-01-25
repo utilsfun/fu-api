@@ -12,6 +12,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -49,6 +50,14 @@ public class ApiAutoConfiguration {
         log.info("Initialize mainJdbcTemplate");
         return new JdbcTemplate(dataSource);
     }
+
+    @Bean
+    @ConditionalOnMissingBean(RestTemplate.class)
+    RestTemplate mainRestTemplate() {
+        log.info("Initialize mainJdbcTemplate");
+        return new RestTemplate();
+    }
+
 
     @Bean(destroyMethod = "destroy")
     @ConditionalOnMissingBean(ApiService.class)

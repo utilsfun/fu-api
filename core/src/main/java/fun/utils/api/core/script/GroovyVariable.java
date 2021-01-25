@@ -1,10 +1,8 @@
 package fun.utils.api.core.script;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode
 public class GroovyVariable {
 
     private String title; //标题,仅用于接口文档

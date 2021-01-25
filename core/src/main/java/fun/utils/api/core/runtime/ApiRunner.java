@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,11 +56,8 @@ public class ApiRunner {
     public void doValidate() throws Exception {
 
         //运行 参数验证
-        List<Long> parameterIds = new ArrayList<>();
-        parameterIds.addAll(applicationDO.getParameterIds());
-        parameterIds.addAll(interfaceDO.getParameterIds());
         JSONObject parameters = new JSONObject();
-        genParameters(runContext.getInput(),parameters,parameterIds,runContext.getRequest());
+        genParameters(runContext.getInput(),parameters,runContext.getParameterIds(),runContext.getRequest());
         runContext.setParameters(parameters);
 
     }
@@ -84,6 +82,15 @@ public class ApiRunner {
 
             String groovy = interfaceDO.getImplementCode();
             GroovySource groovySource = GroovyUtils.sourceOf(method.getId(),groovy);
+
+            Map<String, GroovyVariable> declaredVariables = method.getDeclaredVariables();
+
+            for (Long parameterId: runContext.getParameterIds() ) {
+                ParameterDO parameterDO  = doService.getParameterDO(parameterId);
+                GroovyVariable groovyVariable = GroovyUtils.parameterOf(parameterDO.getDataType(),parameterDO.getIsArray() == 1);
+                declaredVariables.put(parameterDO.getName(),groovyVariable);
+            }
+
             method.getImports().addAll(groovySource.getImports());
             method.setSource(groovySource.getSource());
 
@@ -91,7 +98,10 @@ public class ApiRunner {
             Object result = groovyRunner.execute(runContext,runContext.getParameters());
             runContext.setResult(result);
 
+        } if ("bean".equalsIgnoreCase(interfaceDO.getImplementType())){
+
         }
+
 
     }
 
@@ -186,7 +196,7 @@ public class ApiRunner {
                         srcArray = (List<Object>) srcObject;
                     } else {
                         if (String.valueOf(srcObject).trim().matches("\\[.+\\]")) {
-                            srcArray = JSON.parseArray(JSON.toJSONString(srcObject));
+                            srcArray = JSON.parseArray(String.valueOf(srcObject));
                         } else {
                             srcArray = Arrays.asList(StringUtils.split(String.valueOf(srcObject)));
                         }

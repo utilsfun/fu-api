@@ -1,17 +1,17 @@
 package fun.utils.api.core.script;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
+import fun.utils.api.core.exception.ApiException;
 import fun.utils.api.core.util.ClassUtils;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UnknownFormatConversionException;
+import java.util.*;
 
 public class GroovyRunner {
 
@@ -134,13 +134,13 @@ public class GroovyRunner {
     public Object execute(Object context, JSONObject variables) throws Exception {
 
         Binding binding = new Binding();
-        binding.setVariable("context", context);
-        binding.setVariable("config", groovyScript.getConfig());
+        binding.setVariable("$context", context);
+        binding.setVariable("$config", groovyScript.getConfig());
 
         groovyScript.getDeclaredVariables().forEach((name, parameter) -> {
 
-            Object parameterValue;
-            Object sourceValue = null;
+
+            Object srcObject = null;
 
             String dataType = StringUtils.defaultIfBlank(parameter.getDataType(), "String");
             Class dataClass = ClassUtils.loadClass(dataType);
@@ -150,18 +150,55 @@ public class GroovyRunner {
             }
 
             if (variables != null && variables.containsKey(name)) {
-                sourceValue = variables.get(name);
+                srcObject = variables.get(name);
             } else {
                 if (StringUtils.isNotBlank(parameter.getDefaultValue())) {
-                    sourceValue = parameter.getDefaultValue();
+                    srcObject = parameter.getDefaultValue();
                 }
             }
 
-            parameterValue = TypeUtils.castToJavaBean(sourceValue, dataClass);
-            if (sourceValue == null && parameter.isRequired()) {
-                throw new NullPointerException("参数'" + name + "'必填");
+            //有值不为空
+            List<Object> srcArray = new ArrayList<>();
+            List<Object> valueArray = new ArrayList<>();
+
+            if (parameter.isArray()) {
+                if (srcObject instanceof List) {
+                    srcArray = (List<Object>) srcObject;
+                } else {
+                    if (String.valueOf(srcObject).trim().matches("\\[.+\\]")) {
+                        srcArray = JSON.parseArray(String.valueOf(srcObject));
+                    } else {
+                        srcArray = Arrays.asList(StringUtils.split(String.valueOf(srcObject)));
+                    }
+                }
             } else {
-                binding.setVariable(name, parameterValue);
+                srcArray.add(srcObject);
+            }
+
+            for (Object srcObj : srcArray) {
+
+                if (srcObj == null) {
+                    continue;
+                }
+
+                Object valueObj = ClassUtils.castValue(srcObj, dataType);
+                if (valueObj == null) {
+                    //类型转换错误
+                    throw new UnknownFormatConversionException("参数类型'" + dataType + "'转换错误");
+                } else {
+                    valueArray.add(valueObj);
+                }
+
+            }
+
+            if (srcArray.size() == 0 && parameter.isRequired() ) {
+                throw new NullPointerException("参数'" + name + "'必填");
+            }
+
+            if (parameter.isArray()) {
+                binding.setVariable(name, valueArray);
+            } else {
+                binding.setVariable(name, valueArray.size() > 0 ? valueArray.get(0) : null );
             }
 
         });

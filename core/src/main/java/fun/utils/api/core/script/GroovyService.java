@@ -30,6 +30,7 @@ public class GroovyService {
         return getRunner(groovyScript);
     }
 
+
     public GroovyRunner getRunner(GroovyScript method) throws Exception {
         GroovyRunner runner = cacheRunners.get(method.getId(), () -> new GroovyRunner(this, method));
         if (runner.getVersion().equals(method.getVersion())) {
