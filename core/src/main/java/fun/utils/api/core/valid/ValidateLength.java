@@ -1,7 +1,7 @@
 package fun.utils.api.core.valid;
 
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.core.runtime.Validation;
+import fun.utils.api.core.common.Validation;
 import org.apache.commons.lang3.StringUtils;
 
 public class ValidateLength extends Validation {

@@ -1,6 +1,6 @@
 package fun.utils.api.core.persistence;
 
-import fun.utils.api.core.runtime.Validation;
+import fun.utils.api.core.common.Validation;
 import lombok.Data;
 
 import java.util.ArrayList;

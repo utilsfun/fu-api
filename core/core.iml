@@ -54,7 +54,15 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-oxm:5.2.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:5.2.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.29" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.13" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.14" level="project" />
+    <orderEntry type="library" name="Maven: com.github.APIJSON:apijson-framework:4.5.3" level="project" />
+    <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Tencent:APIJSON:4.5.2" level="project" />
+    <orderEntry type="library" name="Maven: javax.activation:activation:1.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.postgresql:postgresql:42.2.18" level="project" />
+    <orderEntry type="library" name="Maven: com.github.TommyLemon:unitauto-java:2.5.3" level="project" />
+    <orderEntry type="library" name="Maven: com.github.TommyLemon:unitauto-jar:2.5.3" level="project" />
+    <orderEntry type="library" name="Maven: io.github.classgraph:classgraph:4.8.87" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy:2.5.14" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-ant:2.5.14" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ant:ant:1.9.15" level="project" />

@@ -1,7 +1,7 @@
 package fun.utils.api.core.persistence;
 
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.core.runtime.ErrorCode;
+import fun.utils.api.core.common.ErrorCode;
 import lombok.Data;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package fun.utils.api.core.runtime;
+package fun.utils.api.core.common;
 
 
 import lombok.Data;

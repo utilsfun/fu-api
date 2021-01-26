@@ -1,7 +1,12 @@
 package fun.utils.api.demo;
 
+import apijson.Log;
+import apijson.RequestMethod;
+import apijson.framework.*;
+import apijson.orm.SQLConfig;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.api.apijson.MyParser;
 import fun.utils.api.core.script.*;
 import lombok.Data;
 import org.junit.Before;
@@ -111,6 +116,31 @@ public class MyTest {
         System.out.println(JSON.toJSONString(result));
 
 
+    }
+
+
+    @Test
+    public void testApiJson() throws Exception {
+
+        // Log.DEBUG = false;
+
+       APIJSONCreator creator = new APIJSONCreator() {
+            @Override
+            public SQLConfig createSQLConfig() {
+                return new DemoSQLConfig();
+            }
+
+        };
+
+        MyParser myParser =  new MyParser(RequestMethod.GET,false, creator);
+
+
+        JSONObject request = new JSONObject();
+        request.put("API_APPLICATION",JSON.parseObject("{id:1}"));
+
+
+
+        System.out.println( myParser.parseResponse(request));
     }
 
 }

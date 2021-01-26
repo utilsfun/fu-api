@@ -1,6 +1,6 @@
 package fun.utils.api.core.valid;
 
-import fun.utils.api.core.runtime.Validation;
+import fun.utils.api.core.common.Validation;
 import org.apache.commons.lang3.StringUtils;
 
 public class ValidateUrl extends Validation {
