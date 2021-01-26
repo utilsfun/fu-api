@@ -136,9 +136,12 @@ public class MyTest {
 
 
         JSONObject request = new JSONObject();
-        request.put("API_APPLICATION",JSON.parseObject("{id:1}"));
+       // request.put("API_APPLICATION",JSON.parseObject("{id:1}"));
 
+        request = JSON.parseObject("{\"API_PARAMETER[]\":{\"API_PARAMETER\":{},\"query\":2}}");
 
+        request.put("total@","/API_PARAMETER[]/total");
+        request.put("info@","/[]/info");
 
         System.out.println( myParser.parseResponse(request));
     }
