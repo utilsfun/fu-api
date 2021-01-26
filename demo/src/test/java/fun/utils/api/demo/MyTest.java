@@ -132,7 +132,10 @@ public class MyTest {
 
         };
 
-        MyParser myParser =  new MyParser(RequestMethod.GET,false, creator);
+
+
+
+       MyParser myParser =  new MyParser(RequestMethod.GET,false, creator);
 
 
         JSONObject request = new JSONObject();
@@ -141,7 +144,10 @@ public class MyTest {
         request = JSON.parseObject("{\"API_PARAMETER[]\":{\"API_PARAMETER\":{},\"query\":2}}");
 
         request.put("total@","/API_PARAMETER[]/total");
-        request.put("info@","/[]/info");
+        request.put("info@","/API_PARAMETER[]/info");
+
+
+
 
         System.out.println( myParser.parseResponse(request));
     }
