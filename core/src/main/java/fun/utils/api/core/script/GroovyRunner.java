@@ -136,7 +136,11 @@ public class GroovyRunner {
         Binding binding = new Binding();
 
         binding.setVariable("$context", context);
-        binding.setVariable("$config", groovyScript.getConfig());
+
+        JSONObject config = groovyScript.getConfig();
+        config = config == null ? new JSONObject() : (JSONObject) config.clone();
+
+        binding.setVariable("$config", config);
 
         groovyScript.getDeclaredVariables().forEach((name, parameter) -> {
 

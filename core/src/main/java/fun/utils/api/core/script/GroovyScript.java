@@ -15,7 +15,7 @@ public class GroovyScript extends GroovySource {
 
     private JSONObject config; //配置
 
-    private String returnType; //返回类型 (java class 定义) 如: void,String,int,...,com.alibaba.fastjson.JSONObject
+    private String returnType = "Object"; //返回类型 (java class 定义) 如: void,String,int,...,com.alibaba.fastjson.JSONObject
 
     private String version = "0";//版本
 
