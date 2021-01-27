@@ -1,6 +1,10 @@
 package fun.utils.api.core.controller;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import fun.utils.api.core.common.MyJdbcTemplate;
+import fun.utils.api.core.services.ApiService;
 import fun.utils.api.core.services.DoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Configuration
@@ -48,7 +53,7 @@ public class ApiAutoConfiguration {
     @ConditionalOnMissingBean(JdbcTemplate.class)
     JdbcTemplate mainJdbcTemplate() {
         log.info("Initialize mainJdbcTemplate");
-        return new JdbcTemplate(dataSource);
+        return new MyJdbcTemplate(dataSource);
     }
 
     @Bean
@@ -71,6 +76,14 @@ public class ApiAutoConfiguration {
     DoService doService(){
         log.info("Initialize DoService");
         return new DoService();
+    }
+
+    @Bean("fu-api.datasource-cache")
+    @ConfigurationProperties(prefix = "fu-api.datasource-cache")
+    public Cache<String, DataSource> getDataSourceCache() {
+        log.info("Initialize datasourceCache");
+        Cache<String, DataSource> dataSourceCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(60, TimeUnit.SECONDS).build();
+        return dataSourceCache;
     }
 
 }

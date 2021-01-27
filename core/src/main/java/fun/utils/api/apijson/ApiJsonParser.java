@@ -1,17 +1,9 @@
 package fun.utils.api.apijson;
 
-import apijson.Log;
-import apijson.NotNull;
 import apijson.RequestMethod;
-import apijson.StringUtil;
 import apijson.framework.*;
 import apijson.orm.*;
-import apijson.orm.exception.NotExistException;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
-import lombok.SneakyThrows;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -21,27 +13,27 @@ import java.util.Set;
 import static apijson.framework.APIJSONConstant.*;
 import static apijson.framework.APIJSONConstant.VERSION;
 
-public class MyParser extends AbstractParser<Long> {
+public class ApiJsonParser extends AbstractParser<Long> {
 
     public static final String TAG = "MyParser";
 
 
     private APIJSONCreator apijsonCreator;
 
-    private MyParser() {
+    private ApiJsonParser() {
         super();
     }
-    private MyParser(RequestMethod method) {
+    private ApiJsonParser(RequestMethod method) {
         super(method);
     }
-    private MyParser(RequestMethod method, boolean needVerify) {
+    private ApiJsonParser(RequestMethod method, boolean needVerify) {
         super(method, needVerify);
     }
 
 
     private HttpSession session;
 
-    public MyParser(RequestMethod method, boolean needVerify, APIJSONCreator apijsonCreator) {
+    public ApiJsonParser(RequestMethod method, boolean needVerify, APIJSONCreator apijsonCreator) {
         super(method, needVerify);
         this.apijsonCreator = apijsonCreator;
     }
@@ -50,7 +42,7 @@ public class MyParser extends AbstractParser<Long> {
         return session;
     }
 
-    public MyParser setSession(HttpSession session) {
+    public ApiJsonParser setSession(HttpSession session) {
         this.session = session;
         setVisitor(APIJSONVerifier.getVisitor(session));
         return this;

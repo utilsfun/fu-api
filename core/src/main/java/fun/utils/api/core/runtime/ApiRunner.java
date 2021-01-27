@@ -3,6 +3,7 @@ package fun.utils.api.core.runtime;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.api.core.controller.AppBean;
 import fun.utils.api.core.exception.ApiException;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.InterfaceDO;
@@ -20,12 +21,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 public class ApiRunner {
 
+    private final AppBean appBean;
     private final DoService doService;
     private final GroovyService groovyService;
 
@@ -33,12 +33,17 @@ public class ApiRunner {
     private final ApplicationDO applicationDO;
     private final InterfaceDO interfaceDO;
 
-    public ApiRunner(DoService doService, GroovyService groovyService, RunContext runContext) {
-        this.doService = doService;
-        this.groovyService = groovyService;
+    public ApiRunner(AppBean appBean, RunContext runContext) {
+
+        this.appBean = appBean;
+
+        this.doService = appBean.getDoService();
+        this.groovyService = appBean.getGroovyService();
+
         this.runContext = runContext;
         this.applicationDO = runContext.getApplicationDO();
         this.interfaceDO = runContext.getInterfaceDO();
+
     }
 
     public void doInitialize() throws Exception {

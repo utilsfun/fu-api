@@ -92,7 +92,7 @@ public class GroovyRunner {
         System.out.println(sb.toString());
         runner = groovyService.getShell().parse(sb.toString());
 
-        String returnType = StringUtils.defaultIfBlank(groovyScript.getReturnType(), "String");
+        String returnType = StringUtils.defaultIfBlank(groovyScript.getReturnType(), "Object");
         returnClass = ClassUtils.loadClass(returnType);
         if (returnClass == null) {
             throw new UnknownFormatConversionException("返回类型'" + returnType + "'不可识别");
@@ -134,6 +134,7 @@ public class GroovyRunner {
     public Object execute(Object context, JSONObject variables) throws Exception {
 
         Binding binding = new Binding();
+
         binding.setVariable("$context", context);
         binding.setVariable("$config", groovyScript.getConfig());
 

@@ -2,20 +2,11 @@ package fun.utils.api.core.controller;
 
 import com.alibaba.fastjson.JSON;
 import fun.utils.api.core.exception.ApiException;
-import fun.utils.api.core.persistence.ApplicationDO;
-import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.runtime.ApiRunner;
 import fun.utils.api.core.runtime.RunContext;
-import fun.utils.api.core.script.GroovyService;
-import fun.utils.api.core.services.DoService;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -33,26 +24,11 @@ public class ApiController {
 
     private final ApiProperties.Application app;
 
+    private final AppBean appBean;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private DoService doService;
-
-
-    private final GroovyService groovyService;
-
-    public ApiController(ApiProperties.Application app) {
+    public ApiController(ApiProperties.Application app, AppBean appBean) {
         this.app = app;
-        this.groovyService = new GroovyService();
-
+        this.appBean = appBean;
         log.info("Create ApiSimpleController {}", app.getPath());
     }
 
@@ -122,11 +98,8 @@ public class ApiController {
         String interfaceName = uc.getPathSegments().get(1);
 
 
-        ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
-        InterfaceDO interfaceDO = doService.getInterfaceDO(applicationName, interfaceName);
-
-        RunContext runContext = new RunContext(restTemplate, webApplicationContext, applicationDO, interfaceDO, response, request);
-        ApiRunner apiRunner = new ApiRunner(doService, groovyService, runContext);
+        RunContext runContext = new RunContext(appBean, applicationName, interfaceName, response, request);
+        ApiRunner apiRunner = new ApiRunner(appBean, runContext);
 
 
         try {
@@ -163,7 +136,7 @@ public class ApiController {
                 //接口成功时
                 ret.put("code", 200);
                 ret.put("message", "success");
-                ret.put("result", JSON.toJSON(retObj));
+                ret.put("result", retObj);
 
             } else {
                 //接口出错时

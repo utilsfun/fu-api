@@ -1,18 +1,18 @@
 package fun.utils.api.demo;
 
-import apijson.Log;
 import apijson.RequestMethod;
 import apijson.framework.*;
 import apijson.orm.SQLConfig;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.apijson.MyParser;
+import fun.utils.api.apijson.ApiJsonParser;
 import fun.utils.api.core.script.*;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Map;
+import java.util.*;
 
 public class MyTest {
 
@@ -34,7 +34,16 @@ public class MyTest {
             private int s = 3;
         }
 
-        GroovyScript groovyScript = GroovyUtils.scriptOf("System.out.println(toJSONString($context)); System.out.println($config.age); System.out.println(c[0]); return $context.s + a + b;");
+        List<String> ss= new ArrayList<>();
+        ss.add("System.out.println(toJSONString($context));");
+        ss.add("System.out.println($config.age);");
+        ss.add("System.out.println(c[0]);");
+        ss.add("return $context.s + a + b;");
+
+        Map<String,Object> context = new HashMap<>();
+        context.put("s",4);
+
+        GroovyScript groovyScript = GroovyUtils.scriptOf(StringUtils.join(ss,"\r\n"));
 
         groovyScript.setTitle("title");
         groovyScript.getImports().add("import com.alibaba.fastjson.* ; ");
@@ -47,7 +56,6 @@ public class MyTest {
         Map<String, GroovyVariable> declaredParameters = groovyScript.getDeclaredVariables();
         declaredParameters.put("a", GroovyUtils.parameterOf("int"));
         declaredParameters.put("b", GroovyUtils.parameterOf("integer"));
-
         GroovyVariable  variableC = GroovyUtils.parameterOf("integer");
         variableC.setArray(true);
         declaredParameters.put("c", variableC);
@@ -69,7 +77,7 @@ public class MyTest {
         long bTime = System.currentTimeMillis();
 
         for (int i = 0; i < 10; i++) {
-            result = runner.execute(new A(), variables);
+            result = runner.execute(context, variables);
         }
         System.out.println(System.currentTimeMillis() - bTime);
         System.out.println(JSON.toJSONString(result));
@@ -94,7 +102,7 @@ public class MyTest {
         Map<String, GroovyVariable> declaredParameters = method.getDeclaredVariables();
         declaredParameters.put("a", GroovyUtils.parameterOf("int"));
         declaredParameters.put("b", GroovyUtils.parameterOf("integer"));
-        method.setSource("return context.s + a + b;");
+        method.setSource("return $context.s + a + b;");
         method.setReturnType("Integer");
 
 
@@ -136,7 +144,7 @@ public class MyTest {
 
 
 
-       MyParser myParser =  new MyParser(RequestMethod.GET,false, creator);
+       ApiJsonParser myParser =  new ApiJsonParser(RequestMethod.GET,false, creator);
 
 
         JSONObject request = new JSONObject();
@@ -146,9 +154,6 @@ public class MyTest {
 
         request.put("total@","/API_PARAMETER[]/total");
         request.put("info@","/API_PARAMETER[]/info");
-
-
-
 
         System.out.println( myParser.parseResponse(request));
     }

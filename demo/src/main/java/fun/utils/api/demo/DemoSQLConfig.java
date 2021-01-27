@@ -33,8 +33,8 @@ public class DemoSQLConfig extends APIJSONSQLConfig {
 
     @Override
     public String getSQLSchema() {
-
-        return "fuapi";
+        return null;
+       // return "fuapi";
     }
 
     @Override

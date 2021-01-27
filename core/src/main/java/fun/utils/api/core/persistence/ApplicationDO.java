@@ -98,11 +98,19 @@ public class ApplicationDO {
 
 
     private List<String> interfaceNames ;
-    public List<String> getInterfaceName(){
+    public List<String> getInterfaceNames(){
         if (interfaceNames == null){
             interfaceNames = new ArrayList<>();
         }
         return interfaceNames;
+    }
+
+    private List<Long> sourceIds ;
+    public List<Long> getSourceIds(){
+        if (sourceIds == null){
+            sourceIds = new ArrayList<>();
+        }
+        return sourceIds;
     }
 
 }

@@ -1,10 +1,11 @@
-package fun.utils.api.core.controller;
+package fun.utils.api.core.services;
 
 import com.alibaba.fastjson.JSON;
-import lombok.Data;
+import fun.utils.api.core.controller.ApiController;
+import fun.utils.api.core.controller.ApiProperties;
+import fun.utils.api.core.controller.AppBean;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -34,7 +35,10 @@ public class ApiService implements DisposableBean {
 
         for (ApiProperties.Application app : properties.getApplications()) {
 
-            ApiController controller = new ApiController(app);
+            AppBean appBean = new AppBean();
+            webApplicationContext.getAutowireCapableBeanFactory().autowireBean(appBean);
+
+            ApiController controller = new ApiController(app, appBean);
             webApplicationContext.getAutowireCapableBeanFactory().autowireBean(controller);
 
             String path = app.getPath();

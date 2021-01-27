@@ -2,8 +2,13 @@ package fun.utils.api.core.runtime;
 
 
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.api.apijson.ApiJson;
+import fun.utils.api.core.common.MyJdbcTemplate;
+import fun.utils.api.core.controller.AppBean;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.InterfaceDO;
+import fun.utils.api.core.persistence.SourceDO;
+import fun.utils.api.core.services.DoService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +24,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 public class RunContext {
@@ -30,11 +38,18 @@ public class RunContext {
     @Getter
     private final long enterTime = System.currentTimeMillis();
 
-    @Getter @Setter
+    @Getter
     private final RestTemplate restTemplate;
 
     @Getter
     private final WebApplicationContext webApplicationContext;
+
+    @Getter
+    private final AppBean appBean;
+
+    @Getter
+    private final DoService doService;
+
 
     @Getter
     private final ApplicationDO applicationDO;
@@ -72,22 +87,36 @@ public class RunContext {
     @Getter @Setter
     private boolean isVoid = false;
 
+    protected final Map<String, DataSource> dataSources = new HashMap<>();
     protected final Map<String, JdbcTemplate> jdbcTemplates = new HashMap<>();
     protected final Map<String, RedisTemplate> redisTemplates = new HashMap<>();
     protected final Map<String, Object> attributes = new HashMap<>();
 
+    public RunContext(AppBean appBean, String applicationName, String interfaceName, HttpServletResponse response, HttpServletRequest request) throws ExecutionException {
 
+        this.appBean = appBean;
+        this.restTemplate = appBean.getRestTemplate();
+        this.webApplicationContext = appBean.getWebApplicationContext();
+        this.doService = appBean.getDoService();
 
-    public RunContext(RestTemplate restTemplate, WebApplicationContext webApplicationContext,ApplicationDO applicationDO, InterfaceDO interfaceDO, HttpServletResponse response, HttpServletRequest request) {
+        this.applicationDO = doService.getApplicationDO(applicationName);
+        this.interfaceDO = doService.getInterfaceDO(applicationName, interfaceName);;
 
-        this.restTemplate = restTemplate;
-        this.webApplicationContext = webApplicationContext;
-        this.interfaceDO = interfaceDO;
-        this.applicationDO = applicationDO;
         this.config = interfaceDO.getConfig();
         this.response = response;
         this.request = request;
 
+        for (Long sourceId:applicationDO.getSourceIds()) {
+            SourceDO sourceDO = doService.getSourceDO(sourceId);
+            if ("database".equalsIgnoreCase(sourceDO.getType())){
+                DataSource dataSource = appBean.getDataSource(sourceDO);
+                dataSources.put(sourceDO.getName(), dataSource);
+                jdbcTemplates.put(sourceDO.getName(),new MyJdbcTemplate(dataSource));
+            }else if ("redis".equalsIgnoreCase(sourceDO.getType())){
+                //
+            }
+
+        }
 
         for (Long parameterId:applicationDO.getParameterIds()) {
           if (!parameterIds.contains(parameterId)){
@@ -198,7 +227,6 @@ public class RunContext {
     }
 
 
-
     /* ********** logger ********** */
 
 
@@ -227,6 +255,15 @@ public class RunContext {
 
     public void putHeader(String key,String value){
         responseHeaders.put(key,value);
+    }
+
+    /* ********** logger ********** */
+    public ApiJson getApiJson() throws SQLException {
+        return getApiJson("default");
+    }
+
+    public ApiJson getApiJson(String dataSourceName) throws SQLException {
+        return new ApiJson(dataSources.get(dataSourceName));
     }
 
 }
