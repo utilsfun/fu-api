@@ -2,6 +2,7 @@ package fun.utils.api.core.persistence;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
+import org.yaml.snakeyaml.Yaml;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,9 +36,9 @@ public class SourceDO {
     private String note;
 
     /**
-     * 【配置】 json
+     * 【配置】 json,yaml
      */
-    private JSONObject config;
+    private String config;
 
 
     /**

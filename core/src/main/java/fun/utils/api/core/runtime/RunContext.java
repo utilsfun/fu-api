@@ -4,17 +4,25 @@ package fun.utils.api.core.runtime;
 import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.apijson.ApiJson;
 import fun.utils.api.core.common.MyJdbcTemplate;
+import fun.utils.api.core.common.MyRedisTemplate;
 import fun.utils.api.core.controller.AppBean;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.persistence.SourceDO;
+import fun.utils.api.core.services.BeanService;
 import fun.utils.api.core.services.DoService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 
 import org.slf4j.LoggerFactory;
+
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
@@ -46,6 +54,9 @@ public class RunContext {
 
     @Getter
     private final AppBean appBean;
+
+    @Getter
+    private final BeanService beans;
 
     @Getter
     private final DoService doService;
@@ -88,8 +99,8 @@ public class RunContext {
     private boolean isVoid = false;
 
     protected final Map<String, DataSource> dataSources = new HashMap<>();
-    protected final Map<String, JdbcTemplate> jdbcTemplates = new HashMap<>();
-    protected final Map<String, RedisTemplate> redisTemplates = new HashMap<>();
+    protected final Map<String, RedissonClient> redissonClients = new HashMap<>();
+
     protected final Map<String, Object> attributes = new HashMap<>();
 
     public RunContext(AppBean appBean, String applicationName, String interfaceName, HttpServletResponse response, HttpServletRequest request) throws ExecutionException {
@@ -98,6 +109,7 @@ public class RunContext {
         this.restTemplate = appBean.getRestTemplate();
         this.webApplicationContext = appBean.getWebApplicationContext();
         this.doService = appBean.getDoService();
+        this.beans = appBean.getBeans();
 
         this.applicationDO = doService.getApplicationDO(applicationName);
         this.interfaceDO = doService.getInterfaceDO(applicationName, interfaceName);;
@@ -111,11 +123,11 @@ public class RunContext {
             if ("database".equalsIgnoreCase(sourceDO.getType())){
                 DataSource dataSource = appBean.getDataSource(sourceDO);
                 dataSources.put(sourceDO.getName(), dataSource);
-                jdbcTemplates.put(sourceDO.getName(),new MyJdbcTemplate(dataSource));
-            }else if ("redis".equalsIgnoreCase(sourceDO.getType())){
-                //
             }
-
+            else if ("redis".equalsIgnoreCase(sourceDO.getType())){
+                RedissonClient redissonClient = appBean.getRedissonClient(sourceDO);
+                redissonClients.put(sourceDO.getName(),redissonClient);
+            }
         }
 
         for (Long parameterId:applicationDO.getParameterIds()) {
@@ -123,13 +135,11 @@ public class RunContext {
               parameterIds.add(parameterId);
           }
         }
-
         for (Long parameterId:interfaceDO.getParameterIds()) {
             if (!parameterIds.contains(parameterId)){
                 parameterIds.add(parameterId);
             }
         }
-
 
         String myName = interfaceDO.getApplicationName() + "." + interfaceDO.getName();
         this.logger = LoggerFactory.getLogger(myName);
@@ -175,48 +185,79 @@ public class RunContext {
 
     /* ********** jdbc ,redis Template ********** */
 
-    public void putJdbcTemplate(String name, JdbcTemplate obj) {
-        jdbcTemplates.put(name, obj);
+    public DataSource getDataSource(String name){
+      return dataSources.get(name);
     }
 
-    public void putJdbcTemplate(JdbcTemplate obj) {
-        jdbcTemplates.put("default", obj);
+    public DataSource getDataSource(){
+
+        if (dataSources.size() == 0){
+            return null;
+        }
+        else if (dataSources.size() == 1){
+            return dataSources.get(0);
+        }
+        else if (dataSources.containsKey("default")){
+            return dataSources.get("default");
+        }
+        else {
+            return dataSources.get(0);
+        }
+
     }
+
 
     public JdbcTemplate getJdbcTemplate(String name) {
-        return jdbcTemplates.get(name);
+        return new MyJdbcTemplate(getDataSource(name));
     }
 
     public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplates.get("default");
+        return new MyJdbcTemplate(getDataSource());
     }
 
     public JdbcTemplate getJdbc() {
         return getJdbcTemplate();
     }
 
-    public void putRedisTemplate(String name, RedisTemplate obj) {
-        redisTemplates.put(name, obj);
-    }
-
-    public void putRedisTemplate(RedisTemplate obj) {
-        redisTemplates.put("default", obj);
+    public RedisTemplate getRedisTemplate() {
+        return new MyRedisTemplate(getRedissonClient());
     }
 
     public RedisTemplate getRedisTemplate(String name) {
-        return redisTemplates.get(name);
+        return new MyRedisTemplate(getRedissonClient(name));
     }
 
-    public RedisTemplate getRedisTemplate() {
-        return redisTemplates.get("default");
+    public RedissonClient getRedissonClient(String name){
+        return redissonClients.get(name);
+    }
+
+    public RedissonClient getRedissonClient() {
+
+        if (redissonClients.size() == 0){
+            return null;
+        }
+        else if (redissonClients.size() == 1){
+            return redissonClients.get(0);
+        }
+        else if (redissonClients.containsKey("default")){
+            return redissonClients.get("default");
+        }
+        else {
+            return redissonClients.get(0);
+        }
+
     }
 
     public RedisTemplate getRedis() {
-        return redisTemplates.get("default");
+        return getRedisTemplate();
     }
 
 
     /* ********** spring bean ********** */
+
+    public Object getBean(String beanName) {
+        return webApplicationContext.getBean(beanName);
+    }
 
     public <T> T getBean(String beanId, Class<T> clazz) {
         return webApplicationContext.getBean(beanId,  clazz);

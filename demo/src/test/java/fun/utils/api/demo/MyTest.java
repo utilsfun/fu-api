@@ -36,6 +36,7 @@ public class MyTest {
 
         List<String> ss= new ArrayList<>();
         ss.add("System.out.println(toJSONString($context));");
+        ss.add("$config.age = 99");
         ss.add("System.out.println($config.age);");
         ss.add("System.out.println(c[0]);");
         ss.add("return $context.s + a + b;");
@@ -77,7 +78,7 @@ public class MyTest {
         long bTime = System.currentTimeMillis();
 
         for (int i = 0; i < 10; i++) {
-            result = runner.execute(context, variables);
+            result = runner.withProperty("$context",context).execute(variables);
         }
         System.out.println(System.currentTimeMillis() - bTime);
         System.out.println(JSON.toJSONString(result));
@@ -119,7 +120,7 @@ public class MyTest {
         long bTime = System.currentTimeMillis();
 
         for (int i = 0; i < 1000000; i++) {
-            result = runner.execute(new A(), parameters);
+            result = runner.withProperty("$context",new A()).execute(parameters);
         }
         System.out.println(System.currentTimeMillis() - bTime);
         System.out.println(JSON.toJSONString(result));

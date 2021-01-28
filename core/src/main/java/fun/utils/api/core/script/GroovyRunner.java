@@ -26,6 +26,8 @@ public class GroovyRunner {
     @Getter
     private String id;
 
+    @Getter
+    private Map<String,Object> properties = new HashMap<>();
 
     public GroovyRunner(GroovyService groovyService, GroovyScript groovyScript) throws Exception {
         this.groovyService = groovyService;
@@ -131,19 +133,11 @@ public class GroovyRunner {
         }
     }
 
-    public Object execute(Object context, JSONObject variables) throws Exception {
+    private Map<String,Object> parseVariables(JSONObject variables){
 
-        Binding binding = new Binding();
-
-        binding.setVariable("$context", context);
-
-        JSONObject config = groovyScript.getConfig();
-        config = config == null ? new JSONObject() : (JSONObject) config.clone();
-
-        binding.setVariable("$config", config);
+        Map<String,Object> result = new HashMap<>();
 
         groovyScript.getDeclaredVariables().forEach((name, parameter) -> {
-
 
             Object srcObject = null;
 
@@ -201,18 +195,56 @@ public class GroovyRunner {
             }
 
             if (parameter.isArray()) {
-                binding.setVariable(name, valueArray);
+                result.put(name, valueArray);
             } else {
-                binding.setVariable(name, valueArray.size() > 0 ? valueArray.get(0) : null );
+                result.put(name, valueArray.size() > 0 ? valueArray.get(0) : null );
             }
 
         });
 
+        return result;
+    }
+
+
+    private Object run(Map<String,Object> variables) throws Exception {
+
+        Binding binding = new Binding();
+
+        if (properties != null){
+            properties.forEach(binding::setProperty);
+        }
+
+        if (variables != null){
+            variables.forEach(binding::setVariable);
+        }
 
         runner.setBinding(binding);
-        Object result = runner.run();
 
-        return TypeUtils.castToJavaBean(result, returnClass);
+        return runner.run();
 
     }
+
+    public GroovyRunner withProperty(String name,Object object){
+        this.properties.put(name,object);
+        return this;
+    }
+
+    public GroovyRunner withProperties(Map<String,Object> properties){
+        this.properties.putAll(properties);
+        return this;
+    }
+
+    public Object execute(JSONObject values) throws Exception {
+
+        JSONObject config = groovyScript.getConfig();
+        config = config == null ? new JSONObject() : (JSONObject) config.clone();
+        properties.put("$config", config);
+
+        Map<String,Object> variables = parseVariables(values);
+        Object result = run(variables);
+
+        return TypeUtils.castToJavaBean(result, returnClass);
+        
+    }
+
 }

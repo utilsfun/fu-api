@@ -100,7 +100,7 @@ public class ApiRunner {
             method.setSource(groovySource.getSource());
 
             GroovyRunner groovyRunner = groovyService.getRunner(method);
-            Object result = groovyRunner.execute(runContext,runContext.getParameters());
+            Object result = groovyRunner.withProperty("$context",runContext).execute(runContext.getParameters());
             runContext.setResult(result);
 
         } if ("bean".equalsIgnoreCase(interfaceDO.getImplementType())){

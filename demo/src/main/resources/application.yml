@@ -44,6 +44,18 @@ fu-api:
     filters: stat,wall,slf4j
     connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
     use-global-data-source-stat: true
+  redis:
+    config: classpath:redisson.yml
+    database: 0
+    host: r-wz9qp5lpbxt05l3jh8pd.redis.rds.aliyuncs.com
+    port: 6379
+    password: v!123456
+    jedis:
+      pool:
+        max-idle: 30
+        min-idle: 10
+        max-wait: 5000ms
+        max-active: 100
 
   applications:
     - path: demo

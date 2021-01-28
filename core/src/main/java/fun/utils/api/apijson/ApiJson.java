@@ -7,6 +7,7 @@ import apijson.framework.APIJSONSQLConfig;
 import apijson.framework.APIJSONSQLExecutor;
 import apijson.orm.SQLConfig;
 import apijson.orm.SQLExecutor;
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.apijson.ApiJsonParser;
 
@@ -16,7 +17,6 @@ import java.sql.SQLException;
 
 public class ApiJson {
 
-    private final DataSource dataSource;
     private final APIJSONCreator creator ;
 
     private final String dbName;
@@ -25,20 +25,17 @@ public class ApiJson {
 
     public ApiJson(DataSource dataSource) throws SQLException {
 
-        this.dataSource = dataSource;
-        this.dbName = "MYSQL";
-        this.dbVersion = "8.0.11";
-        this.dbSchema = null;
-
-//        try (Connection connection = dataSource.getConnection()){
-//            this.dbName = connection.getMetaData().getDatabaseProductName();
-//            this.dbVersion = connection.getMetaData().getDatabaseProductVersion();
-//            this.dbSchema = connection.getSchema();
-//        }
+        try (Connection connection = dataSource.getConnection()){
+            this.dbName = connection.getMetaData().getDatabaseProductName().toUpperCase();
+            this.dbVersion = connection.getMetaData().getDatabaseProductVersion();
+            this.dbSchema = connection.getCatalog();
+        }
 
         this.creator = new APIJSONCreator() {
+
             @Override
             public SQLConfig createSQLConfig() {
+
                 APIJSONSQLConfig sqlConfig = new APIJSONSQLConfig(){
                     @Override
                     public String getSQLDatabase() {
@@ -59,6 +56,7 @@ public class ApiJson {
             }
 
             public SQLExecutor createSQLExecutor() {
+
                 return new APIJSONSQLExecutor(){
 
                     //  可重写以下方法，支持 Redis 等单机全局缓存或分布式缓存

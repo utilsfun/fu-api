@@ -1,0 +1,18 @@
+singleServerConfig:
+  address: "redis://r-wz9qp5lpbxt05l3jh8pd.redis.rds.aliyuncs.com:6379"
+  database: 0
+  clientName: null
+  password: "v!123456"
+  idleConnectionTimeout: 10000
+  connectTimeout: 10000
+  timeout: 3000
+  retryAttempts: 3
+  retryInterval: 1500
+  subscriptionsPerConnection: 5
+  subscriptionConnectionMinimumIdleSize: 1
+  subscriptionConnectionPoolSize: 50
+  connectionMinimumIdleSize: 2
+  connectionPoolSize: 8
+  dnsMonitoringInterval: 5000
+threads: 0
+nettyThreads: 0
