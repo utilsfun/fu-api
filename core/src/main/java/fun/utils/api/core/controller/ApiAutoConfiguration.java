@@ -1,5 +1,7 @@
 package fun.utils.api.core.controller;
 
+import apijson.JSON;
+import apijson.JSONObject;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -35,6 +37,8 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -62,8 +66,6 @@ public class ApiAutoConfiguration {
     @Resource(name = "fu-api.datasource")
     DataSource dataSource;
 
-
-
     @Bean
     @ConditionalOnMissingBean(JdbcTemplate.class)
     JdbcTemplate mainJdbcTemplate() {
@@ -84,7 +86,6 @@ public class ApiAutoConfiguration {
         template.setConnectionFactory(connectionFactory);
         return template;
     }
-
 
     @Bean
     @ConditionalOnMissingBean(RestTemplate.class)
