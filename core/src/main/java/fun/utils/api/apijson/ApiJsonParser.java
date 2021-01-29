@@ -1,7 +1,10 @@
 package fun.utils.api.apijson;
 
 import apijson.RequestMethod;
-import apijson.framework.*;
+import apijson.framework.APIJSONCreator;
+import apijson.framework.APIJSONFunctionParser;
+import apijson.framework.APIJSONObjectParser;
+import apijson.framework.APIJSONVerifier;
 import apijson.orm.*;
 import com.alibaba.fastjson.JSONObject;
 
@@ -11,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static apijson.framework.APIJSONConstant.*;
-import static apijson.framework.APIJSONConstant.VERSION;
 
 public class ApiJsonParser extends AbstractParser<Long> {
 

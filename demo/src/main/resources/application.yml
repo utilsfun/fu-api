@@ -24,39 +24,47 @@ spring:
 
 fu-api:
   datasource:
-    url: jdbc:mysql://rm-wz9c07bgnhh23pjm4ko.mysql.rds.aliyuncs.com/fuapi?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=GMT%2B8&useSSL=false&allowMultiQueries=true
-    username: db_root
-    password: db@@2020
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    initial-size: 1
-    min-idle: 1
-    max-active: 5
-    max-wait: 60000
-    time-between-eviction-runsMillis: 60000
-    min-evictable-idle-timeMillis: 300000
-    validation-query: select 'x' FROM DUAL
-    test-while-idle: true
-    test-on-borrow: false
-    test-on-return: false
-    pool-prepared-statements: true
-    max-open-prepared-statements: 20
-    max-pool-prepared-statement-per-connection-size: 20
-    filters: stat,wall,slf4j
-    connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-    use-global-data-source-stat: true
+    druid:
+      url: jdbc:mysql://rm-wz9c07bgnhh23pjm4ko.mysql.rds.aliyuncs.com/fuapi?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=GMT%2B8&useSSL=false&allowMultiQueries=true
+      username: db_root
+      password: db@@2020
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      initial-size: 1
+      min-idle: 1
+      max-active: 5
+      max-wait: 60000
+      time-between-eviction-runsMillis: 60000
+      min-evictable-idle-timeMillis: 300000
+      validation-query: select 'x' FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall,slf4j
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      use-global-data-source-stat: true
   redis:
-    config: classpath:redisson.yml
-    database: 0
-    host: r-wz9qp5lpbxt05l3jh8pd.redis.rds.aliyuncs.com
-    port: 6379
-    password: v!123456
-    jedis:
-      pool:
-        max-idle: 30
-        min-idle: 10
-        max-wait: 5000ms
-        max-active: 100
-
+    redisson:
+      singleServerConfig:
+        address: "redis://r-wz9qp5lpbxt05l3jh8pd.redis.rds.aliyuncs.com:6379"
+        database: 0
+        clientName: null
+        password: "v!123456"
+        idleConnectionTimeout: 10000
+        connectTimeout: 10000
+        timeout: 3000
+        retryAttempts: 3
+        retryInterval: 1500
+        subscriptionsPerConnection: 5
+        subscriptionConnectionMinimumIdleSize: 1
+        subscriptionConnectionPoolSize: 50
+        connectionMinimumIdleSize: 2
+        connectionPoolSize: 8
+        dnsMonitoringInterval: 5000
+      threads: 0
+      nettyThreads: 0
   applications:
     - path: demo
 

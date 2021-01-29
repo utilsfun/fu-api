@@ -7,9 +7,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class GroovySrcDefaultLoader implements Callback<String, GroovySource> {

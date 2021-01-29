@@ -7,15 +7,13 @@ import apijson.framework.APIJSONSQLConfig;
 import apijson.framework.APIJSONSQLExecutor;
 import apijson.orm.SQLConfig;
 import apijson.orm.SQLExecutor;
-import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.apijson.ApiJsonParser;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ApiJson {
+public class ApiJsonner {
 
     private final APIJSONCreator creator ;
 
@@ -23,7 +21,7 @@ public class ApiJson {
     private final String dbVersion;
     private final String dbSchema;
 
-    public ApiJson(DataSource dataSource) throws SQLException {
+    public ApiJsonner(DataSource dataSource) throws SQLException {
 
         try (Connection connection = dataSource.getConnection()){
             this.dbName = connection.getMetaData().getDatabaseProductName().toUpperCase();

@@ -1,15 +1,9 @@
 package fun.utils.api.core.script;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.util.TypeUtils;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import org.springframework.util.DigestUtils;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

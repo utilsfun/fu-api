@@ -1,5 +1,8 @@
 package fun.utils.api.core.exception;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class ApiException extends Exception {
 
 	private static final long serialVersionUID = -3683450436146794017L;
@@ -27,7 +30,11 @@ public class ApiException extends Exception {
 	}
 
 	public static ApiException unknownException(Throwable e){
-		return new ApiException(500, String.format(e.getMessage()));
+		List<String> detail = new LinkedList<>();
+		for ( StackTraceElement stackTraceElement:e.getStackTrace()) {
+			detail.add(stackTraceElement.toString());
+		}
+		return new ApiException(500, String.format(e.getMessage()), detail);
 	}
 
 	public static ApiException parameterRequiredException(String parameterName){
@@ -36,6 +43,10 @@ public class ApiException extends Exception {
 
 	public static ApiException parameterTypeException(String parameterName,String parameterType){
 		return new ApiException(502, String.format("参数%s数据类型(%s)不匹配", parameterName,parameterType));
+	}
+
+	public static ApiException resourceNotFondException(String resource){
+		return new ApiException(503, String.format("资源%s不存在", resource));
 	}
 
 }

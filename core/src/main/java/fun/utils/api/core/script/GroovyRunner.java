@@ -1,18 +1,18 @@
 package fun.utils.api.core.script;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
-import fun.utils.api.core.exception.ApiException;
 import fun.utils.api.core.util.ClassUtils;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+@Slf4j
 public class GroovyRunner {
 
     private GroovyService groovyService;
@@ -91,7 +91,9 @@ public class GroovyRunner {
         sb.append("/* ******** end ******** */");
         sb.append("\r\n");
 
-        System.out.println(sb.toString());
+
+        log.debug(sb.toString());
+
         runner = groovyService.getShell().parse(sb.toString());
 
         String returnType = StringUtils.defaultIfBlank(groovyScript.getReturnType(), "Object");
@@ -244,7 +246,7 @@ public class GroovyRunner {
         Object result = run(variables);
 
         return TypeUtils.castToJavaBean(result, returnClass);
-        
+
     }
 
 }

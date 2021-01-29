@@ -2,27 +2,20 @@ package fun.utils.api.core.runtime;
 
 
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.apijson.ApiJson;
+import fun.utils.api.apijson.ApiJsonner;
 import fun.utils.api.core.common.MyJdbcTemplate;
 import fun.utils.api.core.common.MyRedisTemplate;
 import fun.utils.api.core.controller.AppBean;
+import fun.utils.api.core.exception.ApiException;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.InterfaceDO;
-import fun.utils.api.core.persistence.SourceDO;
-import fun.utils.api.core.services.BeanService;
 import fun.utils.api.core.services.DoService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
-
 import org.slf4j.LoggerFactory;
-
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
@@ -33,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +36,14 @@ import java.util.concurrent.ExecutionException;
 
 @Slf4j
 public class RunContext {
+
+    public class BeanBridge {
+
+        public Object get(String name){
+            return webApplicationContext.getBean(name);
+        }
+
+    }
 
     @Getter
     private final long enterTime = System.currentTimeMillis();
@@ -56,11 +58,10 @@ public class RunContext {
     private final AppBean appBean;
 
     @Getter
-    private final BeanService beans;
+    private final BeanBridge beans = new BeanBridge();
 
     @Getter
     private final DoService doService;
-
 
     @Getter
     private final ApplicationDO applicationDO;
@@ -98,9 +99,6 @@ public class RunContext {
     @Getter @Setter
     private boolean isVoid = false;
 
-    protected final Map<String, DataSource> dataSources = new HashMap<>();
-    protected final Map<String, RedissonClient> redissonClients = new HashMap<>();
-
     protected final Map<String, Object> attributes = new HashMap<>();
 
     public RunContext(AppBean appBean, String applicationName, String interfaceName, HttpServletResponse response, HttpServletRequest request) throws ExecutionException {
@@ -109,7 +107,6 @@ public class RunContext {
         this.restTemplate = appBean.getRestTemplate();
         this.webApplicationContext = appBean.getWebApplicationContext();
         this.doService = appBean.getDoService();
-        this.beans = appBean.getBeans();
 
         this.applicationDO = doService.getApplicationDO(applicationName);
         this.interfaceDO = doService.getInterfaceDO(applicationName, interfaceName);;
@@ -117,18 +114,6 @@ public class RunContext {
         this.config = interfaceDO.getConfig();
         this.response = response;
         this.request = request;
-
-        for (Long sourceId:applicationDO.getSourceIds()) {
-            SourceDO sourceDO = doService.getSourceDO(sourceId);
-            if ("database".equalsIgnoreCase(sourceDO.getType())){
-                DataSource dataSource = appBean.getDataSource(sourceDO);
-                dataSources.put(sourceDO.getName(), dataSource);
-            }
-            else if ("redis".equalsIgnoreCase(sourceDO.getType())){
-                RedissonClient redissonClient = appBean.getRedissonClient(sourceDO);
-                redissonClients.put(sourceDO.getName(),redissonClient);
-            }
-        }
 
         for (Long parameterId:applicationDO.getParameterIds()) {
           if (!parameterIds.contains(parameterId)){
@@ -185,70 +170,44 @@ public class RunContext {
 
     /* ********** jdbc ,redis Template ********** */
 
-    public DataSource getDataSource(String name){
-      return dataSources.get(name);
+    public DataSource getDataSource(String name) throws ExecutionException, ApiException {
+      return appBean.getDataSource(applicationDO.getName(),name);
     }
 
-    public DataSource getDataSource(){
-
-        if (dataSources.size() == 0){
-            return null;
-        }
-        else if (dataSources.size() == 1){
-            return dataSources.get(0);
-        }
-        else if (dataSources.containsKey("default")){
-            return dataSources.get("default");
-        }
-        else {
-            return dataSources.get(0);
-        }
-
+    public DataSource getDataSource() throws ExecutionException, ApiException {
+        return getDataSource("default");
     }
 
 
-    public JdbcTemplate getJdbcTemplate(String name) {
+    public JdbcTemplate getJdbcTemplate(String name) throws ExecutionException, ApiException {
         return new MyJdbcTemplate(getDataSource(name));
     }
 
-    public JdbcTemplate getJdbcTemplate() {
+    public JdbcTemplate getJdbcTemplate() throws ExecutionException, ApiException {
         return new MyJdbcTemplate(getDataSource());
     }
 
-    public JdbcTemplate getJdbc() {
+    public JdbcTemplate getJdbc() throws ExecutionException, ApiException {
         return getJdbcTemplate();
     }
 
-    public RedisTemplate getRedisTemplate() {
+    public RedisTemplate getRedisTemplate() throws ExecutionException, ApiException, IOException {
         return new MyRedisTemplate(getRedissonClient());
     }
 
-    public RedisTemplate getRedisTemplate(String name) {
+    public RedisTemplate getRedisTemplate(String name) throws ExecutionException, ApiException, IOException {
         return new MyRedisTemplate(getRedissonClient(name));
     }
 
-    public RedissonClient getRedissonClient(String name){
-        return redissonClients.get(name);
+    public RedissonClient getRedissonClient(String name) throws ExecutionException, ApiException, IOException {
+        return appBean.getRedissonClient(applicationDO.getName(),name);
     }
 
-    public RedissonClient getRedissonClient() {
-
-        if (redissonClients.size() == 0){
-            return null;
-        }
-        else if (redissonClients.size() == 1){
-            return redissonClients.get(0);
-        }
-        else if (redissonClients.containsKey("default")){
-            return redissonClients.get("default");
-        }
-        else {
-            return redissonClients.get(0);
-        }
-
+    public RedissonClient getRedissonClient() throws ExecutionException, ApiException, IOException {
+       return getRedissonClient("default");
     }
 
-    public RedisTemplate getRedis() {
+    public RedisTemplate getRedis() throws ExecutionException, ApiException, IOException {
         return getRedisTemplate();
     }
 
@@ -298,13 +257,13 @@ public class RunContext {
         responseHeaders.put(key,value);
     }
 
-    /* ********** logger ********** */
-    public ApiJson getApiJson() throws SQLException {
+    /* ********** ApiJson ********** */
+    public ApiJsonner getApiJson() throws SQLException, ExecutionException, ApiException {
         return getApiJson("default");
     }
 
-    public ApiJson getApiJson(String dataSourceName) throws SQLException {
-        return new ApiJson(dataSources.get(dataSourceName));
+    public ApiJsonner getApiJson(String databaseName) throws SQLException, ExecutionException, ApiException {
+        return new ApiJsonner(getDataSource(databaseName));
     }
 
 }

@@ -105,12 +105,20 @@ public class ApplicationDO {
         return interfaceNames;
     }
 
-    private List<Long> sourceIds ;
-    public List<Long> getSourceIds(){
-        if (sourceIds == null){
-            sourceIds = new ArrayList<>();
+    private List<String> databaseNames ;
+    public List<String> getDatabaseNames(){
+        if (databaseNames == null){
+            databaseNames = new ArrayList<>();
         }
-        return sourceIds;
+        return databaseNames;
+    }
+
+    private List<String> redisNames ;
+    public List<String> getRedisNames(){
+        if (redisNames == null){
+            redisNames = new ArrayList<>();
+        }
+        return redisNames;
     }
 
 }

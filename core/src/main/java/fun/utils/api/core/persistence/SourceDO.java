@@ -1,12 +1,8 @@
 package fun.utils.api.core.persistence;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
-import org.yaml.snakeyaml.Yaml;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Description:接口方法表
@@ -21,12 +17,17 @@ public class SourceDO {
     private long id;
 
     /**
-     * 【名称】 应用 + 名称 唯一
+     * 【应用Id】
+     */
+    private long applicationId;
+
+    /**
+     * 【名称】 应用 + 类型 + 名称 唯一
      */
     private String name;
 
     /**
-     * 【类型】mysql,redis
+     * 【类型】database,redis
      */
     private String type;
 

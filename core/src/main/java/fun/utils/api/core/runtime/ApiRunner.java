@@ -99,6 +99,10 @@ public class ApiRunner {
             method.getImports().addAll(groovySource.getImports());
             method.setSource(groovySource.getSource());
 
+            method.getImports().add("import com.alibaba.fastjson.*;");
+            method.getImports().add("org.apache.commons.lang3.StringUtils;");
+
+
             GroovyRunner groovyRunner = groovyService.getRunner(method);
             Object result = groovyRunner.withProperty("$context",runContext).execute(runContext.getParameters());
             runContext.setResult(result);

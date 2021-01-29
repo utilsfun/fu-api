@@ -6,8 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fun.utils.api.core.persistence.*;
-import fun.utils.api.core.runtime.RunApplication;
-import fun.utils.api.core.runtime.RunInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -15,7 +13,6 @@ import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +24,8 @@ public class DoService {
     private final Cache<String, DocumentDO> documentCache;
     private final Cache<String, FilterDO> filterCache;
     private final Cache<String, ParameterDO> parameterCache;
-    private final Cache<String, SourceDO> sourceCache;
+    private final Cache<String, SourceDO> databaseCache;
+    private final Cache<String, SourceDO> redisCache;
 
     private final BeanPropertyRowMapper<ApplicationDO> applicationRowMapper;
     private final BeanPropertyRowMapper<SourceDO> sourceRowMapper;
@@ -42,15 +40,19 @@ public class DoService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private final long expireSeconds = 10;
+
     public DoService() {
 
-        applicationCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterWrite(10, TimeUnit.SECONDS).build();
-        sourceCache = CacheBuilder.newBuilder().maximumSize(20).expireAfterWrite(10, TimeUnit.SECONDS).build();
+        applicationCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterWrite(expireSeconds, TimeUnit.SECONDS).build();
 
-        interfaceCache = CacheBuilder.newBuilder().maximumSize(200).expireAfterWrite(10, TimeUnit.SECONDS).build();
-        documentCache = CacheBuilder.newBuilder().maximumSize(500).expireAfterWrite(10, TimeUnit.SECONDS).build();
-        filterCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(10, TimeUnit.SECONDS).build();
-        parameterCache = CacheBuilder.newBuilder().maximumSize(5000).expireAfterWrite(10, TimeUnit.SECONDS).build();
+        databaseCache = CacheBuilder.newBuilder().maximumSize(20).expireAfterWrite(expireSeconds, TimeUnit.SECONDS).build();
+        redisCache = CacheBuilder.newBuilder().maximumSize(20).expireAfterWrite(expireSeconds, TimeUnit.SECONDS).build();
+
+        interfaceCache = CacheBuilder.newBuilder().maximumSize(200).expireAfterWrite(expireSeconds, TimeUnit.SECONDS).build();
+        documentCache = CacheBuilder.newBuilder().maximumSize(500).expireAfterWrite(expireSeconds, TimeUnit.SECONDS).build();
+        filterCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(expireSeconds, TimeUnit.SECONDS).build();
+        parameterCache = CacheBuilder.newBuilder().maximumSize(5000).expireAfterWrite(expireSeconds, TimeUnit.SECONDS).build();
 
         GenericConversionService conversionService = new DefaultConversionService();
 
@@ -100,7 +102,8 @@ public class DoService {
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS parameter_ids ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_filter` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS filter_ids ");
         sqlBuffer.append(" ,(select group_concat(name ORDER BY `sort` SEPARATOR ',') from `api_interface` WHERE `status` = 0 and `application_id` = api_application.id GROUP BY `application_id` ) AS interface_names ");
-        sqlBuffer.append(" ,(select group_concat(id SEPARATOR ',') from `api_source_rel` WHERE `status` = 0 and `application_id` = api_application.id) AS source_ids ");
+        sqlBuffer.append(" ,(select group_concat(name SEPARATOR ',') from `api_source` WHERE type = 'database' and `status` = 0 and `application_id` = api_application.id) AS database_names ");
+        sqlBuffer.append(" ,(select group_concat(name SEPARATOR ',') from `api_source` WHERE type = 'redis' and `status` = 0 and `application_id` = api_application.id) AS redis_names ");
         sqlBuffer.append(" from api_application ");
         sqlBuffer.append(" where status = 0 and name = ? ");
 
@@ -136,13 +139,27 @@ public class DoService {
         return jdbcTemplate.queryForObject(documentSql,documentRowMapper,id);
     }
 
-    public SourceDO getSourceDO(Long id) throws ExecutionException {
-        return  sourceCache.get(String.valueOf(id),()-> loadSourceDO(id));
+
+    public SourceDO getRedisSourceDO(String applicationName,String redisName) throws ExecutionException {
+        String key = String.format("%s/redis/%s", applicationName, redisName);
+        return  redisCache.get(String.valueOf(key),()-> loadRedisSourceDO(applicationName,redisName));
     }
 
-    public SourceDO loadSourceDO(Long id)  {
-        String sourceSql = " select id,name,note,type,config,status,gmt_create,gmt_modified from api_source where status = 0 and id = ? " ;
-        return jdbcTemplate.queryForObject(sourceSql,sourceRowMapper,id);
+    public SourceDO loadRedisSourceDO(String applicationName,String redisName) throws ExecutionException {
+        ApplicationDO applicationDO = getApplicationDO(applicationName);
+        String sourceSql = " select id,application_id,name,note,type,config,status,gmt_create,gmt_modified from api_source where  status = 0 and type='redis' and application_id = ?  and name = ? " ;
+        return jdbcTemplate.queryForObject(sourceSql,sourceRowMapper,applicationDO.getId(),redisName);
+    }
+
+    public SourceDO getDatabaseSourceDO(String applicationName,String databaseName) throws ExecutionException {
+        String key = String.format("%s/database/%s", applicationName, databaseName);
+        return  databaseCache.get(String.valueOf(key),()-> loadDatabaseSourceDO(applicationName,databaseName));
+    }
+
+    public SourceDO loadDatabaseSourceDO(String applicationName,String databaseName) throws ExecutionException {
+        ApplicationDO applicationDO = getApplicationDO(applicationName);
+        String sourceSql = " select id,application_id,name,note,type,config,status,gmt_create,gmt_modified from api_source where  status = 0 and type='database' and application_id = ?  and name = ? " ;
+        return jdbcTemplate.queryForObject(sourceSql,sourceRowMapper,applicationDO.getId(),databaseName);
     }
 
     public FilterDO getFilterDO(Long id) throws ExecutionException {
