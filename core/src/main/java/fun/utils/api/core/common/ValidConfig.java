@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 @Data
-public class Validation {
+public class ValidConfig {
 
     //类型
     public String type;

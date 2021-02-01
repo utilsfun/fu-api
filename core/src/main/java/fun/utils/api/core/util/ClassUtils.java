@@ -113,6 +113,10 @@ public class ClassUtils {
         return TypeUtils.loadClass(className);
     }
 
+    public static <T> T castValue(Object value,  Class<T> cls) {
+        return TypeUtils.castToJavaBean(value,cls);
+    }
+
     public static Object castValue(Object value, String className) {
         return TypeUtils.castToJavaBean(value,loadClass(className));
     }

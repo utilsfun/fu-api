@@ -3,6 +3,7 @@ package fun.utils.api.core.runtime;
 
 import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.apijson.ApiJsonner;
+import fun.utils.api.core.common.DataUtils;
 import fun.utils.api.core.common.MyJdbcTemplate;
 import fun.utils.api.core.common.MyRedisTemplate;
 import fun.utils.api.core.controller.AppBean;
@@ -115,12 +116,14 @@ public class RunContext {
         this.response = response;
         this.request = request;
 
-        for (Long parameterId:applicationDO.getParameterIds()) {
+
+        for (Long parameterId:DataUtils.getEmptyIfNull(applicationDO.getParameterIds())) {
           if (!parameterIds.contains(parameterId)){
               parameterIds.add(parameterId);
           }
         }
-        for (Long parameterId:interfaceDO.getParameterIds()) {
+
+        for (Long parameterId:DataUtils.getEmptyIfNull(interfaceDO.getParameterIds())) {
             if (!parameterIds.contains(parameterId)){
                 parameterIds.add(parameterId);
             }

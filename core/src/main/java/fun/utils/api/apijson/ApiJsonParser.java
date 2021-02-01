@@ -127,7 +127,7 @@ public class ApiJsonParser extends AbstractParser<Long> {
 
 
     @Override
-    public APIJSONObjectParser createObjectParser(JSONObject request, String parentPath, String name, SQLConfig arrayConfig, boolean isSubquery) throws Exception {
+    public APIJSONObjectParser createObjectParser(JSONObject request, String parentPath, SQLConfig arrayConfig, boolean isSubquery, boolean isTable, boolean isArrayMainTable) throws Exception {
 
         AbstractSQLConfig.Callback callback = new AbstractSQLConfig.SimpleCallback() {
 
@@ -140,7 +140,7 @@ public class ApiJsonParser extends AbstractParser<Long> {
             }
         };
 
-        return new APIJSONObjectParser(getSession(), request, parentPath, name, arrayConfig, isSubquery){
+        return new APIJSONObjectParser(getSession(), request, parentPath, arrayConfig, isSubquery,isTable,isArrayMainTable){
             @Override
             public SQLConfig newSQLConfig(RequestMethod method, String table, String alias, JSONObject request, List<Join> joinList, boolean isProcedure) throws Exception {
                 return AbstractSQLConfig.newSQLConfig(method, table, alias, request, joinList, isProcedure,callback) ;

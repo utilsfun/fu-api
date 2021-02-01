@@ -6,6 +6,7 @@ import apijson.orm.SQLConfig;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.apijson.ApiJsonParser;
+import fun.utils.api.core.common.DataUtils;
 import fun.utils.api.core.script.*;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -157,6 +158,25 @@ public class MyTest {
         request.put("info@","/API_PARAMETER[]/info");
 
         System.out.println( myParser.parseResponse(request));
+    }
+
+
+    @Test
+    public void testStringFormat() throws Exception {
+
+        // Log.DEBUG = false;
+        Map<String,Object> objectMap = new HashMap<>();
+        objectMap.put("cc","dd");
+        objectMap.put("aa","{a:2}");
+
+        objectMap.put("bb",JSON.parseObject("{dkd:\"3asfs\",kso:123}"));
+
+
+        System.out.println(DataUtils.stringFormat("这个测测${cc}!",objectMap));
+        System.out.println(DataUtils.stringFormat("这个测测${dd|default:99}!",objectMap));
+        System.out.println(DataUtils.stringFormat("这个测测${dd|default:'99'|xx| d ||}!",objectMap));
+        System.out.println(DataUtils.stringFormat("${aa|toJson}!",objectMap));
+        System.out.println(DataUtils.stringFormat("${bb|json:}!",objectMap));
     }
 
 }

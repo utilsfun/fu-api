@@ -1,6 +1,6 @@
 package fun.utils.api.core.persistence;
 
-import fun.utils.api.core.common.Validation;
+import fun.utils.api.core.common.ValidConfig;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -92,7 +92,7 @@ public class ParameterDO {
     /**
      * 【参数验证】json Validation格式
      */
-    private List<Validation> validations;
+    private List<ValidConfig> validations;
 
     /**
      * 【状态】0正常 1停用

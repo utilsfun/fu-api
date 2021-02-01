@@ -3,6 +3,9 @@ package fun.utils.api.core.runtime;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.api.core.common.DataUtils;
+import fun.utils.api.core.common.ValidConfig;
+import fun.utils.api.core.common.ValidUtils;
 import fun.utils.api.core.controller.AppBean;
 import fun.utils.api.core.exception.ApiException;
 import fun.utils.api.core.persistence.ApplicationDO;
@@ -21,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import static fun.utils.api.core.common.ApiConst.PUBLIC_GROOVY_IMPORTS;
 
 @Slf4j
 public class ApiRunner {
@@ -62,7 +67,7 @@ public class ApiRunner {
 
         //运行 参数验证
         JSONObject parameters = new JSONObject();
-        genParameters(runContext.getInput(),parameters,runContext.getParameterIds(),runContext.getRequest());
+        genParameters(runContext.getInput(), parameters, runContext.getParameterIds(), runContext.getRequest());
         runContext.setParameters(parameters);
 
     }
@@ -77,37 +82,36 @@ public class ApiRunner {
 
         //运行 interface 方法
 
-        if ("groovy".equalsIgnoreCase(interfaceDO.getImplementType())){
+        if ("groovy".equalsIgnoreCase(interfaceDO.getImplementType())) {
 
-            GroovyScript  method  = new GroovyScript();
+            GroovyScript method = new GroovyScript();
             method.setId(String.valueOf(interfaceDO.getId()));
             method.setConfig(interfaceDO.getConfig());
             method.setVersion(interfaceDO.getGmtModified().toString());
             method.setTitle(interfaceDO.getTitle());
 
             String groovy = interfaceDO.getImplementCode();
-            GroovySource groovySource = GroovyUtils.sourceOf(method.getId(),groovy);
+            GroovySource groovySource = GroovyUtils.sourceOf(method.getId(), groovy);
 
             Map<String, GroovyVariable> declaredVariables = method.getDeclaredVariables();
 
-            for (Long parameterId: runContext.getParameterIds() ) {
-                ParameterDO parameterDO  = doService.getParameterDO(parameterId);
-                GroovyVariable groovyVariable = GroovyUtils.parameterOf(parameterDO.getDataType(),parameterDO.getIsArray() == 1);
-                declaredVariables.put(parameterDO.getName(),groovyVariable);
+            for (Long parameterId : runContext.getParameterIds()) {
+                ParameterDO parameterDO = doService.getParameterDO(parameterId);
+                GroovyVariable groovyVariable = GroovyUtils.parameterOf(parameterDO.getDataType(), parameterDO.getIsArray() == 1);
+                declaredVariables.put(parameterDO.getName(), groovyVariable);
             }
 
             method.getImports().addAll(groovySource.getImports());
             method.setSource(groovySource.getSource());
 
-            method.getImports().add("import com.alibaba.fastjson.*;");
-            method.getImports().add("org.apache.commons.lang3.StringUtils;");
-
+            method.getImports().addAll(PUBLIC_GROOVY_IMPORTS);
 
             GroovyRunner groovyRunner = groovyService.getRunner(method);
-            Object result = groovyRunner.withProperty("$context",runContext).execute(runContext.getParameters());
+            Object result = groovyRunner.withProperty("$context", runContext).execute(runContext.getParameters());
             runContext.setResult(result);
 
-        } if ("bean".equalsIgnoreCase(interfaceDO.getImplementType())){
+        }
+        if ("bean".equalsIgnoreCase(interfaceDO.getImplementType())) {
 
         }
 
@@ -155,13 +159,17 @@ public class ApiRunner {
             //为一级参数时,从指定位置中取值
             else if ("header".equalsIgnoreCase(parameterDO.getPosition())) {
                 superJo = input.getJSONObject("headers");
-            } else if ("cookie".equalsIgnoreCase(parameterDO.getPosition())) {
+            }
+            else if ("cookie".equalsIgnoreCase(parameterDO.getPosition())) {
                 superJo = input.getJSONObject("cookies");
-            } else if ("query".equalsIgnoreCase(parameterDO.getPosition())) {
+            }
+            else if ("query".equalsIgnoreCase(parameterDO.getPosition())) {
                 superJo = input.getJSONObject("parameters");
-            } else if ("body".equalsIgnoreCase(parameterDO.getPosition())) {
+            }
+            else if ("body".equalsIgnoreCase(parameterDO.getPosition())) {
                 superJo = input.getJSONObject("body");
-            } else {
+            }
+            else {
                 superJo = input.getJSONObject("body");
             }
 
@@ -192,25 +200,31 @@ public class ApiRunner {
             if (srcObject == null) {
                 //也无默认值
                 if (parameterDO.getIsRequired() == 1) {
+                    //如果参数定义为必填,则报错.
                     throw ApiException.parameterRequiredException(parameterDO.getName());
                 }
 
-            } else {
+            }
+            else {
                 //有值不为空
                 List<Object> srcArray = new ArrayList<>();
                 List<Object> valueArray = new ArrayList<>();
 
+                //无论是单值还是多值(数组)都入加到列表中处理
                 if (parameterDO.getIsArray() == 1) {
                     if (srcObject instanceof List) {
                         srcArray = (List<Object>) srcObject;
-                    } else {
+                    }
+                    else {
                         if (String.valueOf(srcObject).trim().matches("\\[.+\\]")) {
                             srcArray = JSON.parseArray(String.valueOf(srcObject));
-                        } else {
+                        }
+                        else {
                             srcArray = Arrays.asList(StringUtils.split(String.valueOf(srcObject)));
                         }
                     }
-                } else {
+                }
+                else {
                     srcArray.add(srcObject);
                 }
 
@@ -222,7 +236,8 @@ public class ApiRunner {
                         JSONObject srcJo;
                         if (elementObj instanceof JSONObject) {
                             srcJo = (JSONObject) elementObj;
-                        } else {
+                        }
+                        else {
                             srcJo = JSON.parseObject(JSON.toJSONString(elementObj));
                         }
 
@@ -230,25 +245,36 @@ public class ApiRunner {
                         genParameters(srcJo, valueJo, parameterDO.getParameterIds(), request);
                         valueArray.add(valueJo);
 
-                    } else {
+                    }
+                    else {
                         //基础类型
 
                         Object value = ClassUtils.castValue(elementObj, parameterDO.getDataType());
                         if (value == null) {
                             //类型转换错误
                             throw ApiException.parameterTypeException(parameterDO.getName(), parameterDO.getDataType());
-                        } else {
+                        }
+                        else {
+
+                            //加入到值列表前进行参数验证 *******************
+                            for (ValidConfig validConfig : DataUtils.getEmptyIfNull(parameterDO.getValidations())) {
+                                ValidUtils.validateValue(parameterDO.getName(), value, validConfig.getType(), validConfig.getData(), validConfig.getMessage());
+                            }
+                            //加入到值列表
                             valueArray.add(value);
                         }
                     }
 
                 }
 
+                //加入到json参数值包对象中
                 if (parameterDO.getIsArray() == 1) {
                     parameters.put(parameterDO.getName(), JSONArray.toJSON(valueArray));
-                } else {
+                }
+                else {
                     parameters.put(parameterDO.getName(), JSONArray.toJSON(valueArray.get(0)));
                 }
+
             }
         }
     }

@@ -45,8 +45,12 @@ public class ApiException extends Exception {
 		return new ApiException(502, String.format("参数%s数据类型(%s)不匹配", parameterName,parameterType));
 	}
 
+	public static ApiException parameterValidException(String message){
+		return new ApiException(503, message);
+	}
+
 	public static ApiException resourceNotFondException(String resource){
-		return new ApiException(503, String.format("资源%s不存在", resource));
+		return new ApiException(510, String.format("资源%s不存在", resource));
 	}
 
 }
