@@ -1,6 +1,7 @@
 package fun.utils.api.core.controller;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,23 @@ public class ApiProperties {
 
     @Data
     public static class Application {
+
         private String path;
-        private String executor;
-        private RequestMappingInfo requestMappingInfo;
+        private String name;
+        private String docPath;
+
+        public String getPath(){
+            return StringUtils.defaultIfBlank(path,name);
+        }
+
+        public String getName(){
+            return StringUtils.defaultIfBlank(name,path);
+        }
+
+        public String getDocPath(){
+            return StringUtils.defaultIfBlank(docPath,"doc/" + getName());
+        }
+
     }
 
 }

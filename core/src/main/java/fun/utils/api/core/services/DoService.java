@@ -35,8 +35,6 @@ public class DoService {
     private final BeanPropertyRowMapper<ParameterDO> parameterRowMapper;
 
 
-    private final DefaultConversionService defaultConversionService  = new DefaultConversionService();
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -56,6 +54,7 @@ public class DoService {
 
         GenericConversionService conversionService = new DefaultConversionService();
 
+        DefaultConversionService defaultConversionService = new DefaultConversionService();
         conversionService.addConverter(new JsonObjectConverter(defaultConversionService));
         conversionService.addConverter(new JsonArrayConverter(defaultConversionService));
 
@@ -110,11 +109,12 @@ public class DoService {
         return jdbcTemplate.queryForObject(sqlBuffer.toString(),applicationRowMapper, applicationName);
     }
 
-    public InterfaceDO getInterfaceDO(String applicationName,String interfaceName) throws ExecutionException {
-        return interfaceCache.get(applicationName + "/" + interfaceName ,()-> loadInterfaceDO(applicationName,interfaceName));
+    public InterfaceDO getInterfaceDO(String applicationName,String interfaceName,String method) throws ExecutionException {
+        String key = method + ":" + applicationName + "/" + interfaceName;
+        return interfaceCache.get( key ,()-> loadInterfaceDO(applicationName,interfaceName,method));
     }
 
-    public InterfaceDO loadInterfaceDO(String applicationName,String interfaceName) throws ExecutionException {
+    public InterfaceDO loadInterfaceDO(String applicationName,String interfaceName,String method) throws ExecutionException {
 
         ApplicationDO applicationDO = getApplicationDO(applicationName);
 
@@ -125,9 +125,10 @@ public class DoService {
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'interface' and `parent_id` = api_interface.id GROUP BY `parent_id` ) AS parameter_ids ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_filter` WHERE `status` = 0 and `parent_type` = 'interface' and `parent_id` = api_interface.id GROUP BY `parent_id` ) AS filter_ids ");
         sqlBuffer.append(" from api_interface ");
-        sqlBuffer.append(" where status = 0 and application_id = ?  and name = ? ");
+        sqlBuffer.append(" where status = 0 and application_id = ?  and name = ? and method = ? ");
 
-        return jdbcTemplate.queryForObject(sqlBuffer.toString(),interfaceRowMapper,applicationDO.getId(), interfaceName);
+        return jdbcTemplate.queryForObject(sqlBuffer.toString(),interfaceRowMapper,applicationDO.getId(), interfaceName, method);
+
     }
 
     public DocumentDO getDocumentDO(Long id) throws ExecutionException {

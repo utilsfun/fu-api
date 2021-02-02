@@ -15,7 +15,7 @@ public class GroovyService {
     private final Cache<String, GroovySource> cacheSources = CacheBuilder.newBuilder().maximumSize(2000).expireAfterAccess(2, TimeUnit.MINUTES).build();
 
     @Getter
-    private GroovyShell shell = new GroovyShell();
+    private final GroovyShell shell = new GroovyShell();
 
     @Getter
     @Setter

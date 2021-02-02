@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Configuration
 @EnableConfigurationProperties(ApiProperties.class)
-public class ApiAutoConfiguration implements InitializingBean {
+public class ApiAutoConfiguration {
 
     @Autowired
     private ApiProperties apiProperties;
@@ -81,7 +81,7 @@ public class ApiAutoConfiguration implements InitializingBean {
     }
 
 
-    @Bean("fu-api.datasource")
+    @Bean("fu-api.data-source")
     public DataSource getDataSource() throws Exception {
         log.info("Initialize getDataSource");
         Map<String,Object> configMap = (Map<String, Object>)apiProperties.getDatasource().get("druid");
@@ -93,7 +93,7 @@ public class ApiAutoConfiguration implements InitializingBean {
     @ConditionalOnMissingBean(JdbcTemplate.class)
     JdbcTemplate getJdbcTemplate() {
         log.info("Initialize getJdbcTemplate");
-        DataSource dataSource = webApplicationContext.getBean("fu-api.datasource",DataSource.class);
+        DataSource dataSource = webApplicationContext.getBean("fu-api.data-source",DataSource.class);
         return new MyJdbcTemplate(dataSource);
     }
 
@@ -125,10 +125,6 @@ public class ApiAutoConfiguration implements InitializingBean {
         return redissonClientCache;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-
-    }
 
 }
 

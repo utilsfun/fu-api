@@ -3,13 +3,10 @@ package fun.utils.api.core.common;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -26,7 +23,7 @@ public class DataUtils {
         }
     }
 
-    public static <K,V> Map<K,V> getEmptyIfNull(Map<K,V> map) {
+    public static <K, V> Map<K, V> getEmptyIfNull(Map<K, V> map) {
         if (map == null) {
             return new HashedMap();
         }
@@ -38,7 +35,8 @@ public class DataUtils {
     //{}
     public static String stringFormat(String src, Map<String, Object> parameters) {
 
-        Pattern pattern = Pattern.compile("\\$\\{(\\w+)\\s*(\\|[^\\{\\}]+)?\\}");
+        //Pattern pattern = Pattern.compile("\\$\\{(\\w+)\\s*(\\|[^\\{\\}]+)?\\}");
+        Pattern pattern = Pattern.compile("\\$\\{(\\w+)\\s*(\\|[^{}]+)?}");
         Matcher matcher = pattern.matcher(src);
         StringBuffer sb = new StringBuffer();
 
@@ -122,6 +120,74 @@ public class DataUtils {
 
     public static JSONArray copyJSONArray(JSONArray json) {
         return (JSONArray) json.clone();
+    }
+
+    public static boolean isJSONObject(Object object) {
+
+        if (object instanceof JSONObject) {
+            return true;
+        }
+
+        if (object == null) {
+            return false;
+        }
+
+        return isBesieged(object.toString(),"{","}");
+
+    }
+
+    public static boolean isJSONArray(Object object) {
+
+        if (object instanceof JSONObject) {
+            return true;
+        }
+
+        if (object == null) {
+            return false;
+        }
+
+        return isBesieged(object.toString(),"[","]");
+
+    }
+
+
+    public static boolean isBesieged(String source,String left,String right) {
+        if (source == null) {
+            return false;
+        }
+
+        String s = source.trim();
+        return s.startsWith(left) && s.endsWith(right);
+    }
+
+
+    public static String extractStr(String source, String regex, int group){
+        String result = null;
+        Matcher matcher =  Pattern.compile(regex).matcher(source);
+        if (matcher.find()){
+            result = matcher.group(group);
+        }
+        return result;
+    }
+
+    public static String extractStr(String source, String regex){
+        return extractStr(source,regex,0);
+    }
+
+    public static List<String> extractList(String source, String regex, int group){
+        List<String>  result = new ArrayList<>();
+        Matcher matcher =  Pattern.compile(regex).matcher(source);
+        while (matcher.find()){
+            String value = matcher.group(group);
+            if (value != null){
+                result.add(value);
+            }
+        }
+        return result;
+    }
+
+    public static List<String> extractList(String source, String regex){
+        return extractList(source,regex,0);
     }
 
 }

@@ -83,7 +83,7 @@ public class RunContext {
     private final List<Long> parameterIds = new ArrayList<>();
 
     @Getter
-    private JSONObject config;
+    private final JSONObject config;
 
     @Getter @Setter
     private JSONObject input;
@@ -104,13 +104,14 @@ public class RunContext {
 
     public RunContext(AppBean appBean, String applicationName, String interfaceName, HttpServletResponse response, HttpServletRequest request) throws ExecutionException {
 
+
         this.appBean = appBean;
         this.restTemplate = appBean.getRestTemplate();
         this.webApplicationContext = appBean.getWebApplicationContext();
         this.doService = appBean.getDoService();
 
         this.applicationDO = doService.getApplicationDO(applicationName);
-        this.interfaceDO = doService.getInterfaceDO(applicationName, interfaceName);;
+        this.interfaceDO = doService.getInterfaceDO(applicationName, interfaceName,request.getMethod().toLowerCase());
 
         this.config = interfaceDO.getConfig();
         this.response = response;
@@ -254,7 +255,7 @@ public class RunContext {
     }
 
 
-    /* ********** responseHeaders  ********** */;
+    /* ********** responseHeaders  ********** */
 
     public void putHeader(String key,String value){
         responseHeaders.put(key,value);

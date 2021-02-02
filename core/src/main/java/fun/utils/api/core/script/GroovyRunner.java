@@ -3,6 +3,7 @@ package fun.utils.api.core.script;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
+import fun.utils.api.core.common.DataUtils;
 import fun.utils.api.core.util.ClassUtils;
 import groovy.lang.Binding;
 import groovy.lang.Script;
@@ -15,19 +16,19 @@ import java.util.*;
 @Slf4j
 public class GroovyRunner {
 
-    private GroovyService groovyService;
-    private GroovyScript groovyScript;
-    private Script runner;
-    private Class<?> returnClass;
+    private final GroovyService groovyService;
+    private final GroovyScript groovyScript;
+    private final Script runner;
+    private final Class<?> returnClass;
 
     @Getter
-    private String version;
+    private final String version;
 
     @Getter
-    private String id;
+    private final String id;
 
     @Getter
-    private Map<String,Object> properties = new HashMap<>();
+    private final Map<String,Object> properties = new HashMap<>();
 
     public GroovyRunner(GroovyService groovyService, GroovyScript groovyScript) throws Exception {
         this.groovyService = groovyService;
@@ -166,7 +167,7 @@ public class GroovyRunner {
                 if (srcObject instanceof List) {
                     srcArray = (List<Object>) srcObject;
                 } else {
-                    if (String.valueOf(srcObject).trim().matches("\\[.+\\]")) {
+                    if (DataUtils.isJSONArray(srcObject)) {
                         srcArray = JSON.parseArray(String.valueOf(srcObject));
                     } else {
                         srcArray = Arrays.asList(StringUtils.split(String.valueOf(srcObject)));

@@ -14,7 +14,8 @@ public class GroovyUtils {
         GroovySource result  = new GroovyScript();
         result.setId(id);
         List<String> imports = result.getImports();
-        Pattern pattern = Pattern.compile("[\\s]*import[\\s]*([a-z0-9A-Z\\.]+)[\\s]*;?[\\s]*(\\/\\/.+)?[\r\n]+");
+        //Pattern pattern = Pattern.compile("[\\s]*import[\\s]*([a-z0-9A-Z\\.]+)[\\s]*;?[\\s]*(\\/\\/.+)?[\r\n]+");
+        Pattern pattern = Pattern.compile("\\s*import\\s*([a-z0-9A-Z.]+)\\s*;?\\s*(//.+)?[\r\n]+");
         Matcher matcher = pattern.matcher(source);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {

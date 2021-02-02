@@ -29,7 +29,7 @@ public class ValidatorIdCard extends AbstractValidator {
          *
          */
 
-        private String cardNumber; // 完整的身份证号码
+        private final String cardNumber; // 完整的身份证号码
         private Boolean cacheValidateResult = null; // 缓存身份证是否有效，因为验证有效性使用频繁且计算复杂
         private Date cacheBirthDate = null; // 缓存出生日期，因为出生日期使用频繁且计算复杂
         private final static String BIRTH_DATE_FORMAT = "yyyyMMdd"; // 身份证号码中的出生日期的格式

@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@EqualsAndHashCode
 public class GroovyScript extends GroovySource {
 
     private Map<String, GroovyVariable> declaredVariables = new HashMap<>();

@@ -52,6 +52,7 @@ public class ApiRunner {
     }
 
     public void doInitialize() throws Exception {
+
         //打包原始数据到 input 对象
         runContext.setInput(RequestTools.getJsonByInput(runContext.getRequest()));
     }
@@ -83,35 +84,9 @@ public class ApiRunner {
         //运行 interface 方法
 
         if ("groovy".equalsIgnoreCase(interfaceDO.getImplementType())) {
-
-            GroovyScript method = new GroovyScript();
-            method.setId(String.valueOf(interfaceDO.getId()));
-            method.setConfig(interfaceDO.getConfig());
-            method.setVersion(interfaceDO.getGmtModified().toString());
-            method.setTitle(interfaceDO.getTitle());
-
-            String groovy = interfaceDO.getImplementCode();
-            GroovySource groovySource = GroovyUtils.sourceOf(method.getId(), groovy);
-
-            Map<String, GroovyVariable> declaredVariables = method.getDeclaredVariables();
-
-            for (Long parameterId : runContext.getParameterIds()) {
-                ParameterDO parameterDO = doService.getParameterDO(parameterId);
-                GroovyVariable groovyVariable = GroovyUtils.parameterOf(parameterDO.getDataType(), parameterDO.getIsArray() == 1);
-                declaredVariables.put(parameterDO.getName(), groovyVariable);
-            }
-
-            method.getImports().addAll(groovySource.getImports());
-            method.setSource(groovySource.getSource());
-
-            method.getImports().addAll(PUBLIC_GROOVY_IMPORTS);
-
-            GroovyRunner groovyRunner = groovyService.getRunner(method);
-            Object result = groovyRunner.withProperty("$context", runContext).execute(runContext.getParameters());
-            runContext.setResult(result);
-
+            runGroovy();
         }
-        if ("bean".equalsIgnoreCase(interfaceDO.getImplementType())) {
+        else if ("bean".equalsIgnoreCase(interfaceDO.getImplementType())) {
 
         }
 
@@ -141,6 +116,36 @@ public class ApiRunner {
 
     }
 
+
+    private void runGroovy() throws Exception {
+
+        GroovyScript method = new GroovyScript();
+        method.setId(String.valueOf(interfaceDO.getId()));
+        method.setConfig(interfaceDO.getConfig());
+        method.setVersion(interfaceDO.getGmtModified().toString());
+        method.setTitle(interfaceDO.getTitle());
+
+        String groovy = interfaceDO.getImplementCode();
+        GroovySource groovySource = GroovyUtils.sourceOf(method.getId(), groovy);
+
+        Map<String, GroovyVariable> declaredVariables = method.getDeclaredVariables();
+
+        for (Long parameterId : runContext.getParameterIds()) {
+            ParameterDO parameterDO = doService.getParameterDO(parameterId);
+            GroovyVariable groovyVariable = GroovyUtils.parameterOf(parameterDO.getDataType(), parameterDO.getIsArray() == 1);
+            declaredVariables.put(parameterDO.getName(), groovyVariable);
+        }
+
+        method.getImports().addAll(groovySource.getImports());
+        method.setSource(groovySource.getSource());
+
+        method.getImports().addAll(PUBLIC_GROOVY_IMPORTS);
+
+        GroovyRunner groovyRunner = groovyService.getRunner(method);
+        Object result = groovyRunner.withProperty("$context", runContext).execute(runContext.getParameters());
+        runContext.setResult(result);
+
+    }
 
     private void genParameters(JSONObject input, JSONObject parameters, List<Long> parameterIds, HttpServletRequest request) throws ExecutionException, ApiException {
 
@@ -216,7 +221,7 @@ public class ApiRunner {
                         srcArray = (List<Object>) srcObject;
                     }
                     else {
-                        if (String.valueOf(srcObject).trim().matches("\\[.+\\]")) {
+                        if ( DataUtils.isJSONArray(srcObject)) {
                             srcArray = JSON.parseArray(String.valueOf(srcObject));
                         }
                         else {

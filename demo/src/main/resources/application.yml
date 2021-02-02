@@ -65,6 +65,8 @@ fu-api:
         dnsMonitoringInterval: 5000
       threads: 0
       nettyThreads: 0
+
   applications:
-    - path: demo
+    - name: demo
+      path: test/demo
 

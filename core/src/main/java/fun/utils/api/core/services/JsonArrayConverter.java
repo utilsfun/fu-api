@@ -17,6 +17,7 @@ package fun.utils.api.core.services;
 
 
 import com.alibaba.fastjson.JSON;
+import fun.utils.api.core.common.DataUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -53,9 +54,10 @@ public class JsonArrayConverter implements GenericConverter {
     public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
         String string = StringUtils.defaultString((String) source,"").trim();
         TypeDescriptor targetElementType = targetType.getElementTypeDescriptor();
-        if (string.matches("\\[.+\\]")) {
+
+        if (DataUtils.isJSONArray(string)) {
             return JSON.parseArray((String) source, targetElementType.getType());
-        } else if (string.matches("\\{.+\\}")) {
+        } else if (DataUtils.isJSONObject(string)) {
             return Arrays.asList(JSON.parseObject((String) source, targetElementType.getType()));
         } else {
             return defConversionService.convert(source, sourceType, targetType);

@@ -3,6 +3,7 @@ package fun.utils.api.core.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.api.core.common.DataUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
@@ -10,6 +11,7 @@ import org.apache.http.entity.ContentType;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -66,7 +68,7 @@ public class RequestTools {
 
         try {
             String src = StringUtils.defaultString(request.getQueryString(), "").trim();
-            if (src.matches("\\{.+\\}}")) {
+            if (DataUtils.isJSONObject(src)) {
                 src = URLDecoder.decode(src, "utf8");
                 queryBody = JSON.parseObject(src);
             }
@@ -79,7 +81,7 @@ public class RequestTools {
                 && ContentType.parse(request.getContentType()).getMimeType().matches("application/json|text/json|text/plain")
                 && request.getContentLength() > 0 ) {
             try {
-                String src = IOUtils.toString(request.getInputStream(), "utf8");
+                String src = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
                 if (StringUtils.isNotBlank(src)) {
                     fromBody = JSON.parseObject(src);
                 }
@@ -122,12 +124,15 @@ public class RequestTools {
 
                 // 去掉两边[]
                 if (param_now.startsWith("[")) {
-                    param_now = param_now.replaceFirst("^\\[", "").replaceFirst("\\]", "");
+                    //param_now = param_now.replaceFirst("^\\[", "").replaceFirst("\\]", "");
+                    param_now = StringUtils.substringBetween(param_now,"[","]");
                 }
 
                 // 本次处理对象名称
-                String a_name = param_now.replaceAll("\\[.*\\]", "");
-                // 下次处理参数名称
+                String a_name = param_now.replaceAll("\\[.*]", "");
+
+
+                        // 下次处理参数名称
                 param_next = param_now.substring(a_name.length());
 
                 // System.out.println(param_now + "," + a_name + "," + param_next);
