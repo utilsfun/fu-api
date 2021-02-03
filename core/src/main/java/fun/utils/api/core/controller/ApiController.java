@@ -59,7 +59,6 @@ public class ApiController {
             public void onStartAsync(AsyncEvent event) {
                 //线程开始;
             }
-
             @Override
             public void onError(AsyncEvent event) {
                 log.warn("request error", event.getThrowable());
@@ -187,29 +186,23 @@ public class ApiController {
             Object retObj = appBean.getDoService().getApplicationDO(applicationName);
 
             Map<String, Object> ret = new HashMap<>();
-
             ret.put("code", 200);
             ret.put("message", "success");
             ret.put("result", retObj);
-
-
             //返回内容格式化为 application/json
             byte[] returnBytes = JSON.toJSONString(ret).getBytes(StandardCharsets.UTF_8);
             response.setContentType("application/json; charset=utf-8");
-
             //写入返回流
             IOUtils.write(returnBytes, response.getOutputStream());
-
-
         }
         else {
-
-            Resource resource = webApplicationContext.getResource("classpath:static/amis/" + uri);
-
-            if (resource == null) {
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/" + uri);
+            if (resource == null || !resource.exists()) {
+                //静态文件资源不存在
                 response.sendError(404);
             }
             else {
+                //通过文件后缀名分析文件的媒体类型
                 List<MediaType> mediaTypes = MediaTypeFactory.getMediaTypes(uri);
                 String contentType = mediaTypes.size() > 0 ? mediaTypes.get(0).toString() : "application/octet-stream";
                 response.setContentType(contentType);
