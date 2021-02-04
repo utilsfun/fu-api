@@ -1,4 +1,4 @@
-package fun.utils.api.core.exception;
+package fun.utils.api.core.common;
 
 import java.util.LinkedList;
 import java.util.List;

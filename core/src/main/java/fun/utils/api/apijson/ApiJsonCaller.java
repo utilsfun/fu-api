@@ -13,7 +13,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ApiJsonner {
+public class ApiJsonCaller {
 
     private final APIJSONCreator creator ;
 
@@ -21,7 +21,7 @@ public class ApiJsonner {
     private final String dbVersion;
     private final String dbSchema;
 
-    public ApiJsonner(DataSource dataSource) throws SQLException {
+    public ApiJsonCaller(DataSource dataSource) throws SQLException {
 
         try (Connection connection = dataSource.getConnection()){
             this.dbName = connection.getMetaData().getDatabaseProductName().toUpperCase();

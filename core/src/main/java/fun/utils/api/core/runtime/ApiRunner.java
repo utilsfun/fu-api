@@ -7,14 +7,14 @@ import fun.utils.api.core.common.DataUtils;
 import fun.utils.api.core.common.ValidConfig;
 import fun.utils.api.core.common.ValidUtils;
 import fun.utils.api.core.controller.AppBean;
-import fun.utils.api.core.exception.ApiException;
+import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.persistence.ParameterDO;
 import fun.utils.api.core.script.*;
 import fun.utils.api.core.services.DoService;
-import fun.utils.api.core.util.ClassUtils;
-import fun.utils.api.core.util.RequestTools;
+import fun.utils.api.core.common.ClassUtils;
+import fun.utils.api.core.common.RequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,7 +54,7 @@ public class ApiRunner {
     public void doInitialize() throws Exception {
 
         //打包原始数据到 input 对象
-        runContext.setInput(RequestTools.getJsonByInput(runContext.getRequest()));
+        runContext.setInput(RequestUtils.getJsonByInput(runContext.getRequest()));
     }
 
     public void onEnter() throws Exception {

@@ -2,12 +2,12 @@ package fun.utils.api.core.runtime;
 
 
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.apijson.ApiJsonner;
+import fun.utils.api.apijson.ApiJsonCaller;
 import fun.utils.api.core.common.DataUtils;
 import fun.utils.api.core.common.MyJdbcTemplate;
 import fun.utils.api.core.common.MyRedisTemplate;
 import fun.utils.api.core.controller.AppBean;
-import fun.utils.api.core.exception.ApiException;
+import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.services.DoService;
@@ -262,12 +262,12 @@ public class RunContext {
     }
 
     /* ********** ApiJson ********** */
-    public ApiJsonner getApiJson() throws SQLException, ExecutionException, ApiException {
+    public ApiJsonCaller getApiJson() throws SQLException, ExecutionException, ApiException {
         return getApiJson("default");
     }
 
-    public ApiJsonner getApiJson(String databaseName) throws SQLException, ExecutionException, ApiException {
-        return new ApiJsonner(getDataSource(databaseName));
+    public ApiJsonCaller getApiJson(String databaseName) throws SQLException, ExecutionException, ApiException {
+        return new ApiJsonCaller(getDataSource(databaseName));
     }
 
 }

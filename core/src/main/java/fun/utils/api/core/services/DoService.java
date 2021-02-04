@@ -6,13 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fun.utils.api.core.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.annotation.Resource;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +35,7 @@ public class DoService {
     private final BeanPropertyRowMapper<ParameterDO> parameterRowMapper;
 
 
-    @Autowired
+    @Resource(name = "fu-api.jdbc-template")
     private JdbcTemplate jdbcTemplate;
 
     private final long expireSeconds = 10;
@@ -61,7 +61,7 @@ public class DoService {
         conversionService.addConverter(new Converter<String, JSON>() {
             @Override
             public JSON convert(String s) {
-                return (JSON)JSON.parse(s);
+                return (JSON) JSON.parse(s);
             }
         });
 
@@ -91,7 +91,7 @@ public class DoService {
 
 
     public ApplicationDO getApplicationDO(String applicationName) throws ExecutionException {
-        return  applicationCache.get(applicationName,()-> loadApplicationDO(applicationName));
+        return applicationCache.get(applicationName, () -> loadApplicationDO(applicationName));
     }
 
     public ApplicationDO loadApplicationDO(String applicationName) {
@@ -106,15 +106,15 @@ public class DoService {
         sqlBuffer.append(" from api_application ");
         sqlBuffer.append(" where status = 0 and name = ? ");
 
-        return jdbcTemplate.queryForObject(sqlBuffer.toString(),applicationRowMapper, applicationName);
+        return jdbcTemplate.queryForObject(sqlBuffer.toString(), applicationRowMapper, applicationName);
     }
 
-    public InterfaceDO getInterfaceDO(String applicationName,String interfaceName,String method) throws ExecutionException {
+    public InterfaceDO getInterfaceDO(String applicationName, String interfaceName, String method) throws ExecutionException {
         String key = method + ":" + applicationName + "/" + interfaceName;
-        return interfaceCache.get( key ,()-> loadInterfaceDO(applicationName,interfaceName,method));
+        return interfaceCache.get(key, () -> loadInterfaceDO(applicationName, interfaceName, method));
     }
 
-    public InterfaceDO loadInterfaceDO(String applicationName,String interfaceName,String method) throws ExecutionException {
+    public InterfaceDO loadInterfaceDO(String applicationName, String interfaceName, String method) throws ExecutionException {
 
         ApplicationDO applicationDO = getApplicationDO(applicationName);
 
@@ -127,62 +127,62 @@ public class DoService {
         sqlBuffer.append(" from api_interface ");
         sqlBuffer.append(" where status = 0 and application_id = ?  and name = ? and method = ? ");
 
-        return jdbcTemplate.queryForObject(sqlBuffer.toString(),interfaceRowMapper,applicationDO.getId(), interfaceName, method);
+        return jdbcTemplate.queryForObject(sqlBuffer.toString(), interfaceRowMapper, applicationDO.getId(), interfaceName, method);
 
     }
 
     public DocumentDO getDocumentDO(Long id) throws ExecutionException {
-        return  documentCache.get(String.valueOf(id),()-> loadDocumentDO(id));
+        return documentCache.get(String.valueOf(id), () -> loadDocumentDO(id));
     }
 
-    public DocumentDO loadDocumentDO(Long id)  {
-        String documentSql = " select id,parent_type,parent_id,title,note,format,content,permission,status,gmt_create,gmt_modified from api_document where status = 0 and id = ? " ;
-        return jdbcTemplate.queryForObject(documentSql,documentRowMapper,id);
+    public DocumentDO loadDocumentDO(Long id) {
+        String documentSql = " select id,parent_type,parent_id,title,note,format,content,permission,status,gmt_create,gmt_modified from api_document where status = 0 and id = ? ";
+        return jdbcTemplate.queryForObject(documentSql, documentRowMapper, id);
     }
 
 
-    public SourceDO getRedisSourceDO(String applicationName,String redisName) throws ExecutionException {
+    public SourceDO getRedisSourceDO(String applicationName, String redisName) throws ExecutionException {
         String key = String.format("%s/redis/%s", applicationName, redisName);
-        return  redisCache.get(String.valueOf(key),()-> loadRedisSourceDO(applicationName,redisName));
+        return redisCache.get(String.valueOf(key), () -> loadRedisSourceDO(applicationName, redisName));
     }
 
-    public SourceDO loadRedisSourceDO(String applicationName,String redisName) throws ExecutionException {
+    public SourceDO loadRedisSourceDO(String applicationName, String redisName) throws ExecutionException {
         ApplicationDO applicationDO = getApplicationDO(applicationName);
-        String sourceSql = " select id,application_id,name,note,type,config,status,gmt_create,gmt_modified from api_source where  status = 0 and type='redis' and application_id = ?  and name = ? " ;
-        return jdbcTemplate.queryForObject(sourceSql,sourceRowMapper,applicationDO.getId(),redisName);
+        String sourceSql = " select id,application_id,name,note,type,config,status,gmt_create,gmt_modified from api_source where  status = 0 and type='redis' and application_id = ?  and name = ? ";
+        return jdbcTemplate.queryForObject(sourceSql, sourceRowMapper, applicationDO.getId(), redisName);
     }
 
-    public SourceDO getDatabaseSourceDO(String applicationName,String databaseName) throws ExecutionException {
+    public SourceDO getDatabaseSourceDO(String applicationName, String databaseName) throws ExecutionException {
         String key = String.format("%s/database/%s", applicationName, databaseName);
-        return  databaseCache.get(String.valueOf(key),()-> loadDatabaseSourceDO(applicationName,databaseName));
+        return databaseCache.get(String.valueOf(key), () -> loadDatabaseSourceDO(applicationName, databaseName));
     }
 
-    public SourceDO loadDatabaseSourceDO(String applicationName,String databaseName) throws ExecutionException {
+    public SourceDO loadDatabaseSourceDO(String applicationName, String databaseName) throws ExecutionException {
         ApplicationDO applicationDO = getApplicationDO(applicationName);
-        String sourceSql = " select id,application_id,name,note,type,config,status,gmt_create,gmt_modified from api_source where  status = 0 and type='database' and application_id = ?  and name = ? " ;
-        return jdbcTemplate.queryForObject(sourceSql,sourceRowMapper,applicationDO.getId(),databaseName);
+        String sourceSql = " select id,application_id,name,note,type,config,status,gmt_create,gmt_modified from api_source where  status = 0 and type='database' and application_id = ?  and name = ? ";
+        return jdbcTemplate.queryForObject(sourceSql, sourceRowMapper, applicationDO.getId(), databaseName);
     }
 
     public FilterDO getFilterDO(Long id) throws ExecutionException {
-        return  filterCache.get(String.valueOf(id),()-> loadFilterDO(id));
+        return filterCache.get(String.valueOf(id), () -> loadFilterDO(id));
     }
 
-    public FilterDO loadFilterDO(Long id)  {
-        String filterSql = " select id,parent_type,parent_id,title,config,sort,implement_type,implement_code,point,status,gmt_create,gmt_modified from api_filter where status = 0 and id = ? " ;
-        return jdbcTemplate.queryForObject(filterSql,filterRowMapper,id);
+    public FilterDO loadFilterDO(Long id) {
+        String filterSql = " select id,parent_type,parent_id,title,config,sort,implement_type,implement_code,point,status,gmt_create,gmt_modified from api_filter where status = 0 and id = ? ";
+        return jdbcTemplate.queryForObject(filterSql, filterRowMapper, id);
     }
 
     public ParameterDO getParameterDO(Long id) throws ExecutionException {
-        return  parameterCache.get(String.valueOf(id),()-> loadParameterDO(id));
+        return parameterCache.get(String.valueOf(id), () -> loadParameterDO(id));
     }
 
-    public ParameterDO loadParameterDO(Long id)  {
+    public ParameterDO loadParameterDO(Long id) {
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append(" select id,parent_type,parent_id,name,alias,title,sort,position,default_value,data_type,is_array,is_required,is_hidden,is_read_only,examples,validations,status,gmt_create,gmt_modified ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'parameter' and `parent_id` = api_parameter.id GROUP BY `parent_id` ) AS parameter_ids ");
         sqlBuffer.append(" from api_parameter ");
         sqlBuffer.append(" where status = 0 and id = ? ");
-        return jdbcTemplate.queryForObject(sqlBuffer.toString(),parameterRowMapper,id);
+        return jdbcTemplate.queryForObject(sqlBuffer.toString(), parameterRowMapper, id);
     }
 
 }

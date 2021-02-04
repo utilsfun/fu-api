@@ -1,9 +1,8 @@
-package fun.utils.api.core.util;
+package fun.utils.api.core.common;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.core.common.DataUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
@@ -18,7 +17,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 
-public class RequestTools {
+public class RequestUtils {
 
 
     public static JSONObject getJsonByInput(HttpServletRequest request) {
@@ -132,7 +131,7 @@ public class RequestTools {
                 String a_name = param_now.replaceAll("\\[.*]", "");
 
 
-                        // 下次处理参数名称
+                // 下次处理参数名称
                 param_next = param_now.substring(a_name.length());
 
                 // System.out.println(param_now + "," + a_name + "," + param_next);

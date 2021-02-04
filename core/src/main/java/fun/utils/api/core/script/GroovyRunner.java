@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import fun.utils.api.core.common.DataUtils;
-import fun.utils.api.core.util.ClassUtils;
+import fun.utils.api.core.common.ClassUtils;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 import lombok.Getter;

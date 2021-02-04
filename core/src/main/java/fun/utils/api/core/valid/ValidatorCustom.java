@@ -1,11 +1,6 @@
 package fun.utils.api.core.valid;
 
-import fun.utils.api.core.exception.ApiException;
-import fun.utils.api.core.util.ClassUtils;
 import lombok.extern.slf4j.Slf4j;
-
-import java.text.MessageFormat;
-import java.util.List;
 
 // @Custom,parameters:{validator:"my.test.ValidatorDemo",parameter1:"a"},message:"请符合测试规则demo"
 // validator类应要继承AbstractValidator

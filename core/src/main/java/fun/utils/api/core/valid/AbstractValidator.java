@@ -1,12 +1,15 @@
 package fun.utils.api.core.valid;
 
 import fun.utils.api.core.common.DataUtils;
-import fun.utils.api.core.exception.ApiException;
+import fun.utils.api.core.common.ApiException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public abstract class AbstractValidator {
 
     protected Map<String,Object> parameters = new HashMap<>();
@@ -27,7 +30,10 @@ public abstract class AbstractValidator {
 
     public void validate(Object value) throws Exception {
         if (!isValid(value)){
+            log.debug(MessageFormat.format("validate fail : {0}", value));
             throw ApiException.parameterValidException(getFormatMessage());
+        }else{
+            log.trace(MessageFormat.format("validate success : {0}", value));
         }
     }
 

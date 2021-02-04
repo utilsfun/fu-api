@@ -1,7 +1,7 @@
 package fun.utils.api.core.controller;
 
 import com.alibaba.fastjson.JSON;
-import fun.utils.api.core.exception.ApiException;
+import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.runtime.ApiRunner;
 import fun.utils.api.core.runtime.RunContext;
 import lombok.extern.slf4j.Slf4j;
