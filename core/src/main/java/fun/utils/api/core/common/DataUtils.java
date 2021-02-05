@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RKeys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,11 +119,15 @@ public class DataUtils {
     }
 
     public static JSONObject copyJSONObject(JSONObject json) {
-        return (JSONObject) json.clone();
+        return copyJSON(json);
     }
 
     public static JSONArray copyJSONArray(JSONArray json) {
-        return (JSONArray) json.clone();
+        return copyJSON(json);
+    }
+
+    private static <T> T copyJSON(Object json) {
+        return (T) JSON.parse(JSON.toJSONString(json));
     }
 
     public static boolean isJSONObject(Object object) {
@@ -224,19 +229,27 @@ public class DataUtils {
         return result;
     }
 
-    public static <T> T fullRefObject(Object value, JSONObject data){
+    //把value对象,填充数据并返回
+    //为value为String并为 @{JsonPath}格时返回JsonPath对应data中的值
+    public static JSONObject fullRefJSON(JSONObject value, JSONObject data){
+        return fullRefObject(value,data);
+    }
+
+    private static <T> T fullRefObject(Object value, JSONObject data){
+
+            JSONObject p = copyJSONObject(data);
 
             if (value instanceof String && isBesieged ((String) value,"@{","}")){
                 String path = extractBesieged((String) value,"@{","}");
-                return (T) JSONPath.eval(data,path);
+                return (T) JSONPath.eval(p,path);
             }
             else if (value instanceof JSONObject){
                 JSONObject target = new JSONObject();
                 JSONObject objectValue = (JSONObject)value;
                 objectValue.keySet().forEach(k-> {
                     Object v = objectValue.get(k);
-                    Object v1 = fullRefObject(v, data);
-                    String k1 = ClassUtils.castValue(fullRefObject(k, data),String.class);
+                    Object v1 = fullRefObject(v, p);
+                    String k1 = ClassUtils.castValue(fullRefObject(k, p),String.class);
                     target.put(k1,v1);
                 });
                 return (T) target;
@@ -245,7 +258,7 @@ public class DataUtils {
                 JSONArray target = new JSONArray();
                 JSONArray arrayValue = (JSONArray)value;
                 arrayValue.forEach(v->{
-                    target.add(fullRefObject(v,data));
+                    target.add(fullRefObject(v,p));
                 });
                 return (T) target;
             }
@@ -255,35 +268,184 @@ public class DataUtils {
 
     }
 
-    public static JSONObject fullJsonObject(JSONObject baseBox, JSONObject data){
-        JSONObject result = new JSONObject();
-        baseBox.keySet().forEach(key->{
-            Object value = baseBox.get(key);
 
-            if (value instanceof String && isBesieged ((String) value,"@{","}")){
-                String path = extractBesieged((String) value,"@{","}");
-                result.put(key, JSONPath.eval(data,path));
-            }
-            else if (value instanceof JSONObject){
-                result.put(key,fullJsonObject((JSONObject)value,data));
-            }
-            else if (value instanceof JSONArray){
-                JSONArray jsonArray = (JSONArray)value;
-                jsonArray.forEach(element->{
 
-                    //jsonArray.add(fullJsonObject(element,data);
-                });
-                result.put(key,jsonArray);
+    public static JSONObject mergeJson(JSONObject fromObj, JSONObject toObj) {
+        return mergeJson(fromObj, toObj, false,true);
+    }
+
+    //覆盖所有 fromObj中的值到 toObj中
+    //arrayFill:遇到数组时,是否合并,否则替换数组
+    //mustExist:是否只覆盖所有toObj中存在的值
+    public static JSONObject mergeJson( JSONObject fromObj, JSONObject toObj, boolean mustExist, boolean arrayFill){
+
+        JSONObject parameters = copyJSONObject(fromObj);
+        JSONObject target = copyJSONObject(toObj);
+
+        parameters.keySet().forEach(k-> {
+
+            Object fromValue = parameters.get(k);
+
+            if (target.containsKey(k)){
+                //目标对象中有对应值
+                Object toValue = target.get(k);
+
+                if (toValue instanceof JSONObject) {
+                    //当目标值类型为JSONObject
+                    JSONObject toObjValue = (JSONObject) toValue;
+
+                    if (fromValue instanceof JSONObject) {
+                        //源数据值也为JSONObject时
+                        JSONObject fromObjValue = (JSONObject)fromValue;
+                        target.put(k,mergeJson(fromObjValue,toObjValue,mustExist,arrayFill));
+                    }else{
+                        //源数据值不为JSONObject时
+                        target.put(k,fromValue);
+                    }
+                }
+                else if (toValue instanceof JSONArray) {
+                    //当目标值类型为JSONArray
+                    JSONArray toObjValue = (JSONArray) toValue;
+
+                    if (fromValue instanceof JSONArray) {
+                        //源数据值也为JSONArray时
+                        JSONArray fromObjValue =(JSONArray)fromValue;
+                        if (arrayFill){
+                            //补充
+                            fromObjValue.removeAll(toObjValue);
+                            toObjValue.addAll(fromObjValue);
+                        }else{
+                            //更新 覆盖
+                            target.put(k,fromValue);
+                        }
+                    }
+                    else{
+                        //源数据值不为JSONArray时
+                        if (arrayFill){
+                            //补充
+                            if (!toObjValue.contains(fromValue)){
+                                toObjValue.add(fromValue);
+                            }
+                        }else{
+                            //更新 覆盖
+                            target.put(k,fromValue);
+                        }
+                    }
+                }
+                else{
+                    //当目标值类型为基础类型
+                    target.put(k,fromValue);
+                }
             }
             else{
-                result.put(key,value);
+                //目标对象中没有对应值
+                if (!mustExist){
+                    //如果不是更新改值,就加入toObj
+                    target.put(k,fromValue);
+                }
             }
-
-          //  if ((JSON)).
         });
 
-        return  result;
+        return target;
 
+    }
+
+
+
+    //model:1, 覆盖所有 fromObj中的值到toObj中
+    //model:0, 补充所有toObj中不存在但fromObj中存在的值到toObj中
+    //model:-1, 修改所有toObj中存在的值,通过fromObj中存在的对应值
+    public static JSONObject mergeJSONObject( JSONObject fromObj, JSONObject toObj, int model){
+
+        JSONObject p = copyJSONObject(fromObj);
+
+        p.keySet().forEach(k-> {
+
+            Object fromValue = p.get(k);
+            boolean putIt = false;
+
+            if (toObj.containsKey(k)){
+                //目标对象中有对应值
+                Object toValue = toObj.get(k);
+
+                if (toValue instanceof JSONObject) {
+                    //当目标值类型为JSONObject
+                    JSONObject toObjValue = (JSONObject) toValue;
+
+                    if (fromValue instanceof JSONObject) {
+                        //源数据值也为JSONObject时
+                        JSONObject fromObjValue = (JSONObject) fromValue;
+                        toObj.put(k,mergeJSONObject(fromObjValue,toObjValue,model));
+                    }else{
+                        //源数据值不为JSONObject时
+                        if (model == 0){
+                            //补充
+                        }else{
+                            //更新 //覆盖
+                            toObj.put(k,fromValue);
+                        }
+                    }
+                }
+                else if (toValue instanceof JSONArray) {
+                    //当目标值类型为JSONArray
+                    JSONArray toObjValue = (JSONArray) toValue;
+
+                    if (fromValue instanceof JSONArray) {
+                        //源数据值也为JSONArray时
+                        JSONArray fromObjValue = (JSONArray) fromValue;
+
+                        if (model == 0){
+                            //补充
+                            toObjValue.addAll(fromObjValue);
+                        }else{
+                            //更新 覆盖
+                            toObj.put(k,fromValue);
+                        }
+                    }
+                    else{
+                        //源数据值不为JSONArray时
+                        if (model == 0){
+                            //补充
+                            toObjValue.add(fromValue);
+                        }else{
+                            //更新 覆盖
+                            toObj.put(k,fromValue);
+                        }
+                    }
+                }
+                else{
+                    //当目标值类型为基础类型
+                    if (model == 0){
+                        //补充
+                    }else{
+                        //更新 //覆盖
+                        toObj.put(k,fromValue);
+                    }
+                }
+            }
+            else{
+                //目标对象中没有对应值
+                if (model > -1){
+                    //如果不是更新改值,就加入toObj
+                    toObj.put(k,fromValue);
+                }
+            }
+        });
+
+        return toObj;
+
+    }
+
+    public static JSONObject mergeForce( JSONObject fromObj, JSONObject toObj){
+        return mergeJSONObject(fromObj, toObj,1);
+    }
+
+    public static JSONObject mergeFill( JSONObject fromObj, JSONObject toObj){
+        return mergeJSONObject(fromObj, toObj,0);
+    }
+
+    public static JSONObject mergeExisting( JSONObject fromObj, JSONObject toObj){
+        return mergeJSONObject(fromObj, toObj,-1);
     }
 
 }
