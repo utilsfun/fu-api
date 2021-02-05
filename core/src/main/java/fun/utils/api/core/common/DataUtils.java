@@ -235,7 +235,7 @@ public class DataUtils {
         return fullRefObject(value,data);
     }
 
-    private static <T> T fullRefObject(Object value, JSONObject data){
+    private static <T> T fullRefObject(T value, JSONObject data){
 
             JSONObject p = copyJSONObject(data);
 
@@ -263,7 +263,7 @@ public class DataUtils {
                 return (T) target;
             }
             else{
-                return (T) value;
+                return value;
             }
 
     }
