@@ -1,0 +1,113 @@
+{
+  "type": "page",
+  "initApi": "?",
+  "body": [
+    {
+      "type": "tpl",
+      "tpl": "《${title}(${name})接口文档》",
+      "inline": false,
+      "className": "font-bold text-lg text-center"
+    },
+    {
+      "type": "wrapper",
+      "body": [
+        {
+          "type": "tpl",
+          "tpl": "作者: ${owner}",
+          "className": "m-r p-r"
+        },
+        {
+          "type": "tpl",
+          "tpl": "版本: ${version}",
+          "className": "m-r p-r"
+        },
+        {
+          "type": "tpl",
+          "tpl": "更新时间: ${gmtModified|date:YYYY-MM-DD:YYYY-MM-DD}",
+          "className": "m-r p-r"
+        }
+      ],
+      "size": "xs",
+      "className": "text-right"
+    },
+    {
+      "type": "tpl",
+      "tpl": "${note}",
+      "inline": false
+    },
+    {
+      "type": "collapse",
+      "body": [
+      ],
+      "title": "公共参数"
+    },
+    {
+      "type": "collapse",
+      "title": "接口列表",
+      "body": {
+        "type": "each",
+        "name": "interfaceNames",
+        "items": [
+          {
+            "type": "form",
+            "title": "",
+            "submitText": "",
+            "wrapWithPanel": false,
+            "target": "interface_service",
+            "mode": "inline",
+            "submitOnInit": false,
+            "controls": [
+              {
+                "label": "",
+                "type": "button-group",
+                "submitOnChange": true,
+                "value": "false",
+                "name": "collapsed",
+                "options": [
+                  {
+                    "label": "${item}",
+                    "className": "font-bold text-md text-left",
+                    "value": "false",
+                    "visibleOn": "this.collapsed === 'true'",
+                    "icon": "fa fa-angle-down",
+                    "iconClassName": "pull-right",
+                    "level": "link"
+                  },
+                  {
+                    "label": "${item}",
+                    "className": "font-bold text-md text-left",
+                    "value": "true",
+                    "visibleOn": "this.collapsed === 'false'",
+                    "icon": "fa fa-angle-right",
+                    "iconClassName": "pull-right",
+                    "level": "link"
+                  }
+                ]
+              },
+              {
+                "name": "interface_service",
+                "type": "service",
+                "initFetchSchema": false,
+                "visibleOn": "this.collapsed === 'true'",
+                "schemaApi": {
+                  "method": "get",
+                  "url": "interface.jpage",
+                  "data": {
+                    "name": "${item}",
+                    "index": "${index}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "collapse",
+      "body": [
+      ],
+      "title": "更新日志"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "documentIds": "@{documentIds}",
+  "filterIds": "@{filterIds}",
+  "gmtModified": "@{gmtModified}",
+  "name": "@{name}",
+  "note": "@{note}",
+  "owner": "@{owner}",
+  "parameterIds": "@{parameterIds}",
+  "title": "@{title}",
+  "method": "@{method}"
+}

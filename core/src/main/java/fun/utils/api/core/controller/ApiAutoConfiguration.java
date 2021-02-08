@@ -17,6 +17,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +54,8 @@ public class ApiAutoConfiguration implements DisposableBean, InitializingBean {
 
     @Autowired
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
+
+
 
 
     @Bean("fu-api.rest-template")

@@ -1,0 +1,12 @@
+{
+    "documentIds": "@{documentIds}",
+    "filterIds": "@{filterIds}",
+    "gmtModified": "@{gmtModified}",
+    "interfaceNames":"@{interfaceNames}",
+    "name": "@{name}",
+    "note": "@{note}",
+    "owner": "@{owner}",
+    "parameterIds": "@{parameterIds}",
+    "title": "@{title}",
+    "version": "@{version}"
+}

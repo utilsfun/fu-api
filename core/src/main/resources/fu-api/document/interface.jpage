@@ -1,0 +1,11 @@
+{
+  "type": "page",
+  "initApi": "?",
+  "body": [
+      {
+          "type": "tpl",
+          "tpl": "${title}接口",
+          "inline": false
+      }
+  ]
+}

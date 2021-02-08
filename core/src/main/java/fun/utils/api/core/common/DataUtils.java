@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RKeys;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +129,7 @@ public class DataUtils {
     }
 
     private static <T> T copyJSON(Object json) {
-        return (T) JSON.parse(JSON.toJSONString(json));
+        return (T) JSON.parse(toWebJSONString(json));
     }
 
     public static boolean isJSONObject(Object object) {
@@ -269,7 +271,6 @@ public class DataUtils {
     }
 
 
-
     public static JSONObject mergeJson(JSONObject fromObj, JSONObject toObj) {
         return mergeJson(fromObj, toObj, false,true);
     }
@@ -351,4 +352,7 @@ public class DataUtils {
     }
 
 
+    public static String toWebJSONString(Object ret) {
+        return JSON.toJSONString(ret, SerializerFeature.WriteDateUseDateFormat,SerializerFeature.BrowserCompatible);
+    }
 }

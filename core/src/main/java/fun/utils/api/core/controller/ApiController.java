@@ -1,9 +1,14 @@
 package fun.utils.api.core.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.core.common.ApiException;
+import fun.utils.api.core.common.DataUtils;
+import fun.utils.api.core.persistence.ApplicationDO;
+import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.runtime.ApiRunner;
 import fun.utils.api.core.runtime.RunContext;
+import fun.utils.api.core.services.DoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -33,14 +37,18 @@ import java.util.concurrent.TimeoutException;
 public class ApiController {
 
     private final AppBean appBean;
+    private final DoService doService;
     private final ApiProperties.Application app;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     public ApiController(ApiProperties.Application app, AppBean appBean) {
+
         this.appBean = appBean;
         this.app = app;
+        this.doService = appBean.getDoService();
+
         log.info("Create ApiController path:{} name:{}", app.getPath(), app.getName());
     }
 
@@ -59,6 +67,7 @@ public class ApiController {
             public void onStartAsync(AsyncEvent event) {
                 //线程开始;
             }
+
             @Override
             public void onError(AsyncEvent event) {
                 log.warn("request error", event.getThrowable());
@@ -161,7 +170,7 @@ public class ApiController {
 
 
             //返回内容格式化为 application/json
-            byte[] returnBytes = JSON.toJSONString(ret).getBytes(StandardCharsets.UTF_8);
+            byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
             response.setContentType("application/json; charset=utf-8");
 
             //写入返回流
@@ -179,22 +188,84 @@ public class ApiController {
         UriComponents uc = UriComponentsBuilder.fromUriString(url).build();
 
         String uri = StringUtils.substringAfter(uc.getPath(), app.getDocPath()).replaceFirst("^/", "");
+        String filename = StringUtils.substringAfterLast(url, "/");
+        String filenameExt = StringUtils.substringAfterLast(url, ".");
+        String filenamePre = StringUtils.substringBeforeLast(filename, ".");
 
+        if ("document.dochtml".equalsIgnoreCase(filename)) {
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/index.html");
+            if (resource == null || !resource.exists()) {
+                //静态文件资源不存在
+                response.sendError(404);
+            }
+            else {
+                response.setContentType(MediaType.TEXT_HTML.toString());
+                byte[] returnBytes = IOUtils.toByteArray(resource.getInputStream());
+                IOUtils.write(returnBytes, response.getOutputStream());
+            }
+        }
+        else if ("jpage".equalsIgnoreCase(filenameExt)) {
 
-        if ("application.jsl".equalsIgnoreCase(uri)) {
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/" + uri);
+            JSONObject ret = JSON.parseObject(resource.getInputStream(), JSONObject.class);
 
-            String applicationName = app.getName();
-            Object retObj = appBean.getDoService().getApplicationDO(applicationName);
+            String jurl = request.getRequestURI().replaceFirst("/" + filenamePre + "\\.jpage", "/" + filenamePre + ".jdata");
+            jurl += StringUtils.isNotBlank(request.getQueryString()) ? "?" + request.getQueryString() : "";
 
-            Map<String, Object> ret = new HashMap<>();
-            ret.put("code", 200);
-            ret.put("message", "success");
-            ret.put("result", retObj);
+            ret.put("initApi", jurl);
             //返回内容格式化为 application/json
-            byte[] returnBytes = JSON.toJSONString(ret).getBytes(StandardCharsets.UTF_8);
+            byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
             response.setContentType("application/json; charset=utf-8");
+
             //写入返回流
             IOUtils.write(returnBytes, response.getOutputStream());
+
+        }
+        else if ("jdata".equalsIgnoreCase(filenameExt)) {
+
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/" + uri);
+            JSONObject jData = JSON.parseObject(resource.getInputStream(), JSONObject.class);
+
+
+            String applicationName = app.getName();
+            JSONObject data = null;
+
+            if ("application".equalsIgnoreCase(filenamePre)) {
+
+                ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
+                data = (JSONObject) JSON.toJSON(applicationDO);
+
+            }
+            else if ("interface".equalsIgnoreCase(filenamePre)) {
+
+                String iName = request.getParameter("name");
+                String[] iNames = iName.split(":");
+
+                InterfaceDO interfaceDO = doService.getInterfaceDO(applicationName, iNames[1], iNames[0]);
+
+                data = (JSONObject) JSON.toJSON(interfaceDO);
+
+            }
+            else {
+                response.sendError(404);
+                return;
+            }
+
+            jData = DataUtils.mergeJson(data, jData,true,false);
+
+            Map<String, Object> ret = new HashMap<>();
+
+            ret.put("status", 0);
+            ret.put("msg", "success");
+            ret.put("data", jData);
+
+            //返回内容格式化为 application/json
+            byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
+            response.setContentType("application/json; charset=utf-8");
+
+            //写入返回流
+            IOUtils.write(returnBytes, response.getOutputStream());
+
         }
         else {
             Resource resource = webApplicationContext.getResource("classpath:fu-api/" + uri);
@@ -204,8 +275,23 @@ public class ApiController {
             }
             else {
                 //通过文件后缀名分析文件的媒体类型
-                List<MediaType> mediaTypes = MediaTypeFactory.getMediaTypes(uri);
-                String contentType = mediaTypes.size() > 0 ? mediaTypes.get(0).toString() : "application/octet-stream";
+
+                //List<MediaType> mediaTypes = MediaTypeFactory.getMediaTypes(uri);
+                //MediaType mediaType = mediaTypes.size() > 0 ? mediaTypes.get(0)  : MediaType.TEXT_PLAIN;
+
+
+                String contentType = null;
+
+                if ("woff2".equalsIgnoreCase(filenameExt)) {
+                    contentType = "font/woff2";
+                }
+                else if ("page".equalsIgnoreCase(filenameExt)) {
+                    contentType = MediaType.APPLICATION_JSON.toString();
+                }
+                else {
+                    contentType = MediaTypeFactory.getMediaType(resource).orElse(MediaType.TEXT_PLAIN).toString();
+                }
+
                 response.setContentType(contentType);
                 //写入返回流
                 byte[] returnBytes = IOUtils.toByteArray(resource.getInputStream());
@@ -213,5 +299,16 @@ public class ApiController {
             }
         }
 
+
     }
+
+    public void getUi(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException {
+
+
+    }
+
+    public void getData(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException {
+
+    }
+
 }
