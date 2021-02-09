@@ -1,0 +1,20 @@
+{
+  "type": "page",
+  "initApi": "?",
+  "bodyClassName": "m-b-none m-none p-none",
+  "body": {
+    "type": "collapse",
+    "body": [
+      {
+        "type": "tpl",
+        "tpl": "${note}",
+        "inline": false
+      },
+      {
+        "type": "html",
+        "html": "${content}"
+      }
+    ],
+    "title": "${title}"
+  }
+}

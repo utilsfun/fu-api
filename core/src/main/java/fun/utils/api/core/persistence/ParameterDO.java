@@ -65,6 +65,11 @@ public class ParameterDO {
     private String dataType;
 
     /**
+     * 【说明】
+     */
+    private String note;
+
+    /**
      * 【是否数组】0否 1是
      */
     private int isArray;

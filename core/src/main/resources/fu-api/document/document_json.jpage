@@ -1,0 +1,29 @@
+{
+  "type": "page",
+  "initApi": "?",
+  "bodyClassName": "m-b-none m-none p-none",
+  "body": {
+    "type": "collapse",
+    "body": [
+      {
+        "type": "tpl",
+        "tpl": "${note}",
+        "inline": false
+      },
+      {
+        "type": "form",
+        "title": "",
+        "submitText": "",
+        "controls": [
+          {
+            "type": "editor",
+            "name": "content",
+            "language": "@{format}",
+            "disabled": true
+          }
+        ]
+      }
+    ],
+    "title": "${title}"
+  }
+}

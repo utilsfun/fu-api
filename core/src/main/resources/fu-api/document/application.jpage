@@ -36,9 +36,24 @@
       "inline": false
     },
     {
+      "type": "each",
+      "name": "documentIds",
+      "items": [
+        {
+              "type": "service",
+              "initFetchSchema": true,
+          "schemaApi": "document.jpage?id=${item}"
+        }
+      ]
+    },
+
+    {
       "type": "collapse",
-      "body": [
-      ],
+      "body":                {
+        "type": "service",
+        "initFetchSchema": false,
+        "schemaApi": "parameters.jpage?ids=${parameterIds|join}"
+      },
       "title": "公共参数"
     },
     {

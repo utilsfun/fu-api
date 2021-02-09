@@ -1,0 +1,42 @@
+{
+  "type": "page",
+  "initApi": "?",
+  "bodyClassName": "m-b-none m-none p-none",
+  "body": [
+    {
+      "type": "table",
+      "columnsTogglable": false,
+      "headerClassName": "font-bold",
+      "footable": {
+        "expand": "all"
+      },
+      "columns": [
+        {
+          "name": "name",
+          "label": "<b>名称</b>"
+        },
+        {
+          "name": "isRequired",
+          "label": "<b>必填</b>"
+        },
+        {
+          "name": "title",
+          "label": "<b>标题</b>"
+        },
+        {
+          "name": "dataType",
+          "label": "<b>数据类型</b>"
+        },
+        {
+          "name": "defaultValue",
+          "label": "<b>默认值</b>"
+        },
+        {
+          "name": "note",
+          "label": "<b>说明</b>",
+          "className": "word-break"
+        }
+      ]
+    }
+  ]
+}

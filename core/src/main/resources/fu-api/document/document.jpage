@@ -1,0 +1,33 @@
+{
+  "type": "page",
+  "bodyClassName": "m-b-none m-none p-none",
+  "body": {
+    "type": "collapse",
+    "body": [
+      {
+        "type": "form",
+        "data": "@{$}",
+        "title": "",
+        "submitText": "",
+        "wrapWithPanel": false,
+        "controls": [
+          {
+            "type": "tpl",
+            "tpl": "${note}",
+            "inline": false
+          },
+          {
+            "type": "editor",
+            "name": "content",
+            "language": "@{format}",
+            "options": {
+              "automaticLayout": true
+            },
+            "disabled": true
+          }
+        ]
+      }
+    ],
+    "title": "@{title}"
+  }
+}
