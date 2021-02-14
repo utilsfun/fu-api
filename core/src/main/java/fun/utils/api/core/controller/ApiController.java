@@ -196,19 +196,7 @@ public class ApiController {
         String applicationName = app.getName();
 
 
-        if ("document.dochtml".equalsIgnoreCase(filename)) {
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/index.html");
-            if (resource == null || !resource.exists()) {
-                //静态文件资源不存在
-                response.sendError(404);
-            }
-            else {
-                response.setContentType(MediaType.TEXT_HTML.toString());
-                byte[] returnBytes = IOUtils.toByteArray(resource.getInputStream());
-                IOUtils.write(returnBytes, response.getOutputStream());
-            }
-        }
-        else if ("document.jpage".equalsIgnoreCase(filename)) {
+        if ("document.jpage".equalsIgnoreCase(filename)) {
 
             String id = request.getParameter("id");
             JSONObject pageData = DocUtils.getDocumentDocData(doService,Long.valueOf(id));
@@ -252,87 +240,6 @@ public class ApiController {
 
             Resource resource = webApplicationContext.getResource("classpath:fu-api/document/interface.jpage");
             DocUtils.writeResponse(response, resource.getInputStream(),pageData);
-
-        }
-        else if ("jpage".equalsIgnoreCase(filenameExt)) {
-
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/" + uri);
-
-            JSONObject ret = JSON.parseObject(resource.getInputStream(), JSONObject.class);
-
-            String jurl = request.getRequestURI().replaceFirst("/" + filenamePre + "\\.jpage", "/" + filenamePre + ".jdata");
-            jurl += StringUtils.isNotBlank(request.getQueryString()) ? "?" + request.getQueryString() : "";
-
-            ret.put("initApi", jurl);
-            //返回内容格式化为 application/json
-            byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
-            response.setContentType("application/json; charset=utf-8");
-
-            //写入返回流
-            IOUtils.write(returnBytes, response.getOutputStream());
-
-        }
-        else if ("jdata".equalsIgnoreCase(filenameExt)) {
-
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/" + uri);
-            JSONObject jData = JSON.parseObject(resource.getInputStream(), JSONObject.class);
-
-            JSONObject data = null;
-
-            if ("application".equalsIgnoreCase(filenamePre)) {
-
-                ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
-                data = (JSONObject) JSON.toJSON(applicationDO);
-
-            }
-            else if ("interface".equalsIgnoreCase(filenamePre)) {
-
-                String iName = request.getParameter("name");
-                String[] iNames = iName.split(":");
-
-                InterfaceDO interfaceDO = doService.getInterfaceDO(applicationName, iNames[1], iNames[0]);
-
-                data = (JSONObject) JSON.toJSON(interfaceDO);
-
-            }
-            else if ("parameters".equalsIgnoreCase(filenamePre)) {
-
-                String idString = request.getParameter("ids");
-                String[] ids = idString.split(",");
-                List<Long> parameterIds = new ArrayList<>();
-                for (String id:ids) {
-                    parameterIds.add(Long.valueOf(id));
-                }
-                data = new JSONObject();
-                data.put("items", DocUtils.getParametersDocData(doService,parameterIds));
-
-            }
-            else if ("document".equalsIgnoreCase(filenamePre)) {
-
-                String id = request.getParameter("id");
-                DocumentDO documentDO = doService.getDocumentDO(Long.valueOf(id));
-                data = (JSONObject) JSON.toJSON(documentDO);
-
-            }
-            else {
-                response.sendError(404);
-                return;
-            }
-
-            jData = DataUtils.fullRefJSON(jData,data);
-
-            Map<String, Object> ret = new HashMap<>();
-
-            ret.put("status", 0);
-            ret.put("msg", "success");
-            ret.put("data", jData);
-
-            //返回内容格式化为 application/json
-            byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
-            response.setContentType("application/json; charset=utf-8");
-
-            //写入返回流
-            IOUtils.write(returnBytes, response.getOutputStream());
 
         }
         else {
