@@ -179,8 +179,8 @@ public class DoService {
     public ParameterDO loadParameterDO(Long id) {
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append(" select id,parent_type,parent_id,name,alias,title,note,sort,position,default_value,data_type,is_array,is_required,is_hidden,is_read_only,examples,validations,status,gmt_create,gmt_modified ");
-        sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'parameter' and `parent_id` = api_parameter.id GROUP BY `parent_id` ) AS parameter_ids ");
-        sqlBuffer.append(" from api_parameter ");
+        sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'parameter' and `parent_id` = ap.id GROUP BY `parent_id` ) AS parameter_ids ");
+        sqlBuffer.append(" from api_parameter ap ");
         sqlBuffer.append(" where status = 0 and id = ? ");
         return jdbcTemplate.queryForObject(sqlBuffer.toString(), parameterRowMapper, id);
     }

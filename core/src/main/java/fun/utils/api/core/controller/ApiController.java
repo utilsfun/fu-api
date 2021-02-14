@@ -193,6 +193,9 @@ public class ApiController {
         String filenameExt = StringUtils.substringAfterLast(url, ".");
         String filenamePre = StringUtils.substringBeforeLast(filename, ".");
 
+        String applicationName = app.getName();
+
+
         if ("document.dochtml".equalsIgnoreCase(filename)) {
             Resource resource = webApplicationContext.getResource("classpath:fu-api/document/index.html");
             if (resource == null || !resource.exists()) {
@@ -210,20 +213,45 @@ public class ApiController {
             String id = request.getParameter("id");
             JSONObject pageData = DocUtils.getDocumentDocData(doService,Long.valueOf(id));
 
-         //   String reUri = uri.replaceFirst("document\\.jpage","document_" +  pageData.get("format") + ".jpage");
+            String reName = "document_" +  pageData.get("format") + ".jpage";
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/" + reName);
+            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
 
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/" + uri);
-            JSONObject ret = JSON.parseObject(resource.getInputStream(), JSONObject.class);
+        }
+        else if ("application.jpage".equalsIgnoreCase(filename)) {
 
-            ret = DataUtils.fullRefJSON(ret,pageData);
+            String baseUrl = StringUtils.substringBeforeLast(request.getRequestURL().toString(),request.getContextPath() + "/" + app.getDocPath());
+            baseUrl += request.getContextPath() + "/" + app.getPath();
+            JSONObject pageData = DocUtils.getApplicationDocData(doService,baseUrl,applicationName);
 
-           // ret.put("data", pageData);
-            //返回内容格式化为 application/json
-            byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
-            response.setContentType("application/json; charset=utf-8");
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/application.jpage");
+            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
 
-            //写入返回流
-            IOUtils.write(returnBytes, response.getOutputStream());
+        }
+        else if ("parameters.jpage".equalsIgnoreCase(filename)) {
+
+            String idString = StringUtils.defaultIfBlank(request.getParameter("ids"),"");
+            String[] ids = idString.split(",");
+            List<Long> parameterIds = new ArrayList<>();
+            for (String id:ids) {
+                if (StringUtils.isNumeric(id)) {
+                    parameterIds.add(Long.valueOf(id));
+                }
+            }
+            JSONObject pageData = DocUtils.getParametersDocData(doService,parameterIds);
+
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/parameters.jpage");
+            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
+
+        }
+        else if ("interface.jpage".equalsIgnoreCase(filename)) {
+
+            String iName = request.getParameter("name");
+            String[] iNames = iName.split(":");
+            JSONObject pageData = DocUtils.getInterfaceDocData(doService,applicationName,iNames[1], iNames[0]);
+
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/interface.jpage");
+            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
 
         }
         else if ("jpage".equalsIgnoreCase(filenameExt)) {
@@ -249,8 +277,6 @@ public class ApiController {
             Resource resource = webApplicationContext.getResource("classpath:fu-api/" + uri);
             JSONObject jData = JSON.parseObject(resource.getInputStream(), JSONObject.class);
 
-
-            String applicationName = app.getName();
             JSONObject data = null;
 
             if ("application".equalsIgnoreCase(filenamePre)) {

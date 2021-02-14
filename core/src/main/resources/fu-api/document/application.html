@@ -66,9 +66,10 @@
           //请求成功
           success: function (result) {
             console.log(result);
+            var page = {type:"page", body:result};
             let amis = amisRequire('amis/embed');
             // 通过替换下面这个配置来生成不同页面
-            me = amis.embed("#root", result,{},amisConfig );
+            me = amis.embed("#root", page ,{},amisConfig );
           },
           //请求失败，包含具体的错误信息
           error: function (e) {

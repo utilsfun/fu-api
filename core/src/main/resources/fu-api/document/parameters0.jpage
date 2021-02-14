@@ -1,10 +1,10 @@
 {
-  "type": "wrapper",
-  "size": "none",
+  "type": "page",
+
+  "bodyClassName": "m-b-none m-none p-none",
   "body": [
     {
       "type": "table",
-      "data": "@{$}",
       "columnsTogglable": false,
       "headerClassName": "font-bold",
       "footable": {

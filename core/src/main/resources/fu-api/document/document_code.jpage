@@ -1,6 +1,6 @@
 {
-  "type": "page",
-  "bodyClassName": "m-b-none m-none p-none",
+  "type": "wrapper",
+  "size": "none",
   "body": {
     "type": "collapse",
     "headingClassName": "font-bold no-border b-info text-base text-info",
@@ -22,7 +22,10 @@
             "name": "content",
             "language": "@{language}",
             "options": {
-              "automaticLayout": true
+              "automaticLayout": true,
+              "layoutInfo": {
+                "width": 20
+              }
             },
             "disabled": true
           }

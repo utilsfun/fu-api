@@ -7,17 +7,29 @@ import fun.utils.api.core.common.DataUtils;
 import fun.utils.api.core.common.ValidConfig;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.DocumentDO;
+import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.persistence.ParameterDO;
 import fun.utils.api.core.services.DoService;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class DocUtils {
 
-    public static JSONArray getParametersDocData(DoService doService, List<Long> parameterIds ) throws ExecutionException {
+    public static JSONObject getParametersDocData(DoService doService, List<Long> parameterIds ) throws ExecutionException {
+        JSONObject result = new JSONObject();
+        result.put("items",getParametersDocArray(doService,parameterIds));
+        return result;
+    }
+
+    public static JSONArray getParametersDocArray(DoService doService, List<Long> parameterIds ) throws ExecutionException {
         JSONArray result = new JSONArray();
         if (parameterIds != null){
             for (Long childrenId:parameterIds) {
@@ -33,7 +45,7 @@ public class DocUtils {
         ParameterDO parameterDO = doService.getParameterDO(parameterId);
 
         String name = parameterDO.getName();
-        if (parameterDO.getAlias() != null & parameterDO.getAlias().size() > 0){
+        if (parameterDO.getAlias() != null && parameterDO.getAlias().size() > 0){
             name += "\r\n" + parameterDO.getAlias().toString();
         }
         result.put("name",name);
@@ -82,7 +94,7 @@ public class DocUtils {
 
         result.put("note", StringUtils.join(notes,"\r\n"));
 
-        JSONArray children = getParametersDocData(doService,parameterDO.getParameterIds());
+        JSONArray children = getParametersDocArray(doService,parameterDO.getParameterIds());
         result.put("children",children);
 
         return result;
@@ -90,10 +102,11 @@ public class DocUtils {
     }
 
 
-    public static JSONObject getApplicationDocData(DoService doService, String applicationName ) throws ExecutionException {
+    public static JSONObject getApplicationDocData(DoService doService,String baseUrl, String applicationName ) throws ExecutionException {
         JSONObject toObj = new JSONObject();
         toObj.put("documentIds","@{documentIds}");
         toObj.put("filterIds","@{filterIds}");
+        toObj.put("errorCodes","@{errorCodes}");
         toObj.put("gmtModified","@{gmtModified}");
         toObj.put("interfaceNames","@{interfaceNames}");
         toObj.put("name","@{name}");
@@ -102,9 +115,22 @@ public class DocUtils {
         toObj.put("parameterIds","@{parameterIds}");
         toObj.put("title","@{title}");
         toObj.put("version","@{version}");
+
+
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
         JSONObject fromObj = (JSONObject) JSON.toJSON(applicationDO);
         JSONObject result = DataUtils.fullRefJSON (toObj,fromObj);
+
+        JSONArray interfaceDocDatas = new JSONArray();
+        for (String str: applicationDO.getInterfaceNames()) {
+            String[] iNames = str.split(":");
+            JSONObject interfaceDocData = getInterfaceDocData(doService,applicationName,iNames[1],iNames[0]);
+            interfaceDocDatas.add(interfaceDocData);
+        }
+        result.put("interfaces",interfaceDocDatas);
+
+        result.put("baseUrl",baseUrl);
+
         return result;
     }
 
@@ -117,7 +143,52 @@ public class DocUtils {
         DocumentDO documentDO = doService.getDocumentDO(documentId);
         JSONObject fromObj = (JSONObject) JSON.toJSON(documentDO);
         JSONObject result = DataUtils.fullRefJSON (toObj,fromObj);
+
+        String format = documentDO.getFormat();
+        if (StringUtils.startsWithIgnoreCase(format,"code/")){
+            String language = StringUtils.removeStartIgnoreCase(format,"code/");
+            result.put("format","code");
+            result.put("language",language);
+        }
+
         return result;
+    }
+
+    public static void writeResponse(HttpServletResponse response , InputStream templateInputStream, JSONObject data) throws IOException {
+
+        JSONObject ret = JSON.parseObject(templateInputStream, JSONObject.class);
+        ret = DataUtils.fullRefJSON(ret,data);
+
+        // ret.put("data", pageData);
+        //返回内容格式化为 application/json
+        byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
+        response.setContentType("application/json; charset=utf-8");
+        //写入返回流
+        IOUtils.write(returnBytes, response.getOutputStream());
+    }
+
+    public static JSONObject getInterfaceDocData(DoService doService,String applicationName, String interfaceName, String method) throws ExecutionException {
+
+        JSONObject toObj = new JSONObject();
+        toObj.put("documentIds","@{documentIds}");
+        toObj.put("applicationName","@{applicationName}");
+        toObj.put("errorCodes","@{errorCodes}");
+        toObj.put("filterIds","@{filterIds}");
+        toObj.put("gmtModified","@{gmtModified}");
+        toObj.put("name","@{name}");
+        toObj.put("note","@{note}");
+        toObj.put("owner","@{owner}");
+        toObj.put("parameterIds","@{parameterIds}");
+        toObj.put("title","@{title}");
+        toObj.put("method","@{method}");
+
+
+
+        InterfaceDO interfaceDO = doService.getInterfaceDO(applicationName,interfaceName,method);
+        JSONObject fromObj = (JSONObject) JSON.toJSON(interfaceDO);
+        JSONObject result = DataUtils.fullRefJSON (toObj,fromObj);
+        return result;
+
     }
 
 }

@@ -1,0 +1,20 @@
+{
+  "type": "service",
+  "data": "@{$}",
+  "body": [
+      {
+          "type": "tpl",
+          "tpl": "${title}接口",
+          "inline": false
+      },
+      {
+        "type": "collapse",
+        "body":                {
+          "type": "service",
+          "initFetchSchema": false,
+          "schemaApi": "parameters.jpage?ids=${parameterIds|join}"
+        },
+        "title": "接口参数"
+      }
+  ]
+}

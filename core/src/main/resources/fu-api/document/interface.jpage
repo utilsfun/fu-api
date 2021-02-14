@@ -1,21 +1,91 @@
 {
-  "type": "page",
-  "initApi": "?",
-  "bodyClassName": "m-b-none m-none p-none",
+  "type": "wrapper",
+  "size": "xs",
+  "className": "b-t",
   "body": [
-      {
+    {
+      "type": "service",
+      "data": "@{$}",
+      "body": [
+        {
           "type": "tpl",
-          "tpl": "${title}接口",
+          "tpl": "@{note}",
+          "className": "text-base",
           "inline": false
-      },
-      {
-        "type": "collapse",
-        "body":                {
-          "type": "service",
-          "initFetchSchema": false,
-          "schemaApi": "parameters.jpage?ids=${parameterIds|join}"
         },
-        "title": "接口参数"
-      }
+        {
+          "type": "tpl",
+          "tpl": "方法",
+          "className": "font-bold text-base text-info",
+          "inline": false
+        },
+        {
+          "type": "tpl",
+          "tpl": "${method}",
+          "className": "text-base",
+          "inline": false
+        },
+        {
+          "type": "tpl",
+          "tpl": "地址",
+          "className": "font-bold text-base text-info",
+          "inline": false
+        },
+        {
+          "type": "tpl",
+          "tpl": "${baseUrl}/${name}",
+          "className": "text-base",
+          "inline": true
+        },
+        {
+          "label": "",
+          "type": "button",
+          "actionType": "copy",
+          "content": "${baseUrl}/${name}",
+          "level": "link",
+          "icon": "fa fa-copy"
+        },
+        {
+          "type": "collapse",
+          "headingClassName": "font-bold no-border b-info text-base text-info",
+          "body": {
+            "type": "service",
+            "initFetchSchema": true,
+            "schemaApi": "parameters.jpage?ids=${parameterIds|join}"
+          },
+          "title": "参数"
+        },
+        {
+          "type": "each",
+          "name": "documentIds",
+          "items": [
+            {
+              "type": "service",
+              "initFetchSchema": true,
+              "schemaApi": "document.jpage?id=${item}"
+            }
+          ]
+        },
+        {
+          "type": "collapse",
+          "title": "错误码",
+          "headingClassName": "font-bold no-border b-info text-base text-info",
+          "body": {
+            "type": "table",
+            "data": "@{errorCodes}",
+            "columns": [
+              {
+                "name": "code",
+                "label": "<b>编码</b>"
+              },
+              {
+                "name": "message",
+                "label": "<b>说明</b>"
+              }
+            ]
+          }
+        }
+      ]
+    }
   ]
 }

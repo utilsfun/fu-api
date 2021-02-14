@@ -1,6 +1,7 @@
 package fun.utils.api.core.persistence;
 
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.api.core.common.ErrorCode;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class InterfaceDO {
     /**
      * 【错误码】
      */
-    private String errorCodes;
+    private List<ErrorCode> errorCodes;
 
     /**
      * 【版本号】

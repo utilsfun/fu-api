@@ -1,20 +1,24 @@
 {
-  "type": "page",
-  "initApi": "?",
-  "bodyClassName": "m-b-none m-none p-none",
+  "type": "wrapper",
+  "size": "none",
   "body": {
-    "type": "collapse",
-    "body": [
-      {
-        "type": "tpl",
-        "tpl": "${note}",
-        "inline": false
-      },
-      {
-        "type": "html",
-        "html": "${content}"
-      }
-    ],
-    "title": "${title}"
+    "type": "service",
+    "data": "@{$}",
+    "body": {
+      "type": "collapse",
+      "headingClassName": "font-bold no-border b-info text-base text-info",
+      "body": [
+        {
+          "type": "tpl",
+          "tpl": "@{note}",
+          "inline": false
+        },
+        {
+          "type": "html",
+          "html": "@{content}"
+        }
+      ],
+      "title": "@{title}"
+    }
   }
 }

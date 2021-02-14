@@ -1,128 +1,158 @@
 {
-  "type": "page",
-  "initApi": "?",
-  "body": [
-    {
-      "type": "tpl",
-      "tpl": "《${title}(${name})接口文档》",
-      "inline": false,
-      "className": "font-bold text-lg text-center"
-    },
-    {
-      "type": "wrapper",
-      "body": [
-        {
-          "type": "tpl",
-          "tpl": "作者: ${owner}",
-          "className": "m-r p-r"
-        },
-        {
-          "type": "tpl",
-          "tpl": "版本: ${version}",
-          "className": "m-r p-r"
-        },
-        {
-          "type": "tpl",
-          "tpl": "更新时间: ${gmtModified|date:YYYY-MM-DD:YYYY-MM-DD}",
-          "className": "m-r p-r"
-        }
-      ],
-      "size": "xs",
-      "className": "text-right"
-    },
-    {
-      "type": "tpl",
-      "tpl": "${note}",
-      "inline": false
-    },
-    {
-      "type": "each",
-      "name": "documentIds",
-      "items": [
-        {
-              "type": "service",
-              "initFetchSchema": true,
-          "schemaApi": "document.jpage?id=${item}"
-        }
-      ]
-    },
-
-    {
-      "type": "collapse",
-      "body":                {
-        "type": "service",
-        "initFetchSchema": false,
-        "schemaApi": "parameters.jpage?ids=${parameterIds|join}"
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "service",
+    "data": "@{$}",
+    "body": [
+      {
+        "type": "tpl",
+        "tpl": "《${title}(${name})接口文档》",
+        "inline": false,
+        "className": "font-bold text-lg text-center"
       },
-      "title": "公共参数"
-    },
-    {
-      "type": "collapse",
-      "title": "接口列表",
-      "body": {
+      {
+        "type": "wrapper",
+        "body": [
+          {
+            "type": "tpl",
+            "tpl": "作者: ${owner}",
+            "className": "m-r p-r"
+          },
+          {
+            "type": "tpl",
+            "tpl": "版本: ${version}",
+            "className": "m-r p-r"
+          },
+          {
+            "type": "tpl",
+            "tpl": "更新时间: ${gmtModified|date:YYYY-MM-DD:YYYY-MM-DD}",
+            "className": "m-r p-r"
+          }
+        ],
+        "size": "xs",
+        "className": "text-right"
+      },
+      {
+        "type": "tpl",
+        "tpl": "${note}",
+        "inline": false
+      },
+      {
         "type": "each",
-        "name": "interfaceNames",
+        "name": "documentIds",
         "items": [
           {
-            "type": "form",
-            "title": "",
-            "submitText": "",
-            "wrapWithPanel": false,
-            "target": "interface_service",
-            "mode": "inline",
-            "submitOnInit": false,
-            "controls": [
-              {
-                "label": "",
-                "type": "button-group",
-                "submitOnChange": true,
-                "value": "false",
-                "name": "collapsed",
-                "options": [
-                  {
-                    "label": "${item}",
-                    "className": "font-bold text-md text-left",
-                    "value": "false",
-                    "visibleOn": "this.collapsed === 'true'",
-                    "icon": "fa fa-angle-down",
-                    "iconClassName": "pull-right",
-                    "level": "link"
-                  },
-                  {
-                    "label": "${item}",
-                    "className": "font-bold text-md text-left",
-                    "value": "true",
-                    "visibleOn": "this.collapsed === 'false'",
-                    "icon": "fa fa-angle-right",
-                    "iconClassName": "pull-right",
-                    "level": "link"
-                  }
-                ]
-              },
-              {
-                "name": "interface_service",
-                "type": "service",
-                "initFetchSchema": false,
-                "visibleOn": "this.collapsed === 'true'",
-                "schemaApi": {
-                  "method": "get",
-                  "url": "interface.jpage",
-                  "data": {
-                    "name": "${item}",
-                    "index": "${index}"
-                  }
-                }
-              }
-            ]
+            "type": "service",
+            "initFetchSchema": true,
+            "schemaApi": "document.jpage?id=${item}"
           }
         ]
+      },
+      {
+        "type": "collapse",
+        "title": "公共参数",
+        "headingClassName": "font-bold no-border b-info text-base text-info",
+        "body": {
+          "type": "service",
+          "initFetchSchema": true,
+          "schemaApi": "parameters.jpage?ids=${parameterIds|join}"
+        }
+      },
+      {
+        "type": "collapse",
+        "title": "接口列表",
+        "headingClassName": "font-bold no-border b-info text-base text-info",
+        "body": {
+          "type": "each",
+          "name": "interfaces",
+          "items": [
+            {
+              "type": "form",
+              "title": "",
+              "submitText": "",
+              "wrapWithPanel": false,
+              "target": "interface_service",
+              "mode": "inline",
+              "submitOnInit": false,
+              "controls": [
+                {
+                  "label": "",
+                  "type": "button-group",
+                  "submitOnChange": true,
+                  "value": "false",
+                  "name": "collapsed",
+                  "options": [
+                    {
+                      "label": "${index|plus:1}、${name} ${title}",
+                      "className": "font-bold no-border b-info text-base text-info text-left m-none p-none",
+                      "value": "false",
+                      "visibleOn": "this.collapsed === 'true'",
+                      "icon": "fa fa-angle-down",
+                      "iconClassName": "pull-right",
+                      "level": "link"
+                    },
+                    {
+                      "label": "${index|plus:1}、${name} ${title}",
+                      "className": "font-bold no-border b-info text-base text-info text-left m-none p-none",
+                      "value": "true",
+                      "visibleOn": "this.collapsed === 'false'",
+                      "icon": "fa fa-angle-right",
+                      "iconClassName": "pull-right",
+                      "level": "link"
+                    }
+                  ]
+                },
+                {
+                  "name": "interface_service",
+                  "type": "service",
+                  "initFetchSchema": false,
+                  "visibleOn": "this.collapsed === 'true'",
+                  "schemaApi": {
+                    "method": "get",
+                    "url": "interface.jpage",
+                    "data": {
+                      "name": "${method}:${name}",
+                      "index": "${index}"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "collapse",
+        "title": "错误码",
+        "headingClassName": "font-bold no-border b-info text-base text-info",
+        "body": {
+          "type": "table",
+          "data": "@{errorCodes}",
+          "columnsTogglable": false,
+          "headerClassName": "font-bold",
+          "footable": {
+            "expand": "all"
+          },
+          "columns": [
+            {
+              "name": "code",
+              "label": "<b>编码</b>"
+            },
+            {
+              "name": "message",
+              "label": "<b>说明</b>"
+            }
+          ]
+        }
+      },
+      {
+        "type": "collapse",
+        "title": "更新日志",
+        "headingClassName": "font-bold no-border b-info text-base text-info",
+        "body": [
+        ]
       }
-    },
-    {
-      "type": "collapse",
-      "body": [
-      ],
-      "title": "更新日志"
-    }
-  ]
+    ]
+  }
 }
