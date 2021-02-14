@@ -3,11 +3,13 @@
   "size": "none",
   "body": {
     "type": "service",
-    "data": "@{$}",
+    "data": {
+      "application": "@{$}"
+    },
     "body": [
       {
         "type": "tpl",
-        "tpl": "《${title}(${name})接口文档》",
+        "tpl": "《${application.title}(${application.name})接口文档》",
         "inline": false,
         "className": "font-bold text-lg text-center"
       },
@@ -16,17 +18,17 @@
         "body": [
           {
             "type": "tpl",
-            "tpl": "作者: ${owner}",
+            "tpl": "作者: ${application.owner}",
             "className": "m-r p-r"
           },
           {
             "type": "tpl",
-            "tpl": "版本: ${version}",
+            "tpl": "版本: ${application.version}",
             "className": "m-r p-r"
           },
           {
             "type": "tpl",
-            "tpl": "更新时间: ${gmtModified|date:YYYY-MM-DD:YYYY-MM-DD}",
+            "tpl": "更新时间: ${application.gmtModified|date:YYYY-MM-DD:YYYY-MM-DD}",
             "className": "m-r p-r"
           }
         ],
@@ -35,12 +37,12 @@
       },
       {
         "type": "tpl",
-        "tpl": "${note}",
+        "tpl": "${application.note}",
         "inline": false
       },
       {
         "type": "each",
-        "name": "documentIds",
+        "name": "application.documentIds",
         "items": [
           {
             "type": "service",
@@ -53,10 +55,11 @@
         "type": "collapse",
         "title": "公共参数",
         "headingClassName": "font-bold no-border b-info text-base text-info",
+        "visibleOn": "application.parameterIds != null && application.parameterIds.length > 0",
         "body": {
           "type": "service",
           "initFetchSchema": true,
-          "schemaApi": "parameters.jpage?ids=${parameterIds|join}"
+          "schemaApi": "parameters.jpage?ids=${application.parameterIds|join}"
         }
       },
       {
@@ -65,7 +68,7 @@
         "headingClassName": "font-bold no-border b-info text-base text-info",
         "body": {
           "type": "each",
-          "name": "interfaces",
+          "name": "application.interfaces",
           "items": [
             {
               "type": "form",
@@ -126,14 +129,10 @@
         "type": "collapse",
         "title": "错误码",
         "headingClassName": "font-bold no-border b-info text-base text-info",
+        "visibleOn": "application.errorCodes != null && application.errorCodes.length > 0",
         "body": {
           "type": "table",
-          "data": "@{errorCodes}",
-          "columnsTogglable": false,
-          "headerClassName": "font-bold",
-          "footable": {
-            "expand": "all"
-          },
+          "source": "${application.errorCodes}",
           "columns": [
             {
               "name": "code",

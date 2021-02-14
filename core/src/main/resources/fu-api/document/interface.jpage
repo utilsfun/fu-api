@@ -5,11 +5,13 @@
   "body": [
     {
       "type": "service",
-      "data": "@{$}",
+      "data": {
+        "interface": "@{$}"
+      },
       "body": [
         {
           "type": "tpl",
-          "tpl": "@{note}",
+          "tpl": "${interface.note}",
           "className": "text-base",
           "inline": false
         },
@@ -21,7 +23,7 @@
         },
         {
           "type": "tpl",
-          "tpl": "${method}",
+          "tpl": "${interface.method}",
           "className": "text-base",
           "inline": false
         },
@@ -33,7 +35,7 @@
         },
         {
           "type": "tpl",
-          "tpl": "${baseUrl}/${name}",
+          "tpl": "${application.baseUrl}/${application.apiPath}/${interface.name}",
           "className": "text-base",
           "inline": true
         },
@@ -41,23 +43,24 @@
           "label": "",
           "type": "button",
           "actionType": "copy",
-          "content": "${baseUrl}/${name}",
+          "content": "${interface.baseUrl}/${interface.name}",
           "level": "link",
           "icon": "fa fa-copy"
         },
         {
           "type": "collapse",
+          "title": "参数",
           "headingClassName": "font-bold no-border b-info text-base text-info",
+          "visibleOn": "interface.parameterIds != null && interface.parameterIds.length > 0",
           "body": {
             "type": "service",
             "initFetchSchema": true,
-            "schemaApi": "parameters.jpage?ids=${parameterIds|join}"
-          },
-          "title": "参数"
+            "schemaApi": "parameters.jpage?ids=${interface.parameterIds|join}"
+          }
         },
         {
           "type": "each",
-          "name": "documentIds",
+          "name": "interface.documentIds",
           "items": [
             {
               "type": "service",
@@ -70,9 +73,10 @@
           "type": "collapse",
           "title": "错误码",
           "headingClassName": "font-bold no-border b-info text-base text-info",
+          "visibleOn": "interface.errorCodes != null && interface.errorCodes.length > 0",
           "body": {
             "type": "table",
-            "data": "@{errorCodes}",
+            "source": "${interface.errorCodes}",
             "columns": [
               {
                 "name": "code",

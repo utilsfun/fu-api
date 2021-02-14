@@ -3,22 +3,24 @@
   "size": "none",
   "body": {
     "type": "service",
-    "data": "@{$}",
+    "data": {
+      "document": "@{$}"
+    },
     "body": {
       "type": "collapse",
       "headingClassName": "font-bold no-border b-info text-base text-info",
       "body": [
         {
           "type": "tpl",
-          "tpl": "@{note}",
+          "tpl": "${document.note}",
           "inline": false
         },
         {
           "type": "html",
-          "html": "@{content}"
+          "html": "${document.content}"
         }
       ],
-      "title": "@{title}"
+      "title": "${document.title}"
     }
   }
 }

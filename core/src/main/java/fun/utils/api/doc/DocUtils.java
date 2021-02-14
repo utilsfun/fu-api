@@ -102,7 +102,7 @@ public class DocUtils {
     }
 
 
-    public static JSONObject getApplicationDocData(DoService doService,String baseUrl, String applicationName ) throws ExecutionException {
+    public static JSONObject getApplicationDocData(DoService doService, String applicationName ) throws ExecutionException {
         JSONObject toObj = new JSONObject();
         toObj.put("documentIds","@{documentIds}");
         toObj.put("filterIds","@{filterIds}");
@@ -116,7 +116,6 @@ public class DocUtils {
         toObj.put("title","@{title}");
         toObj.put("version","@{version}");
 
-
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
         JSONObject fromObj = (JSONObject) JSON.toJSON(applicationDO);
         JSONObject result = DataUtils.fullRefJSON (toObj,fromObj);
@@ -128,9 +127,6 @@ public class DocUtils {
             interfaceDocDatas.add(interfaceDocData);
         }
         result.put("interfaces",interfaceDocDatas);
-
-        result.put("baseUrl",baseUrl);
-
         return result;
     }
 

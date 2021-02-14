@@ -7,19 +7,21 @@
     "body": [
       {
         "type": "form",
-        "data": "@{$}",
+        "data": {
+          "document": "@{$}"
+        },
         "title": "",
         "submitText": "",
         "wrapWithPanel": false,
         "controls": [
           {
             "type": "tpl",
-            "tpl": "@{note}",
+            "tpl": "${document.note}",
             "inline": false
           },
           {
             "type": "editor",
-            "name": "content",
+            "name": "document.content",
             "language": "@{language}",
             "options": {
               "automaticLayout": true,

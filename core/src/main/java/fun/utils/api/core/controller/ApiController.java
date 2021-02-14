@@ -208,10 +208,13 @@ public class ApiController {
         }
         else if ("application.jpage".equalsIgnoreCase(filename)) {
 
-            String baseUrl = StringUtils.substringBeforeLast(request.getRequestURL().toString(),request.getContextPath() + "/" + app.getDocPath());
-            baseUrl += request.getContextPath() + "/" + app.getPath();
-            JSONObject pageData = DocUtils.getApplicationDocData(doService,baseUrl,applicationName);
-
+            String referer = request.getHeader("Referer");
+            String thisUrl = StringUtils.defaultIfBlank(referer, request.getRequestURL().toString());
+            String baseUrl = StringUtils.substringBeforeLast(thisUrl,request.getContextPath() + "/" + app.getDocPath());
+            baseUrl += request.getContextPath() ;
+            JSONObject pageData = DocUtils.getApplicationDocData(doService,applicationName);
+            pageData.put("baseUrl",baseUrl);
+            pageData.put("apiPath",app.getPath());
             Resource resource = webApplicationContext.getResource("classpath:fu-api/document/application.jpage");
             DocUtils.writeResponse(response, resource.getInputStream(),pageData);
 

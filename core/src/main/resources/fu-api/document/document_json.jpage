@@ -3,23 +3,25 @@
   "size": "none",
   "body": {
     "type": "service",
-    "data": "@{$}",
+    "data": {
+      "document": "@{$}"
+    },
     "body": {
       "type": "collapse",
       "headingClassName": "font-bold no-border b-info text-base text-info",
       "body": [
         {
           "type": "tpl",
-          "tpl": "@{note}",
+          "tpl": "${document.note}",
           "inline": false
         },
         {
           "type": "json",
           "levelExpand": 4,
-          "source": "${content|toJson}"
+          "source": "${document.content|toJson}"
         }
       ],
-      "title": "@{title}"
+      "title": "${document.title}"
     }
   }
 }

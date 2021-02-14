@@ -69,4 +69,5 @@ fu-api:
   applications:
     - name: demo
       path: test/demo
+      docPath: doc/demo
 
