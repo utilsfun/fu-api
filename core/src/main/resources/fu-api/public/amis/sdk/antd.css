@@ -22903,10 +22903,12 @@
 
 .amis-scope .antd-EditorControl--sm {
   min-height: 100px;
+  max-height: 800px;
 }
 
 .amis-scope .antd-EditorControl--sm > .antd-MonacoEditor {
   min-height: 100px;
+  max-height: 800px;
 }
 
 .amis-scope .antd-EditorControl--md {

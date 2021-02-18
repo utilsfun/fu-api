@@ -23,12 +23,12 @@
             "type": "editor",
             "name": "document.content",
             "language": "@{language}",
+            "size": "ss",
             "options": {
               "automaticLayout": true,
-              "layoutInfo": {
-                "width": 20
-              }
+              "lineNumbers": 0
             },
+            "inputClassName": "no-border",
             "disabled": true
           }
         ]

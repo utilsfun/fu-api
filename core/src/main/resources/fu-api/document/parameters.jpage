@@ -34,7 +34,7 @@
         {
           "name": "note",
           "label": "<b>说明</b>",
-          "className": "word-break"
+          "type": "html"
         }
       ]
     }

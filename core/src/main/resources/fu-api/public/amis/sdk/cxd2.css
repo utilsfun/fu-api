@@ -20143,10 +20143,12 @@
 
 .amis-scope .cxd-EditorControl--sm {
   min-height: 100px;
+  max-height: 800px;
 }
 
 .amis-scope .cxd-EditorControl--sm > .cxd-MonacoEditor {
   min-height: 100px;
+  max-height: 800px;
 }
 
 .amis-scope .cxd-EditorControl--md {

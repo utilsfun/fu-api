@@ -1,7 +1,7 @@
 {
   "type": "wrapper",
   "size": "xs",
-  "className": "b-t",
+  "className": "b-t b-b b-1x",
   "body": [
     {
       "type": "service",

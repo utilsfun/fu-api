@@ -85,6 +85,7 @@
                   "submitOnChange": true,
                   "value": "false",
                   "name": "collapsed",
+                  "className": "m-t-sm m-b-sm",
                   "options": [
                     {
                       "label": "${index|plus:1}、${name} ${title}",

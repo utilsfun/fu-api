@@ -21,10 +21,6 @@
     <script src="../public/vue2.js"></script>
 
 
-    <script type="text/javascript">
-
-    </script>
-
     <style>
       html,
       body,
@@ -36,35 +32,11 @@
         padding: 0;
       }
 
-    /* 在Editor属性中加 {"size":"ss"} 则高度在100-800之间自动伸缩 */
-    .amis-scope .cxd-EditorControl--ss {
-      min-height: 100px;
-      max-height: 800px;
-    }
-
-    .amis-scope .cxd-EditorControl--ss > .cxd-MonacoEditor {
-      min-height: 100px;
-      max-height: 800px;
-    }
-
-    .amis-scope .cxd-EditorControl--full {
-      min-height: 100%;
-      max-height: 100%;
-    }
-
-    .amis-scope .cxd-EditorControl--full > .cxd-MonacoEditor {
-      min-height: 100%;
-      max-height: 100%;
-    }
-
     </style>
 </head>
 <body>
-
-    <div class="app-wrapper">
-     <div id="root"></div>
-    </div>
-    <script>
+<div id="root" class="app-wrapper"></div>
+<script>
 
         var me;
         const pageUrl = window.location.href.replace("\.html",".jpage");
@@ -108,7 +80,6 @@
 
       })();
 
-    </script>
-
-    </body>
+</script>
+</body>
 </html>
