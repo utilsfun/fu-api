@@ -71,3 +71,5 @@ fu-api:
       path: test/demo
       docPath: doc/demo
 
+  admin:
+    path: admin/demo

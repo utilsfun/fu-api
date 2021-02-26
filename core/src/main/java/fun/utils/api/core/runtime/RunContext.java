@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class RunContext {
 
+
     public class BeanBridge {
 
         public Object get(String name){
@@ -85,6 +86,9 @@ public class RunContext {
     @Getter
     private final JSONObject config;
 
+    @Getter
+    private JSONObject additional = new JSONObject();
+
     @Getter @Setter
     private JSONObject input;
 
@@ -96,6 +100,7 @@ public class RunContext {
 
     @Getter @Setter
     private Object result;
+
 
     @Getter @Setter
     private boolean isVoid = false;
@@ -268,6 +273,11 @@ public class RunContext {
 
     public ApiJsonCaller getApiJson(String databaseName) throws SQLException, ExecutionException, ApiException {
         return new ApiJsonCaller(getDataSource(databaseName));
+    }
+
+    //是否接口调动已经失败
+    public boolean isFailed() {
+        return getResult() instanceof Exception;
     }
 
 }

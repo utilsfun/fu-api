@@ -56,8 +56,6 @@ public class ApiAutoConfiguration implements DisposableBean, InitializingBean {
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
 
-
-
     @Bean("fu-api.rest-template")
     RestTemplate getRestTemplate() {
         log.info("Initialize getRestTemplate");

@@ -9,6 +9,7 @@ import fun.utils.api.core.common.ValidUtils;
 import fun.utils.api.core.controller.AppBean;
 import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.persistence.ApplicationDO;
+import fun.utils.api.core.persistence.FilterDO;
 import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.persistence.ParameterDO;
 import fun.utils.api.core.script.*;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,9 +61,11 @@ public class ApiRunner {
 
     public void onEnter() throws Exception {
 
-        //运行 application onEnter过滤器
+        //运行 application onEnter过滤器 过滤器
+        executeFilters("enter",applicationDO.getFilterIds());
 
-        //运行 interface onEnter过滤器
+        //运行 interface onEnter过滤器 过滤器
+        executeFilters("enter",interfaceDO.getFilterIds());
 
     }
 
@@ -76,19 +80,34 @@ public class ApiRunner {
 
     public void onExecute() throws Exception {
 
-        //运行 application onExecute
-        //运行 interface onExecute
+        //运行 application onExecute 过滤器
+        executeFilters("execute",applicationDO.getFilterIds());
+
+        //运行 interface onExecute 过滤器
+        executeFilters("execute",interfaceDO.getFilterIds());
+
     }
 
     public void execute() throws Exception {
 
         //运行 interface 方法
 
-        if ("groovy".equalsIgnoreCase(interfaceDO.getImplementType())) {
-            runGroovy();
+        //调用接时任何地方失败都不再继续
+        if (runContext.isFailed()){
+            return;
         }
-        else if ("bean".equalsIgnoreCase(interfaceDO.getImplementType())) {
 
+        if ("groovy".equalsIgnoreCase(interfaceDO.getImplementType())) {
+
+            String id = String.valueOf(interfaceDO.getId());
+            JSONObject config = interfaceDO.getConfig();
+            String version = interfaceDO.getGmtModified().toString();
+            String groovy = interfaceDO.getImplementCode();
+            executeGroovy(id,config,version,groovy);
+
+        }
+        else {
+            throw new Exception(MessageFormat.format("not supply implement type {0}", interfaceDO.getImplementType()));
         }
 
 
@@ -96,10 +115,13 @@ public class ApiRunner {
 
     public void onReturn() throws Exception {
 
-        //运行 interface onReturn
-        //运行 application onReturn
+        //运行 interface onReturn 过滤器
+        executeFilters("return",interfaceDO.getFilterIds());
 
-    }
+        //运行 application onReturn 过滤器
+        executeFilters("return",applicationDO.getFilterIds());
+
+   }
 
     public void run() throws Exception {
 
@@ -107,32 +129,68 @@ public class ApiRunner {
         doInitialize();
 
         //2.接口进入过滤器
+        //2.1 应用过滤器
+        //2.2 接口过滤器
         onEnter();
 
         //3.参数验证
         doValidate();
 
         //4.接口方法执行过滤器
+        //4.1 应用过滤器
+        //4.2 接口过滤器
         onExecute();
 
         //5.接口方法执行
         execute();
 
         //6.接口返回过滤器
+        //6.1 接口过滤器
+        //6.2 应用过滤器
         onReturn();
 
     }
 
 
-    private void runGroovy() throws Exception {
+    private void executeFilters(String point,List<Long> filterIds) throws Exception {
+
+        if (filterIds != null){
+
+            for ( Long filterId : filterIds){
+
+                //调用接时任何地方失败都不再继续
+                if (runContext.isFailed()){
+                    break;
+                }
+
+                FilterDO filterDO =  doService.getFilterDO(filterId);
+
+                if (!point.equalsIgnoreCase(filterDO.getPoint())){
+                    continue;
+                }
+
+                if ("groovy".equalsIgnoreCase(filterDO.getImplementType())) {
+                    JSONObject config = filterDO.getConfig();
+                    String version = filterDO.getGmtModified().toString();
+                    String groovy = filterDO.getImplementCode();
+                    executeGroovy(filterId,config,version,groovy);
+                }
+                else {
+                    throw new Exception(MessageFormat.format("not supply implement type {0}", filterDO.getImplementType()));
+                }
+
+            }
+        }
+    }
+
+
+    private void  executeGroovy(Object id,JSONObject config,String version,String groovy) throws Exception {
 
         GroovyScript method = new GroovyScript();
-        method.setId(String.valueOf(interfaceDO.getId()));
-        method.setConfig(interfaceDO.getConfig());
-        method.setVersion(interfaceDO.getGmtModified().toString());
-        method.setTitle(interfaceDO.getTitle());
+        method.setId(String.valueOf(id));
+        method.setConfig(config);
+        method.setVersion(version);
 
-        String groovy = interfaceDO.getImplementCode();
         GroovySource groovySource = GroovyUtils.sourceOf(method.getId(), groovy);
 
         Map<String, GroovyVariable> declaredVariables = method.getDeclaredVariables();
@@ -150,6 +208,11 @@ public class ApiRunner {
 
         GroovyRunner groovyRunner = groovyService.getRunner(method);
         Object result = groovyRunner.withProperty("$context", runContext).execute(runContext.getParameters());
+
+        if (result instanceof Exception){
+            throw (Exception) result;
+        }
+
         runContext.setResult(result);
 
     }
