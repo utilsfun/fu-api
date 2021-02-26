@@ -149,6 +149,8 @@ public class DocUtils {
             String language = StringUtils.removeStartIgnoreCase(format,"image/");
             result.put("format","image");
             result.put("language",language);
+        }else if (StringUtils.equalsIgnoreCase(format,"amis")){
+            result.put("amis",JSONObject.parseObject(documentDO.getContent()));
         }
 
         return result;

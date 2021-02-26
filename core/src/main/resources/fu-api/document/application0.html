@@ -68,6 +68,8 @@
     </div>
     <script>
 
+        var amis = amisRequire('amis/embed');
+        var amisScoped ;
 
         const pageUrl = window.location.href.replace("\.html",".jpage");
         var amisConfig = {
@@ -86,19 +88,32 @@
 
       (function () {
 
-        var amis = amisRequire('amis/embed');
-        var page = {
-              type: "page",
-              body: {
-                type: "service",
-                schemaApi: {
-                   url: pageUrl
-                }
-              }
-            };
 
-        var amisScoped = amis.embed("#root", page ,{},amisConfig );
 
+        $.ajax({
+          //请求方式
+          type: "GET",
+          //请求的媒体类型
+          contentType: "application/json;charset=UTF-8",
+          //请求地址
+          url: pageUrl,
+          //请求成功
+          success: function (result) {
+            console.log(result);
+
+            document.title =  result.body.data.application.title;
+            var page = {type:"page", body:result};
+
+            // 通过替换下面这个配置来生成不同页面
+            amisScoped = amis.embed("#root", page ,{},amisConfig );
+
+          },
+          //请求失败，包含具体的错误信息
+          error: function (e) {
+            console.log(e.status);
+            console.log(e.responseText);
+          }
+        });
 
       })();
 

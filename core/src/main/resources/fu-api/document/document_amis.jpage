@@ -1,0 +1,23 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "service",
+    "data": {
+      "document": "@{$}"
+    },
+    "body": {
+      "type": "collapse",
+      "headingClassName": "font-bold no-border b-info text-base text-info",
+      "body": [
+        {
+          "type": "tpl",
+          "tpl": "${document.note}",
+          "inline": false
+        },
+        "@{amis}"
+      ],
+      "title": "${document.title}"
+    }
+  }
+}
