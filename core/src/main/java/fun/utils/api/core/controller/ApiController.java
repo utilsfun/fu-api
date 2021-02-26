@@ -280,13 +280,5 @@ public class ApiController {
 
     }
 
-    public void getUi(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException {
-
-
-    }
-
-    public void getData(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException {
-
-    }
 
 }

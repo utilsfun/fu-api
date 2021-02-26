@@ -2,13 +2,15 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
-    <title>amis admin</title>
+    <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta
             name="viewport"
             content="width=device-width, initial-scale=1, maximum-scale=1"
     />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+
+    <link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
 
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/amis/sdk/cxd2.css" title="cxd"/>
@@ -66,7 +68,10 @@
     </div>
     <script>
 
-        var me;
+        var amis ;
+        var amisLib ;
+        var amisScoped ;
+
         const pageUrl = window.location.href.replace("\.html",".jpage");
         var amisConfig = {
 
@@ -94,10 +99,15 @@
           //请求成功
           success: function (result) {
             console.log(result);
+
+            document.title =  result.body.data.application.title;
             var page = {type:"page", body:result};
+
             let amis = amisRequire('amis/embed');
+            let amisLib = amisRequire('amis');
+
             // 通过替换下面这个配置来生成不同页面
-            me = amis.embed("#root", page ,{},amisConfig );
+            let amisScoped = amis.embed("#root", page ,{},amisConfig );
           },
           //请求失败，包含具体的错误信息
           error: function (e) {

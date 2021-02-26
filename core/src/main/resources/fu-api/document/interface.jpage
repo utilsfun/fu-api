@@ -71,6 +71,58 @@
         },
         {
           "type": "collapse",
+          "title": "调用示例",
+          "headingClassName": "font-bold no-border b-info text-base text-info",
+          "visibleOn": "interface.requestExample != null && interface.requestExample.length > 0",
+          "body": {
+            "type": "form",
+            "title": "",
+            "submitText": "",
+            "wrapWithPanel": false,
+            "controls": [
+              {
+                "type": "editor",
+                "name": "interface.requestExample",
+                "language": "json",
+                "size": "ss",
+                "options": {
+                  "automaticLayout": true,
+                  "lineNumbers": 0
+                },
+                "inputClassName": "no-border",
+                "disabled": true
+              }
+            ]
+          }
+        },
+        {
+          "type": "collapse",
+          "title": "返回示例",
+          "headingClassName": "font-bold no-border b-info text-base text-info",
+          "visibleOn": "interface.responseExample != null && interface.responseExample.length > 0",
+          "body": {
+            "type": "form",
+            "title": "",
+            "submitText": "",
+            "wrapWithPanel": false,
+            "controls": [
+              {
+                "type": "editor",
+                "name": "interface.requestExample",
+                "language": "json",
+                "size": "ss",
+                "options": {
+                  "automaticLayout": true,
+                  "lineNumbers": 0
+                },
+                "inputClassName": "no-border",
+                "disabled": true
+              }
+            ]
+          }
+        },
+        {
+          "type": "collapse",
           "title": "错误码",
           "headingClassName": "font-bold no-border b-info text-base text-info",
           "visibleOn": "interface.errorCodes != null && interface.errorCodes.length > 0",

@@ -145,6 +145,10 @@ public class DocUtils {
             String language = StringUtils.removeStartIgnoreCase(format,"code/");
             result.put("format","code");
             result.put("language",language);
+        }else if (StringUtils.startsWithIgnoreCase(format,"image/")){
+            String language = StringUtils.removeStartIgnoreCase(format,"image/");
+            result.put("format","image");
+            result.put("language",language);
         }
 
         return result;
@@ -168,6 +172,10 @@ public class DocUtils {
         JSONObject toObj = new JSONObject();
         toObj.put("documentIds","@{documentIds}");
         toObj.put("applicationName","@{applicationName}");
+
+        toObj.put("requestExample","@{requestExample}");
+        toObj.put("responseExample","@{responseExample}");
+
         toObj.put("errorCodes","@{errorCodes}");
         toObj.put("filterIds","@{filterIds}");
         toObj.put("gmtModified","@{gmtModified}");
