@@ -43,7 +43,7 @@
           "label": "",
           "type": "button",
           "actionType": "copy",
-          "content": "${interface.baseUrl}/${interface.name}",
+          "content": "${application.baseUrl}/${application.apiPath}/${interface.name}",
           "level": "link",
           "icon": "fa fa-copy"
         },

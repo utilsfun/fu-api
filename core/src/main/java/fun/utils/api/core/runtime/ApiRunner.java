@@ -193,7 +193,7 @@ public class ApiRunner {
                 //按名称从输入中取值
                 srcObject = superJo.get(parameterDO.getName());
                 //如果没有值从别名中取值,直到第一个有值的别称
-                if (srcObject == null) {
+                if (srcObject == null && parameterDO.getAlias() != null) {
                     for (String key : parameterDO.getAlias()) {
                         srcObject = superJo.get(key);
                         if (srcObject != null) {
@@ -267,7 +267,6 @@ public class ApiRunner {
                             throw ApiException.parameterTypeException(parameterDO.getName(), parameterDO.getDataType());
                         }
                         else {
-
                             //加入到值列表前进行参数验证 *******************
                             for (ValidConfig validConfig : DataUtils.getEmptyIfNull(parameterDO.getValidations())) {
                                 ValidUtils.validateValue(parameterDO.getName(), value, validConfig.getType(), validConfig.getData(), validConfig.getMessage());
@@ -276,7 +275,6 @@ public class ApiRunner {
                             valueArray.add(value);
                         }
                     }
-
                 }
 
                 //加入到json参数值包对象中
@@ -286,8 +284,8 @@ public class ApiRunner {
                 else {
                     parameters.put(parameterDO.getName(), JSONArray.toJSON(valueArray.get(0)));
                 }
-
             }
+
         }
     }
 }
