@@ -60,6 +60,7 @@ public class ApiRunner {
     public void onEnter() throws Exception {
 
         //运行 application onEnter过滤器
+
         //运行 interface onEnter过滤器
 
     }
@@ -102,16 +103,22 @@ public class ApiRunner {
 
     public void run() throws Exception {
 
+        //1.初始化环境数据,参数,资源等
         doInitialize();
 
+        //2.接口进入过滤器
         onEnter();
 
+        //3.参数验证
         doValidate();
 
+        //4.接口方法执行过滤器
         onExecute();
 
+        //5.接口方法执行
         execute();
 
+        //6.接口返回过滤器
         onReturn();
 
     }
