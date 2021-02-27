@@ -1,0 +1,1 @@
+const button = document.createElement('button'); button.innerText = '点击'; button.onclick = event => { amisLib.toast.info('消息通知'); event.preventDefault(); }; dom.appendChild(button);

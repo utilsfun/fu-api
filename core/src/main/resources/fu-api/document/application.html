@@ -68,6 +68,10 @@
     </div>
     <script>
 
+        var amisEmbed;
+        var amisLib;
+        var React;
+        var amisScoped;
 
         const pageUrl = window.location.href.replace("\.html",".jpage");
         var amisConfig = {
@@ -86,7 +90,7 @@
 
       (function () {
 
-        var amis = amisRequire('amis/embed');
+
         var page = {
               type: "page",
               body: {
@@ -97,8 +101,10 @@
               }
             };
 
-        var amisScoped = amis.embed("#root", page ,{},amisConfig );
-
+        amisLib = amisRequire('amis');
+        React = amisRequire('react');
+        amisEmbed = amisRequire('amis/embed');
+        amisScoped = amisEmbed.embed("#root", page ,{},amisConfig );
 
       })();
 
