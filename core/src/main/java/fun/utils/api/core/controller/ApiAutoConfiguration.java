@@ -17,7 +17,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -137,24 +136,36 @@ public class ApiAutoConfiguration implements DisposableBean, InitializingBean {
             AppBean appBean = new AppBean();
             webApplicationContext.getAutowireCapableBeanFactory().autowireBean(appBean);
 
-            ApiController controller = new ApiController(app, appBean);
-            webApplicationContext.getAutowireCapableBeanFactory().autowireBean(controller);
+            log.info("register application {} " , JSON.toJSONString(app));
 
-            String apiPath = app.getPath() + "/**";
-            RequestMappingInfo requestMappingInfo = RequestMappingInfo.paths(apiPath).build();
-            Method methodRequest = ApiController.class.getDeclaredMethod("apiRequest", HttpServletRequest.class, HttpServletResponse.class);
-            requestMappingHandlerMapping.registerMapping(requestMappingInfo,controller,methodRequest);
-            requestMappingInfoList.add(requestMappingInfo);
+            ApiController apiController = new ApiController(app, appBean);
+            registerController(apiController,app.getApiPath());
 
-            String docPath = app.getDocPath() + "/**";
-            RequestMappingInfo requestDocMappingInfo = RequestMappingInfo.paths(docPath).build();
-            Method methodDocRequest = ApiController.class.getDeclaredMethod("docRequest", HttpServletRequest.class, HttpServletResponse.class);
-            requestMappingHandlerMapping.registerMapping(requestDocMappingInfo,controller,methodDocRequest);
-            requestMappingInfoList.add(requestDocMappingInfo);
+            DocumentController docController = new DocumentController(app, appBean);
+            registerController(docController,app.getDocPath());
 
-            log.info("register Application Controller api:{} doc:{} : {}" , apiPath ,docPath, com.alibaba.fastjson.JSON.toJSONString(app,true));
+            DesignController designController = new DesignController(app, appBean);
+            registerController(designController,app.getDesignPath());
+
+            PublicController pubController = new PublicController(app.getPubPath());
+            registerController(pubController,app.getPubPath());
 
         }
+    }
+
+    private void registerController(Object controller,String path) throws NoSuchMethodException {
+
+        webApplicationContext.getAutowireCapableBeanFactory().autowireBean(controller);
+        String pubPath = path + "/**";
+
+        RequestMappingInfo requestMappingInfo = RequestMappingInfo.paths(pubPath).build();
+        Method method = controller.getClass().getDeclaredMethod("request", HttpServletRequest.class, HttpServletResponse.class);
+        requestMappingHandlerMapping.registerMapping(requestMappingInfo,controller,method);
+
+        requestMappingInfoList.add(requestMappingInfo);
+
+        log.info("register {} Controller path:{}" ,controller.getClass().getSimpleName(), pubPath);
+
     }
 
     @Override
@@ -165,9 +176,9 @@ public class ApiAutoConfiguration implements DisposableBean, InitializingBean {
         for (RequestMappingInfo requestMappingInfo : requestMappingInfoList) {
             try {
                 requestMappingHandlerMapping.unregisterMapping(requestMappingInfo);
-                log.info(MessageFormat.format("stop api controller : {0} ",requestMappingInfo.toString())) ;
+                log.info(MessageFormat.format("stop controller : {0} ",requestMappingInfo.toString())) ;
             } catch (Throwable e) {
-                log.warn("something goes wrong when stopping api controller:", e);
+                log.warn("something goes wrong when stopping controller:", e);
             }
         }
 

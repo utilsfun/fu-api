@@ -4,13 +4,11 @@
     <meta charset="UTF-8"/>
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, maximum-scale=1"
-    />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
 
-    <link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
+    <link type="image/x-icon" rel="shortcut icon" href="../public/favicon.ico">
 
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/amis/sdk/cxd2.css" title="cxd"/>
@@ -19,13 +17,10 @@
     <script src="../public/amis/sdk/sdk.js"></script>
 
 
-    <link rel="stylesheet" href="../public/amis/sdk/helper.css" />
+    <link rel="stylesheet" href="../public/amis/sdk/helper.css"/>
     <script src="../public/vue2.js"></script>
+    <script src="../public/unsupported-ie.js"></script>
 
-
-    <script type="text/javascript">
-
-    </script>
 
     <style>
       html,
@@ -59,56 +54,49 @@
       max-height: 100%;
     }
 
+
     </style>
 </head>
 <body>
 
-    <div class="app-wrapper">
-     <div id="root"></div>
-    </div>
-    <script>
+<div class="app-wrapper">
+    <div id="root"></div>
+</div>
 
-        var amisEmbed;
-        var amisLib;
-        var React;
-        var amisScoped;
+<script type="text/javascript">
 
-        const pageUrl = window.location.href.replace("\.html",".jpage");
-        var amisConfig = {
+    const pageUrl = window.location.href.replace("\.html",".jpage");
+    let amisConfig = {
 
-            // 全局 api 适配器。
-            // api 自己也可以配置适配器，这里最好只处理通用逻辑。
-            responseAdpater(api, response, query, request) {
-              console.log(api);
-              console.log(response);
-              console.log(query);
-              console.log(request);
-              return response;
-            },
-            theme: 'cxd'
-          };
+        // 全局 api 适配器。
+        // api 自己也可以配置适配器，这里最好只处理通用逻辑。
+        responseAdpater: function(api, response, query, request) {
+          console.log(api);
+          console.log(response);
+          console.log(query);
+          console.log(request);
+          return response;
+        },
+        theme: 'cxd'
+      };
 
-      (function () {
+    let page = {
+          type: "page",
+          body: {
+            type: "service",
+            schemaApi: {
+               url: pageUrl
+            }
+          }
+        };
+
+   let amisEmbed = amisRequire('amis/embed');
+   let amisLib = amisRequire('amis');
+   let React = amisRequire('react');
+   let amisScoped = amisEmbed.embed("#root", page ,{},amisConfig );
 
 
-        var page = {
-              type: "page",
-              body: {
-                type: "service",
-                schemaApi: {
-                   url: pageUrl
-                }
-              }
-            };
+</script>
 
-        amisLib = amisRequire('amis');
-        React = amisRequire('react');
-        amisEmbed = amisRequire('amis/embed');
-        amisScoped = amisEmbed.embed("#root", page ,{},amisConfig );
-
-      })();
-
-    </script>
-
-    </body>
+</body>
 </html>
