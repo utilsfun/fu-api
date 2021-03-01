@@ -1,0 +1,35 @@
+{
+  "type": "wrapper",
+  "size": "sm",
+  "body": {
+    "type": "form",
+    "data": "@{$}",
+    "api": "application_config.do",
+    "name":"application_config",
+    "title": "应用配置",
+    "controls": [
+      {
+        "type": "hidden",
+        "name": "id"
+      },
+      {
+        "type": "editor",
+        "name": "config",
+        "language": "json",
+        "value": "@{config}",
+        "size": "600"
+      }
+    ],
+    "actions": [
+      {
+        "type": "submit",
+        "level": "primary",
+        "label": "提交"
+      },
+      {
+        "type": "reset",
+        "label": "重置"
+      }
+    ]
+  }
+}

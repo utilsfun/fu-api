@@ -1,6 +1,6 @@
 {
   "type": "wrapper",
-  "size": "none",
+  "size": "sm",
   "body": {
     "type": "service",
     "data": {

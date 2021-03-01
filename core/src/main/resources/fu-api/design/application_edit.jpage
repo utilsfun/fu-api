@@ -1,0 +1,85 @@
+{
+  "type": "wrapper",
+  "size": "sm",
+  "body": {
+    "type": "form",
+    "data": "@{$}",
+    "api": "application_edit.do",
+    "name":"application_edit",
+    "title": "应用属性",
+
+    "controls": [
+      {
+        "type": "hidden",
+        "name": "id"
+      },
+      {
+        "type": "tpl",
+        "label": "名称",
+        "tpl": "${name}"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "tpl",
+        "label": "更新时间",
+        "tpl": "${gmtModified|date:YYYY年MM月DD日HH时mm分:YYYY-MM-DD HH:mm:ss}"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "text",
+        "name": "title",
+        "label": "标题"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "text",
+        "name": "owner",
+        "label": "作者"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "text",
+        "name": "version",
+        "label": "版本"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "textarea",
+        "name": "note",
+        "minRows": 20,
+        "label": "说明"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "status",
+        "type": "switch",
+        "label": "状态",
+        "trueValue": 0,
+        "falseValue": 1
+      }
+    ],
+    "actions": [
+      {
+        "type": "submit",
+        "level": "primary",
+        "label": "提交"
+      },
+      {
+        "type": "reset",
+        "label": "重置"
+      }
+    ]
+  }
+}

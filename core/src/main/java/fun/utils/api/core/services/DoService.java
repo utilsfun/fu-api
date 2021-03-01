@@ -5,7 +5,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import fun.utils.api.apijson.ApiJsonCaller;
 import fun.utils.api.core.persistence.*;
+import lombok.Getter;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -13,6 +16,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +42,12 @@ public class DoService {
 
     @Resource(name = "fu-api.jdbc-template")
     private JdbcTemplate jdbcTemplate;
+
+    @Resource(name = "fu-api.data-source")
+    @Getter
+    private DataSource dataSource;
+
+    private ApiJsonCaller apiJsonCaller;
 
     private final long expireSeconds = 10;
 
@@ -89,8 +100,20 @@ public class DoService {
 
     }
 
+    public ApiJsonCaller getApiJsonCaller() throws SQLException {
+     if (this.apiJsonCaller== null) {
+         this.apiJsonCaller = new ApiJsonCaller(dataSource);
+     }
+     return this.apiJsonCaller;
+    }
+
 
     public ApplicationDO getApplicationDO(String applicationName) throws ExecutionException {
+        return applicationCache.get(applicationName, () -> loadApplicationDO(applicationName));
+    }
+
+    public ApplicationDO reloadApplicationDO(String applicationName) throws ExecutionException {
+        applicationCache.invalidate(applicationName);
         return applicationCache.get(applicationName, () -> loadApplicationDO(applicationName));
     }
 

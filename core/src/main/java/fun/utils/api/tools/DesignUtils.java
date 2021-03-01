@@ -1,4 +1,4 @@
-package fun.utils.api.doc;
+package fun.utils.api.tools;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class DocUtils {
+public class DesignUtils {
 
     public static JSONObject getParametersDocData(DoService doService, List<Long> parameterIds ) throws ExecutionException {
         JSONObject result = new JSONObject();
@@ -102,31 +102,30 @@ public class DocUtils {
     }
 
 
-    public static JSONObject getApplicationDocData(DoService doService, String applicationName ) throws ExecutionException {
+    public static JSONObject getApplicationEditData(DoService doService, String applicationName ) throws ExecutionException {
         JSONObject toObj = new JSONObject();
-        toObj.put("documentIds","@{documentIds}");
-        toObj.put("filterIds","@{filterIds}");
-        toObj.put("errorCodes","@{errorCodes}");
+        toObj.put("id","@{id}");
         toObj.put("gmtModified","@{gmtModified}");
-        toObj.put("interfaceNames","@{interfaceNames}");
         toObj.put("name","@{name}");
         toObj.put("note","@{note}");
         toObj.put("owner","@{owner}");
-        toObj.put("parameterIds","@{parameterIds}");
         toObj.put("title","@{title}");
         toObj.put("version","@{version}");
+        toObj.put("status","@{status}");
 
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
         JSONObject fromObj = (JSONObject) JSON.toJSON(applicationDO);
         JSONObject result = DataUtils.fullRefJSON (toObj,fromObj);
+        return result;
+    }
 
-        JSONArray interfaceDocDatas = new JSONArray();
-        for (String str: applicationDO.getInterfaceNames()) {
-            String[] iNames = str.split(":");
-            JSONObject interfaceDocData = getInterfaceDocData(doService,applicationName,iNames[1],iNames[0]);
-            interfaceDocDatas.add(interfaceDocData);
-        }
-        result.put("interfaces",interfaceDocDatas);
+    public static JSONObject getApplicationConfigData(DoService doService, String applicationName) throws ExecutionException {
+        JSONObject toObj = new JSONObject();
+        toObj.put("id","@{id}");
+        toObj.put("config","@{config}");
+        ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
+        JSONObject fromObj = (JSONObject) JSON.toJSON(applicationDO);
+        JSONObject result = DataUtils.fullRefJSON (toObj,fromObj);
         return result;
     }
 
@@ -169,6 +168,18 @@ public class DocUtils {
         IOUtils.write(returnBytes, response.getOutputStream());
     }
 
+    public static void writeResponse(HttpServletResponse response , JSONObject template, JSONObject data) throws IOException {
+
+        JSONObject ret = DataUtils.fullRefJSON(template,data);
+
+        // ret.put("data", pageData);
+        //返回内容格式化为 application/json
+        byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
+        response.setContentType("application/json; charset=utf-8");
+        //写入返回流
+        IOUtils.write(returnBytes, response.getOutputStream());
+    }
+
     public static JSONObject getInterfaceDocData(DoService doService,String applicationName, String interfaceName, String method) throws ExecutionException {
 
         JSONObject toObj = new JSONObject();
@@ -196,5 +207,6 @@ public class DocUtils {
         return result;
 
     }
+
 
 }

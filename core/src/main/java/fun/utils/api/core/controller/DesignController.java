@@ -1,9 +1,15 @@
 package fun.utils.api.core.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.api.apijson.ApiJsonCaller;
+import fun.utils.api.core.common.DataUtils;
+import fun.utils.api.core.common.RequestUtils;
+import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.services.DoService;
-import fun.utils.api.doc.DocUtils;
+import fun.utils.api.tools.DesignUtils;
+import fun.utils.api.tools.DocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponents;
@@ -19,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -34,17 +42,17 @@ public class DesignController {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+
     public DesignController(ApiProperties.Application app, AppBean appBean) {
 
         this.appBean = appBean;
         this.app = app;
         this.doService = appBean.getDoService();
-
-        log.info("Create EditController path:{} name:{}", app.getDesignPath(), app.getName());
+        log.info("Create DesignController path:{} name:{}", app.getDesignPath(), app.getName());
     }
 
     @ResponseBody
-    public void request(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException {
+    public void request(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException, SQLException {
 
 
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
@@ -68,17 +76,84 @@ public class DesignController {
             DocUtils.writeResponse(response, resource.getInputStream(),pageData);
 
         }
-        else if ("application.jpage".equalsIgnoreCase(filename)) {
+        else if ("application_edit.jpage".equalsIgnoreCase(filename)) {
 
             String referer = request.getHeader("Referer");
             String thisUrl = StringUtils.defaultIfBlank(referer, request.getRequestURL().toString());
-            String baseUrl = StringUtils.substringBeforeLast(thisUrl,request.getContextPath() + "/" + app.getDocPath());
+            String baseUrl = StringUtils.substringBeforeLast(thisUrl,request.getContextPath() + "/" + app.getDesignPath());
             baseUrl += request.getContextPath() ;
-            JSONObject pageData = DocUtils.getApplicationDocData(doService,applicationName);
+            JSONObject pageData = DesignUtils.getApplicationEditData(doService,applicationName);
             pageData.put("baseUrl",baseUrl);
-            pageData.put("apiPath",app.getApiPath());
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/application.jpage");
-            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
+            pageData.put("designPath",app.getDesignPath());
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/design/application_edit.jpage");
+            DesignUtils.writeResponse(response, resource.getInputStream(),pageData);
+
+        }
+        else if ("application_edit.do".equalsIgnoreCase(filename)) {
+
+            JSONObject input = RequestUtils.getJsonByInput(request);
+
+            ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
+
+
+            JSONObject fromObj = new JSONObject();
+            fromObj.put("tag","API_APPLICATION");
+            JSONObject appData = new JSONObject();
+            appData.put("id","@{id}");
+            appData.put("note","@{note}");
+            appData.put("owner","@{owner}");
+            appData.put("title","@{title}");
+            appData.put("version","@{version}");
+            appData.put("status","@{status}");
+
+            fromObj.put("API_APPLICATION",appData);
+
+            JSONObject putData = DataUtils.fullRefJSON (fromObj,input.getJSONObject("body"));
+
+            ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
+            JSONObject result =  apiJsonCaller.put(putData);
+
+            doService.reloadApplicationDO(applicationName);
+
+            JSONObject template = new JSONObject();
+            template.put("data","@{API_APPLICATION}");
+            template.put("code","@{code}");
+            template.put("msg","@{msg}");
+            DesignUtils.writeResponse(response, template,result);
+
+        }else if ("application_config.jpage".equalsIgnoreCase(filename)) {
+
+            JSONObject pageData = DesignUtils.getApplicationConfigData(doService,applicationName);
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/design/application_config.jpage");
+            DesignUtils.writeResponse(response, resource.getInputStream(),pageData);
+
+        }
+        else if ("application_config.do".equalsIgnoreCase(filename)) {
+
+            JSONObject input = RequestUtils.getJsonByInput(request);
+
+            ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
+
+
+            JSONObject fromObj = new JSONObject();
+            fromObj.put("tag","API_APPLICATION");
+            JSONObject appData = new JSONObject();
+            appData.put("id","@{id}");
+            appData.put("config","@{config}");
+            fromObj.put("API_APPLICATION",appData);
+
+            JSONObject putData = DataUtils.fullRefJSON (fromObj,input.getJSONObject("body"));
+
+            ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
+            JSONObject result =  apiJsonCaller.put(putData);
+
+            doService.reloadApplicationDO(applicationName);
+
+            JSONObject template = new JSONObject();
+            template.put("data","@{API_APPLICATION}");
+            template.put("code","@{code}");
+            template.put("msg","@{msg}");
+            DesignUtils.writeResponse(response, template,result);
 
         }
         else if ("parameters.jpage".equalsIgnoreCase(filename)) {
@@ -108,7 +183,7 @@ public class DesignController {
 
         }
         else {
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/edit/" + uri);
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/design/" + uri);
             if (resource == null || !resource.exists()) {
                 //静态文件资源不存在
                 response.sendError(404);

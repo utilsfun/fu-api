@@ -2,7 +2,7 @@ package fun.utils.api.core.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.core.services.DoService;
-import fun.utils.api.doc.DocUtils;
+import fun.utils.api.tools.DocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;

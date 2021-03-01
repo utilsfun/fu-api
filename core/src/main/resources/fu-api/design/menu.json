@@ -1,0 +1,115 @@
+{
+  "status": 0,
+  "msg": "",
+  "data": {
+    "pages": [
+      {
+        "label": "Home",
+        "url": "/",
+        "redirect": "/application/online"
+      },
+      {
+        "label": "应用",
+        "url": "/application",
+        "children": [
+          {
+            "label": "在线文档",
+            "url": "online",
+            "schemaApi": "../document/application.jpage"
+          },
+          {
+            "label": "属性",
+            "url": "edit",
+            "schemaApi": "./application_edit.jpage"
+          },
+          {
+            "label": "文档段",
+            "url": "document",
+            "schemaApi": "document_edit.jpage"
+          },
+          {
+            "label": "公共参数",
+            "url": "parameter",
+            "schemaApi": "parameter_edit.jpage"
+          },
+          {
+            "label": "过滤器",
+            "url": "filter",
+            "schemaApi": "filter_edit.jpage"
+          },
+          {
+            "label": "接口",
+            "url": "document",
+            "schemaApi": "document_edit.jpage",
+            "children": [
+              {
+                "label": "页面A-1",
+                "url": "1",
+                "schema": {
+                  "type": "page",
+                  "title": "页面A-1",
+                  "body": "页面A-1"
+                }
+              },
+              {
+                "label": "页面A-2",
+                "url": "2",
+                "schema": {
+                  "type": "page",
+                  "title": "页面A-2",
+                  "body": "页面A-2"
+                }
+              },
+              {
+                "label": "页面A-3",
+                "url": "3",
+                "schema": {
+                  "type": "page",
+                  "title": "页面A-3",
+                  "body": "页面A-3"
+                }
+              }
+            ]
+          },
+          {
+            "label": "配置",
+            "url": "config",
+            "schemaApi": "./application_config.jpage"
+          },
+          {
+            "label": "错误码",
+            "url": "error_code",
+            "schemaApi": "error_code.jpage"
+          },
+          {
+            "label": "更新日志",
+            "url": "update_log",
+            "schemaApi": "update_log.jpage"
+          }
+        ]
+      },
+      {
+        "label": "系统",
+        "url": "/system",
+        "children": [
+          {
+            "label": "用户管理",
+            "schema": {
+              "type": "page",
+              "title": "用户管理",
+              "body": "页面C"
+            }
+          },
+          {
+            "label": "外部链接",
+            "link": "http://baidu.gitee.io/amis"
+          },
+          {
+            "label": "部门管理",
+            "schemaApi": "/api/mock2/service/form?tpl=tpl3"
+          }
+        ]
+      }
+    ]
+  }
+}
