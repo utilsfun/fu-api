@@ -1,0 +1,87 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "crud",
+    "syncLocation": false,
+    "api": "application_documents.do",
+    "name":"application_documents",
+    "columns": [
+      {
+        "name": "id",
+        "hidden": true
+      },
+      {
+        "name": "title",
+        "label": "标题"
+      },
+      {
+        "name": "note",
+        "label": "说明"
+      },
+      {
+        "name": "format",
+        "label": "格式"
+      },      {
+        "name": "permission",
+        "label": "权限",
+        "type": "mapping",
+        "map": {
+          "public": "公开（public）",
+          "protected": "保护（protected）",
+          "private": "私有（private）",
+          "*": "未知（${type}）"
+        }
+      },
+      {
+        "name": "gmt_create",
+        "label": "创建时间",
+        "type": "date",
+        "format": "YYYY-MM-DD HH:mm:ss"
+      },
+      {
+        "name": "gmt_modified",
+        "label": "修改时间",
+        "type": "date",
+        "format": "YYYY-MM-DD HH:mm:ss"
+      },
+      {
+        "type": "operation",
+        "label": "操作",
+        "buttons": [
+          {
+            "type": "button",
+            "label": "修改",
+            "level": "info",
+            "actionType": "link",
+            "link": "/application/document/edit/${id}"
+          },
+          {
+            "label": "修改",
+            "type": "button",
+            "level": "info",
+            "actionType": "dialog",
+            "dialog": {
+              "size": "full",
+              "title": "编辑文档",
+              "body":{
+                "type": "service",
+                "size": "none",
+                "schemaApi": "./document_edit.jpage?id=${id}"
+              },
+              "actions": []
+            }
+          },
+          {
+            "label": "删除",
+            "type": "button",
+            "actionType": "ajax",
+            "level": "danger",
+            "confirmText": "确认要删除？",
+            "api": "delete:document_edit.do?_act=delete&id=${id}"
+          }
+        ]
+      }
+    ]
+  }
+}

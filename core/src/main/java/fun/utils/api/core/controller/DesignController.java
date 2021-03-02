@@ -2,11 +2,14 @@ package fun.utils.api.core.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import fun.utils.api.apijson.ApiJsonCaller;
 import fun.utils.api.core.common.DataUtils;
-import fun.utils.api.core.common.RequestUtils;
+import fun.utils.api.core.common.WebUtils;
 import fun.utils.api.core.persistence.ApplicationDO;
+import fun.utils.api.core.persistence.DocumentDO;
 import fun.utils.api.core.services.DoService;
 import fun.utils.api.tools.DesignUtils;
 import fun.utils.api.tools.DocUtils;
@@ -17,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponents;
@@ -38,6 +40,7 @@ public class DesignController {
     private final AppBean appBean;
     private final DoService doService;
     private final ApiProperties.Application app;
+    private final String classPath = "classpath:fu-api/design/";
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -66,14 +69,30 @@ public class DesignController {
         String applicationName = app.getName();
 
 
-        if ("document.jpage".equalsIgnoreCase(filename)) {
+        if ("document_edit.jpage".equalsIgnoreCase(filename)) {
 
             String id = request.getParameter("id");
-            JSONObject pageData = DocUtils.getDocumentDocData(doService,Long.valueOf(id));
+            if (StringUtils.isBlank(id)){
+                JSONObject input = WebUtils.getJsonByInput(request);
+                id = (String) JSONPath.eval(input,"$.body.params.id");
+            }
 
-            String reName = "document_" +  pageData.get("format") + ".jpage";
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/" + reName);
-            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
+            JSONObject pageData = DesignUtils.getDocumentEditData(doService,Long.valueOf(id));
+            JSONObject jpage =  WebUtils.loadJSONObject(webApplicationContext,classPath,"document_edit.jpage");
+
+            WebUtils.writeResponse(response,jpage,pageData);
+
+        }else if ("document_edit.do".equalsIgnoreCase(filename)) {
+
+            JSONObject input = WebUtils.getJsonByInput(request);
+
+            JSONObject fromObj = WebUtils.loadJSONObject(webApplicationContext,classPath,"document_config.json");
+            JSONObject putData = DataUtils.fullRefJSON (fromObj.getJSONObject("put-input"), input.getJSONObject("body"));
+
+            ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
+            JSONObject result =  apiJsonCaller.put(putData);
+
+            DesignUtils.writeResponse(response, fromObj.getJSONObject("put-output"),result);
 
         }
         else if ("application_edit.jpage".equalsIgnoreCase(filename)) {
@@ -91,7 +110,7 @@ public class DesignController {
         }
         else if ("application_edit.do".equalsIgnoreCase(filename)) {
 
-            JSONObject input = RequestUtils.getJsonByInput(request);
+            JSONObject input = WebUtils.getJsonByInput(request);
 
             ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
 
@@ -130,7 +149,7 @@ public class DesignController {
         }
         else if ("application_config.do".equalsIgnoreCase(filename)) {
 
-            JSONObject input = RequestUtils.getJsonByInput(request);
+            JSONObject input = WebUtils.getJsonByInput(request);
 
             ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
 
@@ -154,6 +173,62 @@ public class DesignController {
             template.put("code","@{code}");
             template.put("msg","@{msg}");
             DesignUtils.writeResponse(response, template,result);
+
+        }else if ("application_error.jpage".equalsIgnoreCase(filename)) {
+
+            JSONObject pageData = DesignUtils.getApplicationErrorData(doService,applicationName);
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/design/application_error.jpage");
+            DesignUtils.writeResponse(response, resource.getInputStream(),pageData);
+
+        }
+        else if ("application_error.do".equalsIgnoreCase(filename)) {
+
+            JSONObject input = WebUtils.getJsonByInput(request);
+
+            ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
+
+
+            JSONObject fromObj = new JSONObject();
+            fromObj.put("tag","API_APPLICATION");
+            JSONObject appData = new JSONObject();
+            appData.put("id","@{id}");
+            appData.put("error_codes","@{errorCodes}");
+            fromObj.put("API_APPLICATION",appData);
+
+            JSONObject putData = DataUtils.fullRefJSON (fromObj,input.getJSONObject("body"));
+
+            ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
+            JSONObject result =  apiJsonCaller.put(putData);
+
+            doService.reloadApplicationDO(applicationName);
+
+            JSONObject template = new JSONObject();
+            template.put("data","@{API_APPLICATION}");
+            template.put("code","@{code}");
+            template.put("msg","@{msg}");
+            DesignUtils.writeResponse(response, template,result);
+
+        }else if ("application_documents.jpage".equalsIgnoreCase(filename)) {
+
+            JSONObject pageData = new JSONObject();
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/design/application_documents.jpage");
+            DesignUtils.writeResponse(response, resource.getInputStream(),pageData);
+
+        }
+        else if ("application_documents.do".equalsIgnoreCase(filename)) {
+
+            JSONObject input = WebUtils.getJsonByInput(request);
+
+            ApplicationDO applicationDO = doService.loadApplicationDO(applicationName);
+
+
+            JSONObject fromObj = WebUtils.loadJSONObject(webApplicationContext,classPath,"document_config.json");
+            JSONObject getData = DataUtils.fullRefJSON (fromObj.getJSONObject("query-input"), (JSONObject) JSON.toJSON(applicationDO));
+
+            ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
+            JSONObject result =  apiJsonCaller.get(getData);
+
+            DesignUtils.writeResponse(response, fromObj.getJSONObject("query-output"),result);
 
         }
         else if ("parameters.jpage".equalsIgnoreCase(filename)) {
@@ -204,5 +279,7 @@ public class DesignController {
 
 
     }
+
+
 
 }

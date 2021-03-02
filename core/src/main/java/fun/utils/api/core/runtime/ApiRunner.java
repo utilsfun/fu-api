@@ -15,7 +15,7 @@ import fun.utils.api.core.persistence.ParameterDO;
 import fun.utils.api.core.script.*;
 import fun.utils.api.core.services.DoService;
 import fun.utils.api.core.common.ClassUtils;
-import fun.utils.api.core.common.RequestUtils;
+import fun.utils.api.core.common.WebUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -56,16 +56,16 @@ public class ApiRunner {
     public void doInitialize() throws Exception {
 
         //打包原始数据到 input 对象
-        runContext.setInput(RequestUtils.getJsonByInput(runContext.getRequest()));
+        runContext.setInput(WebUtils.getJsonByInput(runContext.getRequest()));
     }
 
     public void onEnter() throws Exception {
 
         //运行 application onEnter过滤器 过滤器
-        executeFilters("enter",applicationDO.getFilterIds());
+        executeFilters("enter",applicationDO.getParameterIds(), applicationDO.getFilterIds());
 
         //运行 interface onEnter过滤器 过滤器
-        executeFilters("enter",interfaceDO.getFilterIds());
+        executeFilters("enter",runContext.getParameterIds(),interfaceDO.getFilterIds());
 
     }
 
@@ -81,10 +81,10 @@ public class ApiRunner {
     public void onExecute() throws Exception {
 
         //运行 application onExecute 过滤器
-        executeFilters("execute",applicationDO.getFilterIds());
+        executeFilters("execute",applicationDO.getParameterIds(), applicationDO.getFilterIds());
 
         //运行 interface onExecute 过滤器
-        executeFilters("execute",interfaceDO.getFilterIds());
+        executeFilters("execute",runContext.getParameterIds(),interfaceDO.getFilterIds());
 
     }
 
@@ -103,7 +103,7 @@ public class ApiRunner {
             JSONObject config = interfaceDO.getConfig();
             String version = interfaceDO.getGmtModified().toString();
             String groovy = interfaceDO.getImplementCode();
-            executeGroovy(id,config,version,groovy);
+            executeGroovy(id,runContext.getParameterIds(),config,version,groovy);
 
         }
         else {
@@ -116,10 +116,10 @@ public class ApiRunner {
     public void onReturn() throws Exception {
 
         //运行 interface onReturn 过滤器
-        executeFilters("return",interfaceDO.getFilterIds());
+        executeFilters("return",runContext.getParameterIds(), interfaceDO.getFilterIds());
 
         //运行 application onReturn 过滤器
-        executeFilters("return",applicationDO.getFilterIds());
+        executeFilters("return",applicationDO.getParameterIds(), applicationDO.getFilterIds());
 
    }
 
@@ -152,7 +152,7 @@ public class ApiRunner {
     }
 
 
-    private void executeFilters(String point,List<Long> filterIds) throws Exception {
+    private void executeFilters(String point,List<Long> parameterIds,List<Long> filterIds) throws Exception {
 
         if (filterIds != null){
 
@@ -173,7 +173,7 @@ public class ApiRunner {
                     JSONObject config = filterDO.getConfig();
                     String version = filterDO.getGmtModified().toString();
                     String groovy = filterDO.getImplementCode();
-                    executeGroovy(filterId,config,version,groovy);
+                    executeGroovy(filterId,parameterIds,config,version,groovy);
                 }
                 else {
                     throw new Exception(MessageFormat.format("not supply implement type {0}", filterDO.getImplementType()));
@@ -184,7 +184,7 @@ public class ApiRunner {
     }
 
 
-    private void  executeGroovy(Object id,JSONObject config,String version,String groovy) throws Exception {
+    private void  executeGroovy(Object id, List<Long> parameterIds ,JSONObject config,String version,String groovy) throws Exception {
 
         GroovyScript method = new GroovyScript();
         method.setId(String.valueOf(id));
@@ -195,7 +195,7 @@ public class ApiRunner {
 
         Map<String, GroovyVariable> declaredVariables = method.getDeclaredVariables();
 
-        for (Long parameterId : runContext.getParameterIds()) {
+        for (Long parameterId : DataUtils.getEmptyIfNull(parameterIds)) {
             ParameterDO parameterDO = doService.getParameterDO(parameterId);
             GroovyVariable groovyVariable = GroovyUtils.parameterOf(parameterDO.getDataType(), parameterDO.getIsArray() == 1);
             declaredVariables.put(parameterDO.getName(), groovyVariable);

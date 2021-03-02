@@ -15,17 +15,37 @@
           {
             "label": "在线文档",
             "url": "online",
-            "schemaApi": "../document/application.jpage"
+            "schema": {
+              "type": "service",
+              "size": "sm",
+              "schemaApi": "../document/application.jpage"
+            }
           },
           {
             "label": "属性",
             "url": "edit",
-            "schemaApi": "./application_edit.jpage"
+            "schema": {
+              "type": "service",
+              "size": "sm",
+              "schemaApi": "./application_edit.jpage"
+            }
           },
           {
-            "label": "文档段",
+            "label": "文档",
             "url": "document",
-            "schemaApi": "document_edit.jpage"
+            "schema": {
+              "type": "service",
+              "size": "sm",
+              "schemaApi": "./application_documents.jpage"
+            }
+          },{
+            "label": "修改文档",
+            "url": "document/edit/:id",
+            "schema": {
+              "type": "service",
+              "size": "sm",
+              "schemaApi": "./document_edit.jpage?id=${id}"
+            }
           },
           {
             "label": "公共参数",
@@ -74,12 +94,20 @@
           {
             "label": "配置",
             "url": "config",
-            "schemaApi": "./application_config.jpage"
+            "schema": {
+              "type": "service",
+              "size": "sm",
+              "schemaApi": "./application_config.jpage"
+            }
           },
           {
             "label": "错误码",
             "url": "error_code",
-            "schemaApi": "error_code.jpage"
+            "schema": {
+              "type": "service",
+              "size": "sm",
+              "schemaApi": "./application_error.jpage"
+            }
           },
           {
             "label": "更新日志",

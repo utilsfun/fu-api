@@ -1,0 +1,51 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "form",
+    "data": "@{$}",
+    "api": "application_error.do",
+    "name":"application_error",
+    "title": "错误码配置",
+    "mode": "normal",
+    "autoFocus": true,
+    "canAccessSuperData": false,
+    "trimValues": true,
+    "controls": [
+      {
+        "type": "hidden",
+        "name": "id"
+      },
+      {
+        "type": "combo",
+        "name": "errorCodes",
+        "multiple": true,
+        "draggable": true,
+        "controls": [
+          {
+            "name": "code",
+            "label": "错误码",
+            "type": "number",
+            "showSteps": false
+          },
+          {
+            "name": "message",
+            "label": "说明",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "submit",
+        "level": "primary",
+        "label": "提交"
+      },
+      {
+        "type": "reset",
+        "label": "重置"
+      }
+    ]
+  }
+}

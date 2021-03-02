@@ -1,0 +1,206 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "form",
+    "debug": true,
+    "data": "@{$}",
+    "api": "document_edit.do?_act=put",
+    "redirect": "/application/document",
+    "name": "document_edit",
+    "title": "应用属性",
+    "mode": "horizontal",
+    "autoFocus": true,
+    "canAccessSuperData": false,
+    "trimValues": true,
+    "controls": [
+      {
+        "type": "hidden",
+        "name": "id"
+      },
+      {
+        "type": "text",
+        "name": "title",
+        "label": "标题"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "textarea",
+        "name": "note",
+        "minRows": 5,
+        "label": "说明"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "format",
+        "label": "格式",
+        "type": "select",
+        "options": [
+          {
+            "label": "html",
+            "value": "html"
+          },
+          {
+            "label": "code/json",
+            "value": "code/json"
+          },
+          {
+            "label": "code/java",
+            "value": "code/java"
+          },
+          {
+            "label": "code/sql",
+            "value": "code/sql"
+          },
+          {
+            "label": "code/javascript",
+            "value": "code/javascript"
+          },
+          {
+            "label": "code/xml",
+            "value": "code/xml"
+          },
+          {
+            "label": "code/yml",
+            "value": "code/yml"
+          },
+          {
+            "label": "code/shell",
+            "value": "code/shell"
+          },
+          {
+            "label": "amis",
+            "value": "amis"
+          },
+          {
+            "label": "image",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "rich-text",
+        "options": {
+          "menubar": false,
+          "height": 200,
+          "toolbar ": "undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help"
+        },
+        "hiddenOn": "this.format != 'html'"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "editor",
+        "language": "html",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "hiddenOn": "this.format != 'html'"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "editor",
+        "language": "json",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "hiddenOn": "this.format != 'code/json'"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "editor",
+        "language": "java",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "hiddenOn": "this.format != 'code/java'"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "editor",
+        "language": "json",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "hiddenOn": "this.format != 'amis'"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "permission",
+        "label": "权限",
+        "type": "select",
+        "options": [
+          {
+            "label": "公开（public）",
+            "value": "public"
+          },
+          {
+            "label": "保护（protected）",
+            "value": "protected"
+          },
+          {
+            "label": "私有（private）",
+            "value": "private"
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "status",
+        "type": "switch",
+        "label": "状态",
+        "trueValue": 0,
+        "falseValue": 1
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "tpl",
+        "label": "更新时间",
+        "tpl": "${gmtModified|date:YYYY年MM月DD日HH时mm分:YYYY-MM-DD HH:mm:ss}"
+      }
+    ],
+    "actions": [
+      {
+        "type": "submit",
+        "level": "primary",
+        "label": "提交"
+      },
+      {
+        "type": "reset",
+        "label": "重置"
+      },
+      {
+        "type": "action",
+        "actionType": "link",
+        "link": "/application/document",
+        "label": "返回"
+      }
+    ]
+  }
+}

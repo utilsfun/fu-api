@@ -1,13 +1,16 @@
 {
   "type": "wrapper",
-  "size": "sm",
+  "size": "none",
   "body": {
     "type": "form",
     "data": "@{$}",
     "api": "application_edit.do",
     "name":"application_edit",
     "title": "应用属性",
-
+    "mode": "horizontal",
+    "autoFocus": true,
+    "canAccessSuperData": false,
+    "trimValues": true,
     "controls": [
       {
         "type": "hidden",

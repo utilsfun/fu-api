@@ -1,12 +1,16 @@
 {
   "type": "wrapper",
-  "size": "sm",
+  "size": "none",
   "body": {
     "type": "form",
     "data": "@{$}",
     "api": "application_config.do",
     "name":"application_config",
     "title": "应用配置",
+    "mode": "normal",
+    "autoFocus": true,
+    "canAccessSuperData": false,
+    "trimValues": true,
     "controls": [
       {
         "type": "hidden",
@@ -16,7 +20,6 @@
         "type": "editor",
         "name": "config",
         "language": "json",
-        "value": "@{config}",
         "size": "600"
       }
     ],

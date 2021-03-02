@@ -1,0 +1,39 @@
+{
+ "query-input":{
+    "API_DOCUMENT[]": {
+      "API_DOCUMENT": {
+        "id{}": "@{documentIds}",
+        "@column":"id,parent_type,parent_id,title,note,format,permission,status,gmt_create,gmt_modified"
+      },
+      "query": 2
+    },
+    "total@": "/API_DOCUMENT[]/total",
+    "info@": "/API_DOCUMENT[]/info"
+  },
+  "query-output":{
+    "data": {
+      "rows": "@{API_DOCUMENT\\[\\]}",
+      "total": "@{total}",
+      "info": "@{info}"
+    },
+    "code": "@{code}",
+    "msg": "@{msg}"
+  },
+  "put-input": {
+    "tag":"API_DOCUMENT",
+    "API_DOCUMENT": {
+      "id": "@{id}",
+      "title":"@{title}",
+      "note":"@{note}",
+      "format":"@{format}",
+      "content":"@{content}",
+      "permission":"@{permission}",
+      "status":"@{status}"
+    }
+  },
+  "put-output": {
+    "data": "@{API_DOCUMENT}",
+    "code": "@{code}",
+    "msg": "@{msg}"
+  }
+}

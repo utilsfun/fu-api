@@ -129,6 +129,16 @@ public class DesignUtils {
         return result;
     }
 
+    public static JSONObject getApplicationErrorData(DoService doService, String applicationName) throws ExecutionException {
+        JSONObject toObj = new JSONObject();
+        toObj.put("id","@{id}");
+        toObj.put("errorCodes","@{errorCodes}");
+        ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
+        JSONObject fromObj = (JSONObject) JSON.toJSON(applicationDO);
+        JSONObject result = DataUtils.fullRefJSON (toObj,fromObj);
+        return result;
+    }
+
     public static JSONObject getDocumentDocData(DoService doService, Long documentId ) throws ExecutionException {
         JSONObject toObj = new JSONObject();
         toObj.put("format","@{format}");
@@ -180,6 +190,20 @@ public class DesignUtils {
         IOUtils.write(returnBytes, response.getOutputStream());
     }
 
+    public static void writeResponse(HttpServletResponse response ,  InputStream templateInputStream) throws IOException {
+        JSONObject ret = JSON.parseObject(templateInputStream, JSONObject.class);
+        writeResponse(response,ret);
+    }
+
+    public static void writeResponse(HttpServletResponse response , JSONObject data) throws IOException {
+
+        //返回内容格式化为 application/json
+        byte[] returnBytes = DataUtils.toWebJSONString(data).getBytes(StandardCharsets.UTF_8);
+        response.setContentType("application/json; charset=utf-8");
+        //写入返回流
+        IOUtils.write(returnBytes, response.getOutputStream());
+    }
+
     public static JSONObject getInterfaceDocData(DoService doService,String applicationName, String interfaceName, String method) throws ExecutionException {
 
         JSONObject toObj = new JSONObject();
@@ -209,4 +233,27 @@ public class DesignUtils {
     }
 
 
+    public static JSONObject getDocumentEditData(DoService doService, Long documentId) throws ExecutionException {
+        JSONObject toObj = new JSONObject();
+        toObj.put("id","@{id}");
+        toObj.put("format","@{format}");
+        toObj.put("note","@{note}");
+        toObj.put("title","@{title}");
+        toObj.put("format","@{format}");
+        toObj.put("permission","@{permission}");
+        toObj.put("content","@{content}");
+        toObj.put("status","@{status}");
+        toObj.put("gmtModified","@{gmtModified}");
+
+        DocumentDO documentDO = doService.loadDocumentDO(documentId);
+        JSONObject fromObj = (JSONObject) JSON.toJSON(documentDO);
+        JSONObject result = DataUtils.fullRefJSON (toObj,fromObj);
+
+        String format = documentDO.getFormat();
+        if (StringUtils.startsWithIgnoreCase(format,"code/")){
+            String language = StringUtils.removeStartIgnoreCase(format,"code/");
+            result.put("code_language",language);
+        }
+        return result;
+    }
 }

@@ -31,6 +31,7 @@ public class GroovyRunner {
     private final Map<String,Object> properties = new HashMap<>();
 
     public GroovyRunner(GroovyService groovyService, GroovyScript groovyScript) throws Exception {
+
         this.groovyService = groovyService;
         this.groovyScript = groovyScript;
         this.id = groovyScript.getId();
