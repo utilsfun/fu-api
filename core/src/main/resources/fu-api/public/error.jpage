@@ -1,0 +1,29 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "className": "bg-warning",
+  "body": {
+    "type": "service",
+    "data": {
+      "item": "@{$}"
+    },
+      "body": [
+        {
+          "type": "tpl",
+          "tpl": "错误: ${item.code}",
+          "inline": false
+        },
+        {
+          "type": "tpl",
+          "tpl": "说明: ${item.message}",
+          "inline": false
+        },
+        {
+          "type": "json",
+          "levelExpand": 4,
+          "source": "${item.info}"
+        }
+      ]
+
+  }
+}

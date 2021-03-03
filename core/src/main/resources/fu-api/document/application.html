@@ -74,6 +74,21 @@
    let amisScoped = amisEmbed.embed("#root", page ,{},amisConfig );
 
 
+    window.onresize = () =>{
+
+    if (window.parent){
+        console.log(window.outerHeight);
+        window.parent.postMessage(
+              {
+                type: 'amis:resize',
+                data: {
+                  height: window.outerHeight
+                }
+              },
+              '*'
+            );
+       }
+    }
 </script>
 
 </body>

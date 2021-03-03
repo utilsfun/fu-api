@@ -33,7 +33,37 @@
   },
   "put-output": {
     "data": "@{API_DOCUMENT}",
-    "code": "@{code}",
-    "msg": "@{msg}"
+    "code": "@{API_DOCUMENT.code}",
+    "msg": "@{API_DOCUMENT.msg}"
+  },
+  "post-input": {
+    "API_DOCUMENT": {
+      "id": null,
+      "parent_type":"@{parent_type}",
+      "parent_id":"@{parent_id}",
+      "title":"@{title}",
+      "note":"@{note}",
+      "format":"@{format}",
+      "content":"@{content}",
+      "permission":"@{permission}",
+      "status":"@{status}"
+    }
+  },
+  "post-output": {
+    "data": "@{API_DOCUMENT}",
+    "code": "@{API_DOCUMENT.code}",
+    "msg": "@{API_DOCUMENT.msg}"
+  },
+  "delete-input": {
+    "API_DOCUMENT": {
+      "parent_type":"@{parent_type}",
+      "parent_id":"@{parent_id}",
+      "id":"@{id}"
+    }
+  },
+  "delete-output": {
+    "data": "@{API_DOCUMENT.API_DOCUMENT}",
+    "code": "@{API_DOCUMENT.code}",
+    "msg": "@{API_DOCUMENT.msg}"
   }
 }

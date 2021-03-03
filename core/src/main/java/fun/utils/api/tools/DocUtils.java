@@ -92,7 +92,7 @@ public class DocUtils {
             }
         }
 
-        result.put("note", StringUtils.join(notes,"<br/>"));
+        result.put("note", StringUtils.join(notes,"\r\n"));
 
         JSONArray children = getParametersDocArray(doService,parameterDO.getParameterIds());
         result.put("children",children);

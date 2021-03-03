@@ -5,7 +5,7 @@
     "type": "form",
     "debug": true,
     "data": "@{$}",
-    "api": "document_edit.do?_act=put",
+    "api": "document_edit.do",
     "redirect": "/application/document",
     "name": "document_edit",
     "title": "应用属性",
@@ -93,18 +93,6 @@
           "menubar": false,
           "height": 200,
           "toolbar ": "undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help"
-        },
-        "hiddenOn": "this.format != 'html'"
-      },
-      {
-        "name": "content",
-        "label": "内容",
-        "type": "editor",
-        "language": "html",
-        "size": "ss",
-        "options": {
-          "automaticLayout": true,
-          "lineNumbers": 0
         },
         "hiddenOn": "this.format != 'html'"
       },

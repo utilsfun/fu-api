@@ -16,9 +16,9 @@
             "label": "在线文档",
             "url": "online",
             "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "../document/application.jpage"
+                "type": "iframe",
+                "src": "../document/application.html",
+                "height": "calc(100vh - 150px)"
             }
           },
           {
@@ -41,10 +41,20 @@
           },{
             "label": "修改文档",
             "url": "document/edit/:id",
+            "visible": false,
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./document_edit.jpage?id=${id}"
+              "schemaApi": "./document_edit.jpage?_act=update&id=${id}"
+            }
+          },{
+            "label": "新建文档",
+            "url": "document/new",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./document_edit.jpage?_act=insert"
             }
           },
           {

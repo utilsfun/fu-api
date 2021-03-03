@@ -1,87 +1,100 @@
 {
   "type": "wrapper",
   "size": "none",
-  "body": {
-    "type": "crud",
-    "syncLocation": false,
-    "api": "application_documents.do",
-    "name":"application_documents",
-    "columns": [
-      {
-        "name": "id",
-        "hidden": true
-      },
-      {
-        "name": "title",
-        "label": "标题"
-      },
-      {
-        "name": "note",
-        "label": "说明"
-      },
-      {
-        "name": "format",
-        "label": "格式"
-      },      {
-        "name": "permission",
-        "label": "权限",
-        "type": "mapping",
-        "map": {
-          "public": "公开（public）",
-          "protected": "保护（protected）",
-          "private": "私有（private）",
-          "*": "未知（${type}）"
+  "body": [
+    {
+      "type": "crud",
+      "syncLocation": false,
+      "columnsTogglable": false,
+      "api": "application_documents.do",
+      "name": "application_documents",
+      "headerToolbar": [
+        {
+          "label": "新增",
+          "type": "button",
+          "level": "info",
+          "actionType": "link",
+          "link": "/application/document/new",
+          "disabled": false
         }
-      },
-      {
-        "name": "gmt_create",
-        "label": "创建时间",
-        "type": "date",
-        "format": "YYYY-MM-DD HH:mm:ss"
-      },
-      {
-        "name": "gmt_modified",
-        "label": "修改时间",
-        "type": "date",
-        "format": "YYYY-MM-DD HH:mm:ss"
-      },
-      {
-        "type": "operation",
-        "label": "操作",
-        "buttons": [
-          {
-            "type": "button",
-            "label": "修改",
-            "level": "info",
-            "actionType": "link",
-            "link": "/application/document/edit/${id}"
-          },
-          {
-            "label": "修改",
-            "type": "button",
-            "level": "info",
-            "actionType": "dialog",
-            "dialog": {
-              "size": "full",
-              "title": "编辑文档",
-              "body":{
-                "type": "service",
-                "size": "none",
-                "schemaApi": "./document_edit.jpage?id=${id}"
-              },
-              "actions": []
-            }
-          },
-          {
-            "label": "删除",
-            "type": "button",
-            "actionType": "ajax",
-            "level": "danger",
-            "confirmText": "确认要删除？",
-            "api": "delete:document_edit.do?_act=delete&id=${id}"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "hidden": true
+        },
+        {
+          "name": "title",
+          "label": "标题",
+          "width": 100
+        },
+        {
+          "name": "note",
+          "label": "说明",
+          "type": "tpl",
+          "tpl": "${note|truncate:20}"
+        },
+        {
+          "name": "format",
+          "label": "格式"
+        },
+        {
+          "name": "permission",
+          "label": "权限",
+          "type": "mapping",
+          "map": {
+            "public": "公开（public）",
+            "protected": "保护（protected）",
+            "private": "私有（private）",
+            "*": "未知（${permission}）"
           }
-        ]
-      }
-    ]
-  }
+        },
+        {
+          "name": "status",
+          "label": "状态",
+          "type": "mapping",
+          "map": {
+            "0": "<span class='label label-success'>有效</span>",
+            "1": "<span class='label label-light'>禁用</span>",
+            "*": "<span class='label label-danger'>未知status:{status}</span>"
+          }
+        },
+        {
+          "name": "gmt_modified",
+          "label": "修改时间",
+          "type": "date",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "width": 120
+        },
+        {
+          "type": "operation",
+          "label": "操作",
+          "buttons": [
+            {
+              "type": "button-group",
+              "buttons": [
+                {
+                  "type": "button",
+                  "label": "修改",
+                  "level": "info",
+                  "size": "xs",
+                  "actionType": "link",
+                  "link": "/application/document/edit/${id}"
+                },
+                {
+                  "label": "删除",
+                  "type": "button",
+                  "actionType": "ajax",
+                  "size": "xs",
+                  "level": "danger",
+                  "confirmText": "确认要删除文档《${title}》？",
+                  "api": "post:./document_edit.do?_act=delete&id=${id}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

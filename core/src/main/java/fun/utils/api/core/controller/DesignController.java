@@ -34,25 +34,15 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
-public class DesignController {
+public class DesignController extends BaseController {
 
 
-    private final AppBean appBean;
-    private final DoService doService;
-    private final ApiProperties.Application app;
     private final String classPath = "classpath:fu-api/design/";
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-
     public DesignController(ApiProperties.Application app, AppBean appBean) {
-
-        this.appBean = appBean;
-        this.app = app;
-        this.doService = appBean.getDoService();
-        log.info("Create DesignController path:{} name:{}", app.getDesignPath(), app.getName());
+        super(app, appBean);
     }
+
 
     @ResponseBody
     public void request(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException, SQLException {
@@ -67,33 +57,92 @@ public class DesignController {
         String filenamePre = StringUtils.substringBeforeLast(filename, ".");
 
         String applicationName = app.getName();
-
+        ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
 
         if ("document_edit.jpage".equalsIgnoreCase(filename)) {
 
-            String id = request.getParameter("id");
-            if (StringUtils.isBlank(id)){
-                JSONObject input = WebUtils.getJsonByInput(request);
-                id = (String) JSONPath.eval(input,"$.body.params.id");
-            }
+            JSONObject input = WebUtils.getJsonByInput(request);
+            String _act = (String) JSONPath.eval(input,"$.parameters._act");
 
-            JSONObject pageData = DesignUtils.getDocumentEditData(doService,Long.valueOf(id));
+
             JSONObject jpage =  WebUtils.loadJSONObject(webApplicationContext,classPath,"document_edit.jpage");
 
-            WebUtils.writeResponse(response,jpage,pageData);
+            if ("update".equalsIgnoreCase(_act)) {
+
+                String id =  DataUtils.jsonValueByPath(input,"parameters.id","body.params.id");
+
+                if (StringUtils.isBlank(id)) {
+                    writeJPageError(response,500,"没有id参数");
+                } else {
+                    JSONObject pageData = DesignUtils.getDocumentEditData(doService, Long.valueOf(id));
+                    pageData.put("_act", "update");
+                    writeResponse(response, jpage, pageData);
+                }
+
+            }else if ("insert".equalsIgnoreCase(_act)) {
+                JSONObject pageData =new JSONObject();
+                pageData.put("_act","insert");
+                pageData.put("format","html");
+                pageData.put("permission","public");
+                pageData.put("status","0");
+                writeResponse(response,jpage,pageData);
+
+
+            }else{
+                writeJPageError(response,500,"无效的_act参数",input);
+            }
+
 
         }else if ("document_edit.do".equalsIgnoreCase(filename)) {
 
             JSONObject input = WebUtils.getJsonByInput(request);
 
-            JSONObject fromObj = WebUtils.loadJSONObject(webApplicationContext,classPath,"document_config.json");
-            JSONObject putData = DataUtils.fullRefJSON (fromObj.getJSONObject("put-input"), input.getJSONObject("body"));
+            String _act = DataUtils.jsonValueByPath(input,"parameters._act","body.params._act","body._act");
 
-            ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
-            JSONObject result =  apiJsonCaller.put(putData);
+            JSONObject configObj = WebUtils.loadJSONObject(webApplicationContext,classPath,"document_config.json");
 
-            DesignUtils.writeResponse(response, fromObj.getJSONObject("put-output"),result);
+            if ("update".equalsIgnoreCase(_act)) {
 
+                JSONObject srcData = input.getJSONObject("body");
+                JSONObject putData = DataUtils.fullRefJSON (configObj.getJSONObject("put-input"), srcData);
+
+                ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
+                JSONObject result =  apiJsonCaller.put(putData);
+
+                DesignUtils.writeResponse(response, configObj.getJSONObject("put-output"),result);
+
+            }else if ("insert".equalsIgnoreCase(_act)) {
+
+                JSONObject srcData = input.getJSONObject("body");
+                srcData.put("parent_type","application");
+                srcData.put("parent_id",applicationDO.getId());
+
+                JSONObject postData = DataUtils.fullRefJSON (configObj.getJSONObject("post-input"),srcData);
+
+                ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
+                JSONObject result =  apiJsonCaller.post(postData);
+
+                DesignUtils.writeResponse(response, configObj.getJSONObject("post-output"),result);
+
+            }else if ("delete".equalsIgnoreCase(_act)) {
+
+                String id =  DataUtils.jsonValueByPath(input,"parameters.id","body.params.id","body.id");
+
+                JSONObject srcData = input.getJSONObject("body");
+                srcData.put("parent_type","application");
+                srcData.put("parent_id",applicationDO.getId());
+                srcData.put("id",id);
+
+                JSONObject deleteData = DataUtils.fullRefJSON (configObj.getJSONObject("delete-input"),srcData);
+
+                ApiJsonCaller apiJsonCaller =  doService.getApiJsonCaller();
+                JSONObject result =  apiJsonCaller.delete(deleteData);
+
+                DesignUtils.writeResponse(response, configObj.getJSONObject("delete-output"),result);
+
+            }else{
+                writeJPageError(response,500,"无效的_act参数",input);
+            }
         }
         else if ("application_edit.jpage".equalsIgnoreCase(filename)) {
 
@@ -111,8 +160,6 @@ public class DesignController {
         else if ("application_edit.do".equalsIgnoreCase(filename)) {
 
             JSONObject input = WebUtils.getJsonByInput(request);
-
-            ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
 
 
             JSONObject fromObj = new JSONObject();
@@ -151,8 +198,6 @@ public class DesignController {
 
             JSONObject input = WebUtils.getJsonByInput(request);
 
-            ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
-
 
             JSONObject fromObj = new JSONObject();
             fromObj.put("tag","API_APPLICATION");
@@ -185,9 +230,6 @@ public class DesignController {
 
             JSONObject input = WebUtils.getJsonByInput(request);
 
-            ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
-
-
             JSONObject fromObj = new JSONObject();
             fromObj.put("tag","API_APPLICATION");
             JSONObject appData = new JSONObject();
@@ -219,7 +261,7 @@ public class DesignController {
 
             JSONObject input = WebUtils.getJsonByInput(request);
 
-            ApplicationDO applicationDO = doService.loadApplicationDO(applicationName);
+            applicationDO = doService.loadApplicationDO(applicationName);
 
 
             JSONObject fromObj = WebUtils.loadJSONObject(webApplicationContext,classPath,"document_config.json");

@@ -355,4 +355,14 @@ public class DataUtils {
     public static String toWebJSONString(Object ret) {
         return JSON.toJSONString(ret, SerializerFeature.WriteDateUseDateFormat,SerializerFeature.BrowserCompatible);
     }
+
+    public static <T> T jsonValueByPath(JSONObject root,String... path){
+        for (String s:path){
+           T result = (T) JSONPath.eval(root,s);
+           if (result != null){
+               return result;
+           }
+        }
+        return null;
+    }
 }

@@ -17,7 +17,7 @@
         },
         {
           "type": "html",
-          "html": "${document.content}"
+          "html": "${document.content|raw}"
         }
       ],
       "title": "${document.title}"
