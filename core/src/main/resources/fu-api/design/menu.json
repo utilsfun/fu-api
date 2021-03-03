@@ -17,7 +17,7 @@
             "url": "online",
             "schema": {
               "type": "service",
-              "size": "sm",
+              "className": "p-sm",
               "schemaApi": "../document/application.jpage"
             }
           },
@@ -26,7 +26,7 @@
             "url": "edit",
             "schema": {
               "type": "service",
-              "size": "sm",
+              "className": "p-sm",
               "schemaApi": "./application_edit.jpage"
             }
           },
@@ -35,7 +35,7 @@
             "url": "document",
             "schema": {
               "type": "service",
-              "size": "sm",
+              "className": "p-sm",
               "schemaApi": "./application_documents.jpage"
             }
           },{
@@ -43,7 +43,7 @@
             "url": "document/edit/:id",
             "schema": {
               "type": "service",
-              "size": "sm",
+              "className": "p-sm",
               "schemaApi": "./document_edit.jpage?id=${id}"
             }
           },
@@ -96,7 +96,7 @@
             "url": "config",
             "schema": {
               "type": "service",
-              "size": "sm",
+              "className": "p-sm",
               "schemaApi": "./application_config.jpage"
             }
           },
@@ -105,7 +105,7 @@
             "url": "error_code",
             "schema": {
               "type": "service",
-              "size": "sm",
+              "className": "p-sm",
               "schemaApi": "./application_error.jpage"
             }
           },
