@@ -6,7 +6,7 @@
     "debug": true,
     "data": "@{$}",
     "api": "document.api",
-    "redirect": "/application/document",
+    "redirect": "/application/document/list",
     "name": "document_edit",
     "title": "应用属性",
     "mode": "horizontal",
@@ -186,7 +186,7 @@
       {
         "type": "action",
         "actionType": "link",
-        "link": "/application/document",
+        "link": "/application/document/list",
         "label": "返回"
       }
     ]

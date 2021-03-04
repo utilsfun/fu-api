@@ -53,12 +53,18 @@ public class DesignController extends BaseController {
         String applicationName = app.getName();
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
 
-        if ("document_edit.jpage".equalsIgnoreCase(filename)) {
+        if ("document_list.jpage".equalsIgnoreCase(filename)) {
+
+            JSONObject pageData = new JSONObject();
+            Resource resource = webApplicationContext.getResource("classpath:fu-api/design/document_list.jpage");
+            DesignUtils.writeResponse(response, resource.getInputStream(), pageData);
+
+        }
+        else if ("document_edit.jpage".equalsIgnoreCase(filename)) {
 
             JSONObject input = WebUtils.getJsonByInput(request);
 
             String _act = (String) JSONPath.eval(input, "$.parameters._act");
-
 
             JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "document_edit.jpage");
 
@@ -84,12 +90,10 @@ public class DesignController extends BaseController {
                 pageData.put("status", "0");
                 writeResponse(response, jpage, pageData);
 
-
             }
             else {
                 writeJPageError(response, 500, "无效的_act参数", input);
             }
-
 
         }
         else if ("document.api".equalsIgnoreCase(filename)) {
@@ -284,30 +288,6 @@ public class DesignController extends BaseController {
             template.put("code", "@{code}");
             template.put("msg", "@{msg}");
             DesignUtils.writeResponse(response, template, result);
-
-        }
-        else if ("document_list.jpage".equalsIgnoreCase(filename)) {
-
-            JSONObject pageData = new JSONObject();
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/design/document_list.jpage");
-            DesignUtils.writeResponse(response, resource.getInputStream(), pageData);
-
-        }
-        else if ("application_documents.do".equalsIgnoreCase(filename)) {
-
-            JSONObject input = WebUtils.getJsonByInput(request);
-
-            JSONObject fromObj = WebUtils.loadJSONObject(webApplicationContext, classPath, "document_config.json");
-            JSONObject paramObj = new JSONObject();
-            paramObj.put("parent_type", "application");
-            paramObj.put("parent_id", applicationDO.getId());
-
-            JSONObject getData = DataUtils.fullRefJSON(fromObj.getJSONObject("query-input"), paramObj);
-
-            ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
-            JSONObject result = apiJsonCaller.get(getData);
-
-            DesignUtils.writeResponse(response, fromObj.getJSONObject("query-output"), result);
 
         }
         else if ("parameters.jpage".equalsIgnoreCase(filename)) {

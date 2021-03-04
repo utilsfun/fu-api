@@ -6,7 +6,7 @@
       "type": "crud",
       "syncLocation": false,
       "columnsTogglable": false,
-      "api": "./document.api?_type=application",
+      "api": "./document.api?_act=query&_type=application",
       "loadDataOnce": true,
       "draggable": true,
       "saveOrderApi": {
@@ -15,7 +15,7 @@
           "ids": "${ids}"
         }
       },
-      "name": "application_documents",
+      "name": "document_list",
       "itemActions": [
         {
           "type": "button",
