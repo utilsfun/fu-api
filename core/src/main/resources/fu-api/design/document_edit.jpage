@@ -5,7 +5,7 @@
     "type": "form",
     "debug": true,
     "data": "@{$}",
-    "api": "document_edit.do",
+    "api": "document.api",
     "redirect": "/application/document",
     "name": "document_edit",
     "title": "应用属性",

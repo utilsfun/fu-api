@@ -6,17 +6,55 @@
       "type": "crud",
       "syncLocation": false,
       "columnsTogglable": false,
-      "api": "application_documents.do",
+      "api": "./document.api?_type=application",
+      "loadDataOnce": true,
+      "draggable": true,
+      "saveOrderApi": {
+        "url": "./document.api?_type=application&_act=sort",
+        "data": {
+          "ids": "${ids}"
+        }
+      },
       "name": "application_documents",
+      "itemActions": [
+        {
+          "type": "button",
+          "icon": "fa fa-edit",
+          "label": "修改",
+          "actionType": "link",
+          "link": "/application/document/edit/${id}"
+        },
+        {
+          "label": "删除",
+          "icon": "fa fa-trash text-danger",
+          "type": "button",
+          "actionType": "ajax",
+          "confirmText": "确认要删除文档《${title}》？",
+          "api": "post:./document.api?_act=delete&id=${id}"
+        }
+      ],
+      "#bulkActions": [
+        {
+          "label": "批量删除",
+          "icon": "fa fa-trash text-danger",
+          "type": "button",
+          "actionType": "ajax",
+          "confirmText": "确认要删除文档 ${ids} ？",
+          "api": "post:./document.api?_act=batch-delete&ids=${ids}"
+        }
+      ],
       "headerToolbar": [
         {
           "label": "新增",
           "type": "button",
+          "icon": "fa fa-plus",
           "level": "info",
           "actionType": "link",
           "link": "/application/document/new",
           "disabled": false
-        }
+        },
+        "bulkActions",
+        "."
       ],
       "columns": [
         {
@@ -65,34 +103,6 @@
           "type": "date",
           "format": "YYYY-MM-DD HH:mm:ss",
           "width": 120
-        },
-        {
-          "type": "operation",
-          "label": "操作",
-          "buttons": [
-            {
-              "type": "button-group",
-              "buttons": [
-                {
-                  "type": "button",
-                  "label": "修改",
-                  "level": "info",
-                  "size": "xs",
-                  "actionType": "link",
-                  "link": "/application/document/edit/${id}"
-                },
-                {
-                  "label": "删除",
-                  "type": "button",
-                  "actionType": "ajax",
-                  "size": "xs",
-                  "level": "danger",
-                  "confirmText": "确认要删除文档《${title}》？",
-                  "api": "post:./document_edit.do?_act=delete&id=${id}"
-                }
-              ]
-            }
-          ]
         }
       ]
     }

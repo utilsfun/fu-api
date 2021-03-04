@@ -1,16 +1,18 @@
 {
- "query-input":{
+  "query-input": {
     "API_DOCUMENT[]": {
       "API_DOCUMENT": {
-        "id{}": "@{documentIds}",
-        "@column":"id,parent_type,parent_id,title,note,format,permission,status,gmt_create,gmt_modified"
+        "parent_type": "@{parent_type}",
+        "parent_id": "@{parent_id}",
+        "@column": "id,parent_type,parent_id,title,note,format,permission,status,gmt_create,gmt_modified",
+        "@order": "sort"
       },
       "query": 2
     },
     "total@": "/API_DOCUMENT[]/total",
     "info@": "/API_DOCUMENT[]/info"
   },
-  "query-output":{
+  "query-output": {
     "data": {
       "rows": "@{API_DOCUMENT\\[\\]}",
       "total": "@{total}",
@@ -20,15 +22,15 @@
     "msg": "@{msg}"
   },
   "put-input": {
-    "tag":"API_DOCUMENT",
+    "tag": "API_DOCUMENT",
     "API_DOCUMENT": {
       "id": "@{id}",
-      "title":"@{title}",
-      "note":"@{note}",
-      "format":"@{format}",
-      "content":"@{content}",
-      "permission":"@{permission}",
-      "status":"@{status}"
+      "title": "@{title}",
+      "note": "@{note}",
+      "format": "@{format}",
+      "content": "@{content}",
+      "permission": "@{permission}",
+      "status": "@{status}"
     }
   },
   "put-output": {
@@ -39,14 +41,14 @@
   "post-input": {
     "API_DOCUMENT": {
       "id": null,
-      "parent_type":"@{parent_type}",
-      "parent_id":"@{parent_id}",
-      "title":"@{title}",
-      "note":"@{note}",
-      "format":"@{format}",
-      "content":"@{content}",
-      "permission":"@{permission}",
-      "status":"@{status}"
+      "parent_type": "@{parent_type}",
+      "parent_id": "@{parent_id}",
+      "title": "@{title}",
+      "note": "@{note}",
+      "format": "@{format}",
+      "content": "@{content}",
+      "permission": "@{permission}",
+      "status": "@{status}"
     }
   },
   "post-output": {
@@ -56,13 +58,25 @@
   },
   "delete-input": {
     "API_DOCUMENT": {
-      "parent_type":"@{parent_type}",
-      "parent_id":"@{parent_id}",
-      "id":"@{id}"
+      "parent_type": "@{parent_type}",
+      "parent_id": "@{parent_id}",
+      "id": "@{id}"
     }
   },
   "delete-output": {
     "data": "@{API_DOCUMENT.API_DOCUMENT}",
+    "code": "@{API_DOCUMENT.code}",
+    "msg": "@{API_DOCUMENT.msg}"
+  },
+  "sort-input": {
+    "tag": "API_DOCUMENT",
+    "API_DOCUMENT": {
+      "id": "@{id}",
+      "sort": "@{sort}"
+    }
+  },
+  "sort-output": {
+    "data": "@{API_DOCUMENT}",
     "code": "@{API_DOCUMENT.code}",
     "msg": "@{API_DOCUMENT.msg}"
   }

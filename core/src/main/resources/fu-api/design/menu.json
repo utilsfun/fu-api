@@ -32,11 +32,11 @@
           },
           {
             "label": "文档",
-            "url": "document",
+            "url": "document/list",
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_documents.jpage"
+              "schemaApi": "./document_list.jpage"
             }
           },{
             "label": "修改文档",
