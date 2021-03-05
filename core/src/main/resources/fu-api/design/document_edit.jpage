@@ -4,11 +4,11 @@
   "body": {
     "type": "form",
     "debug": true,
-    "data": "@{$}",
+    "initApi": "document.api?_act=get&_for=@{parameters._for}&id=@{body.params.id}",
     "api": "document.api",
     "redirect": "/application/document/list",
     "name": "document_edit",
-    "title": "应用属性",
+    "title": "",
     "mode": "horizontal",
     "autoFocus": true,
     "canAccessSuperData": false,

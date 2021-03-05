@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import javafx.util.Callback;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RKeys;
 
@@ -13,6 +15,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -203,6 +206,23 @@ public class DataUtils {
         return result;
     }
 
+    public static String replaceBy(String source, String regex, int valueGroup , Callback<String,String> callback) {
+        Matcher matcher =  Pattern.compile(regex).matcher(source);
+        boolean result = matcher.find();
+        if (result) {
+            StringBuffer sb = new StringBuffer();
+            do {
+                String value = matcher.group(valueGroup);
+                String replacement = callback.call(value);
+                matcher.appendReplacement(sb, replacement == null ? "": replacement);
+                result = matcher.find();
+            } while (result);
+            matcher.appendTail(sb);
+            return sb.toString();
+        }
+        return source;
+    }
+
     public static List<String> extractList(String source, String regex){
         return extractList(source,regex,0);
     }
@@ -237,13 +257,49 @@ public class DataUtils {
         return fullRefObject(value,data);
     }
 
+    private static <T> T expressionRefObject(String expression, JSONObject data){
+
+        String[] expressions = StringUtils.split(expression, "||");
+        T result = null;
+        for (int i = 0; i < expressions.length; i++) {
+            String subExpression = expressions[i].trim();
+
+            if (isBesieged(subExpression, "'", "'")) {
+                result = (T) JSON.parse(extractBesieged(subExpression, "'", "'"));
+            }
+            else {
+                result = (T) JSONPath.eval(data, subExpression);
+            }
+
+            if (result != null) {
+                break;
+            }
+
+        }
+        return result;
+    }
+
     private static <T> T fullRefObject(T value, JSONObject data){
 
             JSONObject p = copyJSONObject(data);
 
-            if (value instanceof String && isBesieged ((String) value,"@{","}")){
-                String path = extractBesieged((String) value,"@{","}");
-                return (T) JSONPath.eval(p,path);
+            if (value == null){
+                return null;
+            }
+            else if (value instanceof String){
+
+                String strValue =  ((String) value).trim();
+
+                if (strValue.matches("@\\{(((?!@\\{).)*)\\}")) {
+                    //独立引用,可以引用object,array等
+                    String expression = extractBesieged(strValue, "@{", "}");
+                    return expressionRefObject(expression,p);
+
+                }else {
+                    return (T) replaceBy(strValue,"@\\{(((?!@\\{).)*)\\}",1,(s)->{
+                        return expressionRefObject(s,p);
+                    });
+                }
             }
             else if (value instanceof JSONObject){
                 JSONObject target = new JSONObject();

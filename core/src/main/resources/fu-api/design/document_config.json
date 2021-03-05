@@ -1,6 +1,6 @@
 {
   "query-input": {
-    "API_DOCUMENT[]": {
+    "[]": {
       "API_DOCUMENT": {
         "parent_type": "@{parent_type}",
         "parent_id": "@{parent_id}",
@@ -9,20 +9,38 @@
       },
       "query": 2
     },
-    "total@": "/API_DOCUMENT[]/total",
-    "info@": "/API_DOCUMENT[]/info"
+    "total@": "/[]/total",
+    "info@": "/[]/info"
   },
   "query-output": {
     "data": {
-      "rows": "@{API_DOCUMENT\\[\\]}",
+      "rows": "@{\\[\\].API_DOCUMENT}||'[]'}",
       "total": "@{total}",
       "info": "@{info}"
     },
     "code": "@{code}",
     "msg": "@{msg}"
   },
+  "get-input": {
+    "API_DOCUMENT": {
+      "id": "@{id}"
+     }
+  },
+  "get-output": {
+    "data": "@{API_DOCUMENT}",
+    "code": "@{API_DOCUMENT.code}",
+    "msg": "@{API_DOCUMENT.msg}"
+  },
+  "new-default": {
+    "data": {
+      "format": "html",
+      "permission": "public",
+      "status": "0"
+    },
+    "code": "200",
+    "msg": "success"
+  },
   "put-input": {
-    "tag": "API_DOCUMENT",
     "API_DOCUMENT": {
       "id": "@{id}",
       "title": "@{title}",
@@ -40,7 +58,6 @@
   },
   "post-input": {
     "API_DOCUMENT": {
-      "id": null,
       "parent_type": "@{parent_type}",
       "parent_id": "@{parent_id}",
       "title": "@{title}",

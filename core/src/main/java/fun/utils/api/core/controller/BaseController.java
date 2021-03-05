@@ -13,6 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -48,16 +49,29 @@ public class BaseController {
         return result;
     }
 
-    public void writeResponse(HttpServletResponse response , JSONObject template, JSONObject data) throws IOException {
 
-        JSONObject ret = DataUtils.fullRefJSON(template,data);
+    public void writeResponse(HttpServletResponse response , JSONObject data) throws IOException {
 
-        // ret.put("data", pageData);
         //返回内容格式化为 application/json
-        byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
+        byte[] returnBytes = DataUtils.toWebJSONString(data).getBytes(StandardCharsets.UTF_8);
         response.setContentType("application/json; charset=utf-8");
         //写入返回流
         IOUtils.write(returnBytes, response.getOutputStream());
+
+    }
+
+    public void writeResponse(HttpServletResponse response , JSONObject template, JSONObject data) throws IOException {
+
+        JSONObject ret = DataUtils.fullRefJSON(template,data);
+        writeResponse(response,ret);
+
+    }
+
+    public void writeResponse(HttpServletResponse response , InputStream templateInputStream, JSONObject data) throws IOException {
+
+        JSONObject ret = JSON.parseObject(templateInputStream, JSONObject.class);
+        writeResponse (response,ret,data);
+
     }
 
     public void writeJPageError(HttpServletResponse response , int code, String message) throws IOException {

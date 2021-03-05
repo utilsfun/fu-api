@@ -45,7 +45,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./document_edit.jpage?_act=update&id=${id}"
+              "schemaApi": "./document_edit.jpage?_for=update&id=${id}"
             }
           },{
             "label": "新建文档",
@@ -54,7 +54,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./document_edit.jpage?_act=insert"
+              "schemaApi": "./document_edit.jpage?_for=insert"
             }
           },
           {
@@ -64,8 +64,30 @@
           },
           {
             "label": "过滤器",
-            "url": "filter",
-            "schemaApi": "filter_edit.jpage"
+            "url": "filter/list",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./filter_list.jpage"
+            }
+          },{
+            "label": "修改过滤器",
+            "url": "filter/edit/:id",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./filter_edit.jpage?_for=update&id=${id}"
+            }
+          },{
+            "label": "新建过滤器",
+            "url": "filter/new",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./filter_edit.jpage?_for=insert"
+            }
           },
           {
             "label": "接口",

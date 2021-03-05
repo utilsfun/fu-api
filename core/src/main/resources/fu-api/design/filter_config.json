@@ -1,0 +1,100 @@
+{
+  "query-input": {
+    "[]": {
+      "API_FILTER": {
+        "parent_type": "@{parent_type}",
+        "parent_id": "@{parent_id}",
+        "@column": "id,parent_type,parent_id,title,implement_type,point,status,gmt_create,gmt_modified",
+        "@order": "sort"
+      },
+      "query": 2
+    },
+    "total@": "/[]/total",
+    "info@": "/[]/info"
+  },
+  "query-output": {
+    "data": {
+      "rows": "@{\\[\\].API_FILTER}||'[]'}",
+      "total": "@{total}",
+      "info": "@{info}"
+    },
+    "code": "@{code}",
+    "msg": "@{msg}"
+  },
+  "get-input": {
+    "API_FILTER": {
+      "id": "@{id}"
+    }
+  },
+  "get-output": {
+    "data": "@{API_FILTER}",
+    "code": "@{API_FILTER.code}",
+    "msg": "@{API_FILTER.msg}"
+  },
+  "new-default": {
+    "data": {
+      "implement_type": "groovy",
+      "point": "execute",
+      "status": "0"
+    },
+    "code": "200",
+    "msg": "success"
+  },
+  "put-input": {
+    "API_FILTER": {
+      "id": "@{id}",
+      "title": "@{title}",
+      
+      "implement_type": "@{implement_type}",
+      "implement_code": "@{implement_code}",
+      "point": "@{point}",
+      "status": "@{status}"
+    }
+  },
+  "put-output": {
+    "data": "@{API_FILTER}",
+    "code": "@{API_FILTER.code}",
+    "msg": "@{API_FILTER.msg}"
+  },
+  "post-input": {
+    "API_FILTER": {
+      "parent_type": "@{parent_type}",
+      "parent_id": "@{parent_id}",
+      "title": "@{title}",
+      
+      "implement_type": "@{implement_type}",
+      "implement_code": "@{implement_code}",
+      "point": "@{point}",
+      "status": "@{status}"
+    }
+  },
+  "post-output": {
+    "data": "@{API_FILTER}",
+    "code": "@{API_FILTER.code}",
+    "msg": "@{API_FILTER.msg}"
+  },
+  "delete-input": {
+    "API_FILTER": {
+      "parent_type": "@{parent_type}",
+      "parent_id": "@{parent_id}",
+      "id": "@{id}"
+    }
+  },
+  "delete-output": {
+    "data": "@{API_FILTER.API_FILTER}",
+    "code": "@{API_FILTER.code}",
+    "msg": "@{API_FILTER.msg}"
+  },
+  "sort-input": {
+    "tag": "API_FILTER",
+    "API_FILTER": {
+      "id": "@{id}",
+      "sort": "@{sort}"
+    }
+  },
+  "sort-output": {
+    "data": "@{API_FILTER}",
+    "code": "@{API_FILTER.code}",
+    "msg": "@{API_FILTER.msg}"
+  }
+}

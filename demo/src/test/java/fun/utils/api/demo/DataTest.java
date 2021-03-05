@@ -7,6 +7,7 @@ import fun.utils.api.core.common.DataUtils;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 public class DataTest {
 
@@ -51,6 +52,17 @@ public class DataTest {
 
         System.out.println(JSON.toJSONString(s,true));
         System.out.println(JSON.toJSONString(p,true));
+    }
+
+    @Test
+    public void test4() throws IOException {
+
+        String s = "@{a||'{}'},LKJ@{b|| '}@{DD}'}";
+
+        List<String>  sList = DataUtils.extractList(s,"@\\{(((?!@\\{).)*)\\}",1);
+
+        System.out.println(JSON.toJSONString(sList));
+
     }
 
 }
