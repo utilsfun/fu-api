@@ -1,8 +1,8 @@
 package fun.utils.api.core.controller;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
 import fun.utils.api.apijson.ApiJsonCaller;
 import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.common.DataUtils;
@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 @Slf4j
 public class DesignController extends BaseController {
@@ -82,7 +83,7 @@ public class DesignController extends BaseController {
                     String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
 
                     if (StringUtils.isBlank(id)) {
-                       throw ApiException.parameterValidException("没有id参数");
+                        throw ApiException.parameterValidException("没有id参数");
                     }
 
                     JSONObject paramObj = new JSONObject();
@@ -93,7 +94,7 @@ public class DesignController extends BaseController {
                     ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
                     JSONObject apiJsonResult = apiJsonCaller.get(getData);
 
-                    JSONObject outputData =  DataUtils.fullRefJSON(configObj.getJSONObject("get-output"), apiJsonResult);
+                    JSONObject outputData = DataUtils.fullRefJSON(configObj.getJSONObject("get-output"), apiJsonResult);
                     outputData.getJSONObject("data").put("_act", "update");
 
                     writeResponse(response, outputData);
@@ -103,7 +104,7 @@ public class DesignController extends BaseController {
 
                     JSONObject outputData = configObj.getJSONObject("new-default");
                     outputData.getJSONObject("data").put("_act", "insert");
-                    writeResponse(response,outputData);
+                    writeResponse(response, outputData);
 
                 }
 
@@ -188,7 +189,7 @@ public class DesignController extends BaseController {
 
         // ******* filter **********************************************
 
-       else if ("filter_list.jpage".equalsIgnoreCase(filename)) {
+        else if ("filter_list.jpage".equalsIgnoreCase(filename)) {
 
             JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "filter_list.jpage");
             writeResponse(response, jpage, input);
@@ -225,7 +226,7 @@ public class DesignController extends BaseController {
                     ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
                     JSONObject apiJsonResult = apiJsonCaller.get(getData);
 
-                    JSONObject outputData =  DataUtils.fullRefJSON(configObj.getJSONObject("get-output"), apiJsonResult);
+                    JSONObject outputData = DataUtils.fullRefJSON(configObj.getJSONObject("get-output"), apiJsonResult);
                     outputData.getJSONObject("data").put("_act", "update");
 
                     writeResponse(response, outputData);
@@ -235,7 +236,7 @@ public class DesignController extends BaseController {
 
                     JSONObject outputData = configObj.getJSONObject("new-default");
                     outputData.getJSONObject("data").put("_act", "insert");
-                    writeResponse(response,outputData);
+                    writeResponse(response, outputData);
 
                 }
 
@@ -254,6 +255,161 @@ public class DesignController extends BaseController {
                 JSONObject result = apiJsonCaller.get(getData);
 
                 DesignUtils.writeResponse(response, configObj.getJSONObject("query-output"), result);
+
+            }
+            else if ("update".equalsIgnoreCase(_act)) {
+
+                JSONObject srcData = input.getJSONObject("body");
+                JSONObject putData = DataUtils.fullRefJSON(configObj.getJSONObject("put-input"), srcData);
+
+                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+                JSONObject result = apiJsonCaller.put(putData);
+
+                DesignUtils.writeResponse(response, configObj.getJSONObject("put-output"), result);
+
+            }
+            else if ("insert".equalsIgnoreCase(_act)) {
+
+                JSONObject srcData = input.getJSONObject("body");
+                srcData.put("parent_type", "application");
+                srcData.put("parent_id", applicationDO.getId());
+
+                JSONObject postData = DataUtils.fullRefJSON(configObj.getJSONObject("post-input"), srcData);
+
+                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+                JSONObject result = apiJsonCaller.post(postData);
+
+                DesignUtils.writeResponse(response, configObj.getJSONObject("post-output"), result);
+
+            }
+            else if ("delete".equalsIgnoreCase(_act)) {
+
+                String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
+
+                JSONObject srcData = input.getJSONObject("body");
+                srcData.put("parent_type", "application");
+                srcData.put("parent_id", applicationDO.getId());
+                srcData.put("id", id);
+
+                JSONObject deleteData = DataUtils.fullRefJSON(configObj.getJSONObject("delete-input"), srcData);
+
+                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+                JSONObject result = apiJsonCaller.delete(deleteData);
+
+                DesignUtils.writeResponse(response, configObj.getJSONObject("delete-output"), result);
+
+            }
+            else if ("sort".equalsIgnoreCase(_act)) {
+
+                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+                JSONObject result = new JSONObject();
+                String ids = DataUtils.jsonValueByPath(input, "parameters.ids", "body.params.ids", "body.ids");
+                String[] idArray = StringUtils.split(ids, ",");
+                for (int i = 0; i < idArray.length; i++) {
+                    JSONObject paramObj = new JSONObject();
+                    paramObj.put("id", idArray[i]);
+                    paramObj.put("sort", i + 1);
+                    JSONObject putData = DataUtils.fullRefJSON(configObj.getJSONObject("sort-input"), paramObj);
+                    result = apiJsonCaller.put(putData);
+                }
+                DesignUtils.writeResponse(response, configObj.getJSONObject("sort-output"), result);
+            }
+            else {
+                writeJPageError(response, 500, "无效的_act参数", input);
+            }
+        }
+
+
+        // ******* parameter **********************************************
+
+        else if ("parameter_list.jpage".equalsIgnoreCase(filename)) {
+
+            JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "parameter_list.jpage");
+            writeResponse(response, jpage, input);
+
+        }
+        else if ("parameter_edit.jpage".equalsIgnoreCase(filename)) {
+
+            JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "parameter_edit.jpage");
+            writeResponse(response, jpage, input);
+
+        }
+        else if ("parameter.api".equalsIgnoreCase(filename)) {
+
+            JSONObject configObj = WebUtils.loadJSONObject(webApplicationContext, classPath, "parameter_config.json");
+            String _act = DataUtils.jsonValueByPath(input, "parameters._act", "body.params._act", "body._act");
+
+            if ("get".equalsIgnoreCase(_act)) {
+
+                String _for = DataUtils.jsonValueByPath(input, "parameters._for", "body.params._for", "body._for");
+
+                if ("update".equalsIgnoreCase(_for)) {
+
+                    String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
+
+                    if (StringUtils.isBlank(id)) {
+                        throw ApiException.parameterValidException("没有id参数");
+                    }
+
+                    JSONObject paramObj = new JSONObject();
+                    paramObj.put("id", id);
+
+                    JSONObject getData = DataUtils.fullRefJSON(configObj.getJSONObject("get-input"), paramObj);
+
+                    ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+                    JSONObject apiJsonResult = apiJsonCaller.get(getData);
+
+                    JSONObject outputData = DataUtils.fullRefJSON(configObj.getJSONObject("get-output"), apiJsonResult);
+                    outputData.getJSONObject("data").put("_act", "update");
+
+                    writeResponse(response, outputData);
+
+                }
+                else if ("insert".equalsIgnoreCase(_for)) {
+
+                    JSONObject outputData = configObj.getJSONObject("new-default");
+                    outputData.getJSONObject("data").put("_act", "insert");
+                    writeResponse(response, outputData);
+
+                }
+
+            }
+            else if ("query".equalsIgnoreCase(_act)) {
+
+                String parent_type = DataUtils.jsonValueByPath(input, "parameters._type", "body.params._type", "body._type");
+
+                JSONObject paramObj = new JSONObject();
+                paramObj.put("parent_type", parent_type);
+                paramObj.put("parent_id", applicationDO.getId());
+
+                JSONObject getData = DataUtils.fullRefJSON(configObj.getJSONObject("query-input"), paramObj);
+
+                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+                JSONObject callerResult = apiJsonCaller.get(getData);
+
+                JSONObject result = DataUtils.fullRefJSON(configObj.getJSONObject("query-output"), callerResult);
+                JSONArray rows = result.getJSONObject("data").getJSONArray("rows");
+                rows.forEach(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) {
+                        JSONObject parameterItem = (JSONObject) o;
+                        if ("object".equalsIgnoreCase(parameterItem.getString("data_type"))) {
+                            JSONObject tempObj = new JSONObject();
+                            tempObj.put("parent_type", "parameter");
+                            tempObj.put("parent_id", parameterItem.getString("id"));
+                            JSONObject tempGet = DataUtils.fullRefJSON(configObj.getJSONObject("query-input"), tempObj);
+                            JSONObject tempCallerResult = apiJsonCaller.get(tempGet);
+                            JSONObject tempResult = DataUtils.fullRefJSON(configObj.getJSONObject("query-output"), tempCallerResult);
+                            JSONArray tempRows = tempResult.getJSONObject("data").getJSONArray("rows");
+                            parameterItem.put("children", tempRows);
+                            for (Object tmpO : tempRows) {
+                                accept(tmpO);
+                            }
+                        }
+                    }
+                });
+
+                DesignUtils.writeResponse(response, result);
 
             }
             else if ("update".equalsIgnoreCase(_act)) {

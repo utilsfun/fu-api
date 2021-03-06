@@ -1,0 +1,100 @@
+{
+  "query-input": {
+    "[]": {
+      "API_PARAMETER": {
+        "parent_type": "@{parent_type}",
+        "parent_id": "@{parent_id}",
+        "@column": "id,parent_type,parent_id,name,title,is_required,note,position,default_value,data_type,status,is_array,gmt_create,gmt_modified",
+        "@order": "position,sort"
+      },
+      "query": 2
+    },
+    "total@": "/[]/total",
+    "info@": "/[]/info"
+  },
+  "query-output": {
+    "data": {
+      "rows": "@{\\[\\].API_PARAMETER}||'[]'}",
+      "total": "@{total}",
+      "info": "@{info}"
+    },
+    "code": "@{code}",
+    "msg": "@{msg}"
+  },
+  "get-input": {
+    "API_PARAMETER": {
+      "id": "@{id}"
+     }
+  },
+  "get-output": {
+    "data": "@{API_PARAMETER}",
+    "code": "@{API_PARAMETER.code}",
+    "msg": "@{API_PARAMETER.msg}"
+  },
+  "new-default": {
+    "data": {
+      "format": "html",
+      "permission": "public",
+      "status": "0"
+    },
+    "code": "200",
+    "msg": "success"
+  },
+  "put-input": {
+    "API_PARAMETER": {
+      "id": "@{id}",
+      "title": "@{title}",
+      "note": "@{note}",
+      "format": "@{format}",
+      "content": "@{content}",
+      "permission": "@{permission}",
+      "status": "@{status}"
+    }
+  },
+  "put-output": {
+    "data": "@{API_PARAMETER}",
+    "code": "@{API_PARAMETER.code}",
+    "msg": "@{API_PARAMETER.msg}"
+  },
+  "post-input": {
+    "API_PARAMETER": {
+      "parent_type": "@{parent_type}",
+      "parent_id": "@{parent_id}",
+      "title": "@{title}",
+      "note": "@{note}",
+      "format": "@{format}",
+      "content": "@{content}",
+      "permission": "@{permission}",
+      "status": "@{status}"
+    }
+  },
+  "post-output": {
+    "data": "@{API_PARAMETER}",
+    "code": "@{API_PARAMETER.code}",
+    "msg": "@{API_PARAMETER.msg}"
+  },
+  "delete-input": {
+    "API_PARAMETER": {
+      "parent_type": "@{parent_type}",
+      "parent_id": "@{parent_id}",
+      "id": "@{id}"
+    }
+  },
+  "delete-output": {
+    "data": "@{API_PARAMETER.API_PARAMETER}",
+    "code": "@{API_PARAMETER.code}",
+    "msg": "@{API_PARAMETER.msg}"
+  },
+  "sort-input": {
+    "tag": "API_PARAMETER",
+    "API_PARAMETER": {
+      "id": "@{id}",
+      "sort": "@{sort}"
+    }
+  },
+  "sort-output": {
+    "data": "@{API_PARAMETER}",
+    "code": "@{API_PARAMETER.code}",
+    "msg": "@{API_PARAMETER.msg}"
+  }
+}

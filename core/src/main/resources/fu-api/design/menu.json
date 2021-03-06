@@ -59,8 +59,30 @@
           },
           {
             "label": "公共参数",
-            "url": "parameter",
-            "schemaApi": "parameter_edit.jpage"
+            "url": "parameter/list",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./parameter_list.jpage"
+            }
+          },{
+            "label": "修改公共参数",
+            "url": "parameter/edit/:id",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./parameter_edit.jpage?_for=update&id=${id}"
+            }
+          },{
+            "label": "新建公共参数",
+            "url": "filter/new",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./parameter_edit.jpage?_for=insert"
+            }
           },
           {
             "label": "过滤器",

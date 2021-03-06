@@ -1,0 +1,129 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "form",
+    "debug": true,
+    "initApi": "filter.api?_act=get&_for=@{parameters._for}&id=@{body.params.id}",
+    "api": "filter.api",
+    "redirect": "/application/filter/list",
+    "name": "filter_edit",
+    "title": "",
+    "mode": "horizontal",
+    "autoFocus": true,
+    "canAccessSuperData": false,
+    "trimValues": true,
+    "controls": [
+      {
+        "type": "hidden",
+        "name": "id"
+      },
+      {
+        "type": "text",
+        "name": "title",
+        "label": "标题"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "implement_type",
+        "label": "实现方式",
+        "type": "select",
+        "options": [
+          {
+            "label": "groovy",
+            "value": "groovy"
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "implement_code",
+        "label": "实现代码",
+        "type": "editor",
+        "language": "java",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "hiddenOn": "this.implement_type != 'groovy'"
+      },
+      {
+        "name": "implement_code",
+        "label": "实现代码",
+        "type": "editor",
+        "language": "javascript",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "hiddenOn": "this.implement_type != 'javascript'"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "point",
+        "label": "位置",
+        "type": "select",
+        "options": [
+          {
+            "label": "进入后（enter）",
+            "value": "enter"
+          },
+          {
+            "label": "执行前（execute）",
+            "value": "execute"
+          },
+          {
+            "label": "返回前（return）",
+            "value": "return"
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "name": "status",
+        "type": "switch",
+        "label": "状态",
+        "trueValue": 0,
+        "falseValue": 1
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "tpl",
+        "label": "更新时间",
+        "tpl": "${gmtModified|date:YYYY年MM月DD日HH时mm分:YYYY-MM-DD HH:mm:ss}"
+      }
+    ],
+    "actions": [
+      {
+        "type": "submit",
+        "level": "primary",
+        "label": "提交"
+      },
+      {
+        "type": "reset",
+        "label": "重置"
+      },
+      {
+        "type": "action",
+        "actionType": "link",
+        "link": "/application/filter/list",
+        "label": "返回"
+      }
+    ]
+  }
+}

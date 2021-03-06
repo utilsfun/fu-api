@@ -1,0 +1,138 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": [
+    {
+      "type": "crud",
+      "syncLocation": false,
+      "columnsTogglable": false,
+      "api": "./parameter.api?_act=query&_type=application",
+      "loadDataOnce": true,
+      "draggable": true,
+      "saveOrderApi": {
+        "url": "./parameter.api?_type=application&_act=sort",
+        "data": {
+          "ids": "${ids}"
+        }
+      },
+      "name": "parameter_list",
+      "headerToolbar": [
+        {
+          "disabled": false,
+          "type": "button",
+          "icon": "fa fa-plus",
+          "label": "新增",
+          "actionType": "dialog",
+          "level": "info",
+          "dialog": {
+            "size": "lg",
+            "title": "新增子参数",
+            "body": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./parameter_edit.jpage?_for=new&parent_type=application&parent_id=${application.id}"
+            }
+          }
+        },
+        "bulkActions",
+        "."
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "hidden": true
+        },
+        {
+          "name": "name",
+          "label": "名称",
+          "width": 80
+        },
+        {
+          "name": "title",
+          "label": "标题",
+          "width": 120
+        },
+
+        {
+          "name": "position",
+          "label": "位置"
+        },
+        {
+          "name": "data_type",
+          "label": "类型",
+          "type": "tpl",
+          "tpl": "<% if (data.is_array == 1){ return data.data_type + '[]'} else { return data.data_type } %> "
+        },
+        {
+          "name": "default_value",
+          "label": "默认值"
+        },
+        {
+          "name": "is_required",
+          "label": "必填",
+          "type": "mapping",
+          "map": {
+            "1": "<span class='label label-info'>是</span>",
+            "0": "",
+            "*": "<span class='label label-danger'>未知is_required:{is_required}</span>"
+          }
+        },
+        {
+          "name": "status",
+          "label": "状态",
+          "type": "mapping",
+          "map": {
+            "0": "<span class='label label-success'>有效</span>",
+            "1": "<span class='label label-light'>禁用</span>",
+            "*": "<span class='label label-danger'>未知status:{status}</span>"
+          }
+        },
+        {
+          "name": "note",
+          "label": "说明",
+          "type": "tpl",
+          "tpl": "${note|truncate:100}"
+        },      {
+          "type": "operation",
+          "label": "操作",
+          "buttons": [
+            {
+              "type": "button",
+              "icon": "fa fa-plus",
+              "label": "",
+              "actionType": "dialog",
+              "level": "link",
+              "dialog": {
+                "size": "lg",
+                "title": "新增子参数",
+                "body": {
+                  "type": "service",
+                  "className": "p-sm",
+                  "schemaApi": "./parameter_edit.jpage?_for=new&parent_type=parameter&parent_id=${id}"
+                }
+              }
+            },
+            {
+              "type": "button",
+              "icon": "fa fa-edit",
+              "label": "",
+              "actionType": "link",
+              "level": "link",
+              "link": "/application/parameter/edit/${id}"
+            },
+            {
+              "label": "",
+              "icon": "fa fa-trash text-danger",
+              "type": "button",
+              "actionType": "ajax",
+              "level": "link",
+              "className": "text-danger",
+              "confirmText": "确认要删除文档《${title}》？",
+              "api": "post:./parameter.api?_act=delete&id=${id}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
