@@ -13,6 +13,7 @@ import fun.utils.api.tools.DocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
@@ -41,7 +42,7 @@ public class DesignController extends BaseController {
 
 
     @ResponseBody
-    public void request(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException, SQLException, ApiException {
+    public void request(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException, SQLException {
 
 
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
@@ -83,7 +84,8 @@ public class DesignController extends BaseController {
                     String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
 
                     if (StringUtils.isBlank(id)) {
-                        throw ApiException.parameterValidException("没有id参数");
+                        writeApiError(response,503,"没有id参数");
+                        return;
                     }
 
                     JSONObject paramObj = new JSONObject();
@@ -153,6 +155,8 @@ public class DesignController extends BaseController {
             else if ("delete".equalsIgnoreCase(_act)) {
 
                 String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
+                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+
 
                 JSONObject srcData = input.getJSONObject("body");
                 srcData.put("parent_type", "application");
@@ -160,8 +164,6 @@ public class DesignController extends BaseController {
                 srcData.put("id", id);
 
                 JSONObject deleteData = DataUtils.fullRefJSON(configObj.getJSONObject("delete-input"), srcData);
-
-                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
                 JSONObject result = apiJsonCaller.delete(deleteData);
 
                 writeResponse(response, configObj.getJSONObject("delete-output"), result);
@@ -215,7 +217,8 @@ public class DesignController extends BaseController {
                     String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
 
                     if (StringUtils.isBlank(id)) {
-                        throw ApiException.parameterValidException("没有id参数");
+                        writeApiError(response,503,"没有id参数");
+                        return;
                     }
 
                     JSONObject paramObj = new JSONObject();
@@ -285,6 +288,8 @@ public class DesignController extends BaseController {
             else if ("delete".equalsIgnoreCase(_act)) {
 
                 String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
+                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+
 
                 JSONObject srcData = input.getJSONObject("body");
                 srcData.put("parent_type", "application");
@@ -293,7 +298,7 @@ public class DesignController extends BaseController {
 
                 JSONObject deleteData = DataUtils.fullRefJSON(configObj.getJSONObject("delete-input"), srcData);
 
-                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+
                 JSONObject result = apiJsonCaller.delete(deleteData);
 
                 DesignUtils.writeResponse(response, configObj.getJSONObject("delete-output"), result);
@@ -348,7 +353,8 @@ public class DesignController extends BaseController {
                     String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
 
                     if (StringUtils.isBlank(id)) {
-                        throw ApiException.parameterValidException("没有id参数");
+                        writeApiError(response,503,"没有id参数");
+                        return;
                     }
 
                     JSONObject paramObj = new JSONObject();
@@ -415,6 +421,13 @@ public class DesignController extends BaseController {
             else if ("update".equalsIgnoreCase(_act)) {
 
                 JSONObject srcData = input.getJSONObject("body");
+                String parent_type = srcData.getString("parent_type");
+                if ("application".equals(parent_type)){
+                    srcData.put("parent_id", applicationDO.getId());
+                }else{
+                    srcData.put("position", "");
+                }
+
                 JSONObject putData = DataUtils.fullRefJSON(configObj.getJSONObject("put-input"), srcData);
 
                 ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
@@ -426,20 +439,35 @@ public class DesignController extends BaseController {
             else if ("insert".equalsIgnoreCase(_act)) {
 
                 JSONObject srcData = input.getJSONObject("body");
-                srcData.put("parent_type", "application");
-                srcData.put("parent_id", applicationDO.getId());
+                String parent_type = srcData.getString("parent_type");
+                if ("application".equals(parent_type)){
+                    srcData.put("parent_id", applicationDO.getId());
+                }else{
+                    srcData.put("position", "");
+                }
 
                 JSONObject postData = DataUtils.fullRefJSON(configObj.getJSONObject("post-input"), srcData);
 
                 ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
                 JSONObject result = apiJsonCaller.post(postData);
 
-                DesignUtils.writeResponse(response, configObj.getJSONObject("post-output"), result);
+                writeResponse(response, configObj.getJSONObject("post-output"), result);
 
             }
             else if ("delete".equalsIgnoreCase(_act)) {
 
                 String id = DataUtils.jsonValueByPath(input, "parameters.id", "body.params.id", "body.id");
+                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+
+                JSONObject paramObj = new JSONObject();
+                paramObj.put("parameter_id",id);
+                JSONObject getData = DataUtils.fullRefJSON(configObj.getJSONObject("delete-test"), paramObj);
+                JSONObject getResult = apiJsonCaller.get(getData);
+
+                if (getResult.getInteger("total") > 0){
+                    writeApiError(response,404,"有子参数,不能删除");
+                    return;
+                }
 
                 JSONObject srcData = input.getJSONObject("body");
                 srcData.put("parent_type", "application");
@@ -448,7 +476,7 @@ public class DesignController extends BaseController {
 
                 JSONObject deleteData = DataUtils.fullRefJSON(configObj.getJSONObject("delete-input"), srcData);
 
-                ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
+
                 JSONObject result = apiJsonCaller.delete(deleteData);
 
                 DesignUtils.writeResponse(response, configObj.getJSONObject("delete-output"), result);

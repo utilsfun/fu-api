@@ -52,6 +52,7 @@ public class BaseController {
 
     public void writeResponse(HttpServletResponse response , JSONObject data) throws IOException {
 
+
         //返回内容格式化为 application/json
         byte[] returnBytes = DataUtils.toWebJSONString(data).getBytes(StandardCharsets.UTF_8);
         response.setContentType("application/json; charset=utf-8");
@@ -73,6 +74,14 @@ public class BaseController {
         writeResponse (response,ret,data);
 
     }
+
+    public void writeApiError(HttpServletResponse response , int code, String message) throws IOException {
+        JSONObject data = new JSONObject();
+        data.put("code",code);
+        data.put("msg",message);
+        writeResponse(response,data);
+    }
+
 
     public void writeJPageError(HttpServletResponse response , int code, String message) throws IOException {
         writeJPageError(response, code, message, null);

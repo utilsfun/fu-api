@@ -1,129 +1,205 @@
 {
-  "type": "wrapper",
+  "type": "form",
   "size": "none",
-  "body": {
-    "type": "form",
-    "debug": true,
-    "initApi": "filter.api?_act=get&_for=@{parameters._for}&id=@{body.params.id}",
-    "api": "filter.api",
-    "redirect": "/application/filter/list",
-    "name": "filter_edit",
-    "title": "",
-    "mode": "horizontal",
-    "autoFocus": true,
-    "canAccessSuperData": false,
-    "trimValues": true,
-    "controls": [
-      {
-        "type": "hidden",
-        "name": "id"
-      },
-      {
-        "type": "text",
-        "name": "title",
-        "label": "标题"
-      },
-      {
-        "type": "divider"
-      },
-      {
-        "type": "divider"
-      },
-      {
-        "name": "implement_type",
-        "label": "实现方式",
-        "type": "select",
-        "options": [
-          {
-            "label": "groovy",
-            "value": "groovy"
-          }
-        ]
-      },
-      {
-        "type": "divider"
-      },
-      {
-        "name": "implement_code",
-        "label": "实现代码",
-        "type": "editor",
-        "language": "java",
-        "size": "ss",
-        "options": {
-          "automaticLayout": true,
-          "lineNumbers": 0
+  "wrapWithPanel": false,
+  "debug": "@{parameters._debug}",
+  "initApi":{
+    "url": "parameter.api?_act=get&_for=@{parameters._for}&id=@{parameters.id}",
+    "responseData": {
+      "&": "$$",
+      "_act": "@{parameters._for}",
+      "parent_type": "@{parameters.parent_type}",
+      "parent_id": "@{parameters.parent_id}"
+    }
+  },
+  "api": {
+    "url": "parameter.api",
+    "data": {
+      "_act": "@{parameters._for}",
+      "parent_type": "@{parameters.parent_type}",
+      "parent_id": "@{parameters.parent_id}",
+      "&": "$$"
+    }
+  },
+  "name": "parameter_edit",
+  "title": "",
+  "#mode": "horizontal",
+  "#horizontal": {
+    "leftFixed": true
+  },
+  "autoFocus": true,
+  "canAccessSuperData": false,
+  "trimValues": true,
+  "controls": [
+    {
+      "type": "hidden",
+      "name": "id"
+    },
+    {
+      "type": "fieldSet",
+      "title": "基本配置",
+      "controls": [
+        {
+          "type": "group",
+          "mode": "inline",
+          "controls": [
+            {
+              "type": "text",
+              "name": "name",
+              "label": "名称",
+              "size": "xs"
+            },
+            {
+              "type": "text",
+              "name": "title",
+              "size": "md",
+              "label": "标题"
+            },
+            {
+              "name": "position",
+              "label": "位置",
+              "type": "select",
+              "options": [
+                {
+                  "label": "body",
+                  "value": "body"
+                },
+                {
+                  "label": "header",
+                  "value": "header"
+                },
+                {
+                  "label": "cookie",
+                  "value": "cookie"
+                }
+              ],
+              "visibleOn": "this.parent_type == 'application'"
+            },
+            {
+              "name": "data_type",
+              "label": "类型",
+              "type": "select",
+              "options": [
+                {
+                  "label": "string",
+                  "value": "string"
+                },
+                {
+                  "label": "int",
+                  "value": "int"
+                },
+                {
+                  "label": "long",
+                  "value": "long"
+                },
+                {
+                  "label": "double",
+                  "value": "double"
+                },
+                {
+                  "label": "boolean",
+                  "value": "boolean"
+                },
+                {
+                  "label": "date",
+                  "value": "date"
+                },
+                {
+                  "label": "object",
+                  "value": "object"
+                }
+              ]
+            },
+            {
+              "name": "is_array",
+              "type": "switch",
+              "label": "是否数组",
+              "trueValue": 1,
+              "falseValue": 0
+            },
+            {
+              "name": "is_required",
+              "type": "switch",
+              "label": "是否必填",
+              "trueValue": 1,
+              "falseValue": 0
+            },
+            {
+              "type": "text",
+              "name": "default_value",
+              "size": "full",
+              "label": "默认值"
+            }
+          ]
         },
-        "hiddenOn": "this.implement_type != 'groovy'"
-      },
-      {
-        "name": "implement_code",
-        "label": "实现代码",
-        "type": "editor",
-        "language": "javascript",
-        "size": "ss",
-        "options": {
-          "automaticLayout": true,
-          "lineNumbers": 0
+        {
+          "type": "divider"
         },
-        "hiddenOn": "this.implement_type != 'javascript'"
-      },
-      {
-        "type": "divider"
-      },
-      {
-        "name": "point",
-        "label": "位置",
-        "type": "select",
-        "options": [
-          {
-            "label": "进入后（enter）",
-            "value": "enter"
-          },
-          {
-            "label": "执行前（execute）",
-            "value": "execute"
-          },
-          {
-            "label": "返回前（return）",
-            "value": "return"
-          }
-        ]
-      },
-      {
-        "type": "divider"
-      },
-      {
-        "name": "status",
-        "type": "switch",
-        "label": "状态",
-        "trueValue": 0,
-        "falseValue": 1
-      },
-      {
-        "type": "divider"
-      },
-      {
-        "type": "tpl",
-        "label": "更新时间",
-        "tpl": "${gmtModified|date:YYYY年MM月DD日HH时mm分:YYYY-MM-DD HH:mm:ss}"
-      }
-    ],
-    "actions": [
-      {
-        "type": "submit",
-        "level": "primary",
-        "label": "提交"
-      },
-      {
-        "type": "reset",
-        "label": "重置"
-      },
-      {
-        "type": "action",
-        "actionType": "link",
-        "link": "/application/filter/list",
-        "label": "返回"
-      }
-    ]
-  }
+        {
+          "type": "textarea",
+          "name": "note",
+          "minRows": 3,
+          "label": "说明"
+        }
+      ]
+    },
+    {
+      "type": "fieldSet",
+      "title": "高级配置",
+      "collapsable": true,
+      "collapsed": true,
+      "controls": [
+        {
+          "type": "group",
+          "mode": "inline",
+          "controls": [
+            {
+              "name": "is_hidden",
+              "type": "switch",
+              "label": "是否隐藏",
+              "labelRemark": "隐藏时文档中不显示参数,但可以传入",
+              "trueValue": 1,
+              "falseValue": 0
+            },
+            {
+              "name": "is_read_only",
+              "type": "switch",
+              "label": "是否只读",
+              "labelRemark": "只读时不能传入参数,只取默认值",
+              "trueValue": 1,
+              "falseValue": 0
+            }
+          ]
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "text",
+          "name": "alias",
+          "size": "lg",
+          "label": "别称"
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "name": "status",
+          "type": "switch",
+          "label": "状态",
+          "trueValue": 0,
+          "falseValue": 1
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "tpl",
+          "label": "更新时间",
+          "tpl": "${gmt_modified|date:YYYY年MM月DD日HH时mm分:YYYY-MM-DD HH:mm:ss}",
+          "visibleOn": "this._act == 'update'"
+        }
+      ]
+    }
+  ]
 }

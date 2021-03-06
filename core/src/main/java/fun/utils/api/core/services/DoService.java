@@ -41,6 +41,7 @@ public class DoService {
 
 
     @Resource(name = "fu-api.jdbc-template")
+    @Getter
     private JdbcTemplate jdbcTemplate;
 
     @Resource(name = "fu-api.data-source")

@@ -3,7 +3,7 @@
   "size": "none",
   "body": {
     "type": "form",
-    "debug": true,
+    "debug": "@{parameters._debug}",
     "initApi": "filter.api?_act=get&_for=@{parameters._for}&id=@{body.params.id}",
     "api": "filter.api",
     "redirect": "/application/filter/list",
@@ -22,9 +22,6 @@
         "type": "text",
         "name": "title",
         "label": "标题"
-      },
-      {
-        "type": "divider"
       },
       {
         "type": "divider"
