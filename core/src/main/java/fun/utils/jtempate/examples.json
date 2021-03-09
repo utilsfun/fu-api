@@ -1,0 +1,71 @@
+{
+  "s1.1": {
+    "data": {
+    },
+    "template": {
+      ":c": 1,
+      "a": "@{$}",
+      "b": "@{name}",
+      "c": "@{key||name}",
+      "d": "@{item||'[]'}",
+      "@[name]": "@{:c}",
+      "": [
+        "@{:c}",
+        "@{::a}",
+        "@{:..:c}",
+        "@{::a.c}",
+        "@{::a/c}"
+      ]
+    },
+    "output": {
+    }
+  },
+  "users": {
+    "@type": "for-each",
+    "@select": {
+      "key": "1",
+      "name": "a"
+    },
+    "@body": {
+      "@type": "choose",
+      "@when((:key) == 'key')": {
+        "id": "@(:value)",
+        "name": "@(:v)"
+      },
+      "@else": {
+
+      }
+    }
+  },
+  "name": {
+    "@type": "if",
+    "@if((:key) == 'key')": {
+      "id": "@(:value)",
+      "name": "@(:v)"
+    },
+    "@else": {
+
+    }
+  },
+  "params": {
+    "@type": "if",
+    "@if((:key) == 'key')": {
+      "id": "@(:value)",
+      "name": "@(:v)"
+    },
+    "@else": {
+
+    }
+
+  },
+  "if": {
+    "@type": "if",
+    "@if((:key) == 'key')": {
+      "id": "@(:value)",
+      "name": "@(:v)"
+    },
+    "@else": {
+
+    }
+  }
+}

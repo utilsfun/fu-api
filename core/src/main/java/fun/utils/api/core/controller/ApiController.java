@@ -1,7 +1,7 @@
 package fun.utils.api.core.controller;
 
 import fun.utils.api.core.common.ApiException;
-import fun.utils.api.core.common.DataUtils;
+import fun.utils.common.DataUtils;
 import fun.utils.api.core.runtime.ApiRunner;
 import fun.utils.api.core.runtime.RunContext;
 import fun.utils.api.core.services.DoService;

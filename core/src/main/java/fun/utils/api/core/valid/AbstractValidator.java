@@ -1,6 +1,6 @@
 package fun.utils.api.core.valid;
 
-import fun.utils.api.core.common.DataUtils;
+import fun.utils.common.DataUtils;
 import fun.utils.api.core.common.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

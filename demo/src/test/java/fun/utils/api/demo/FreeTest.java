@@ -2,7 +2,7 @@ package fun.utils.api.demo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.core.common.DataUtils;
+import fun.utils.common.DataUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.http.MediaTypeFactory;
@@ -46,6 +46,14 @@ public class FreeTest {
 
         System.out.println(DataUtils.extractBesieged("@(/si)e/d(i{k)s)","@(",")"));
     }
+
+    @Test
+    public void test5() throws IOException {
+        System.out.println(System.currentTimeMillis() );
+        System.out.println((System.currentTimeMillis() / 1000) % 1000000000);
+    }
+
+
 
 }
 

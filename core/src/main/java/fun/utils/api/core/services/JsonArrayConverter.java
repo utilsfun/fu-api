@@ -17,7 +17,7 @@ package fun.utils.api.core.services;
 
 
 import com.alibaba.fastjson.JSON;
-import fun.utils.api.core.common.DataUtils;
+import fun.utils.common.DataUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;

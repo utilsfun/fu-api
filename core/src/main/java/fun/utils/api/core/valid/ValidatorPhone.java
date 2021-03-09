@@ -2,6 +2,7 @@ package fun.utils.api.core.valid;
 
 import org.apache.commons.validator.GenericValidator;
 
+// @Phone
 public class ValidatorPhone extends AbstractValidator {
 
     public ValidatorPhone() {

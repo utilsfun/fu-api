@@ -1,4 +1,4 @@
-package fun.utils.api.core.common;
+package fun.utils.common;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -7,15 +7,11 @@ import com.alibaba.fastjson.JSONPath;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import javafx.util.Callback;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.redisson.api.RKeys;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -231,7 +227,7 @@ public class DataUtils {
         List<String>  result = new ArrayList<>();
         Matcher matcher =  Pattern.compile(regex).matcher(source);
         if (matcher.find()){
-            for (int i = 0; i < matcher.groupCount() ; i++) {
+            for (int i = 0; i < matcher.groupCount() + 1 ; i++) {
                 result.add(matcher.group(i));
             }
         }
@@ -243,7 +239,7 @@ public class DataUtils {
         Matcher matcher =  Pattern.compile(regex).matcher(source);
         while (matcher.find()){
             List<String>  groups = new ArrayList<>();
-            for (int i = 0; i < matcher.groupCount() ; i++) {
+            for (int i = 0; i < matcher.groupCount() + 1; i++) {
                 groups.add(matcher.group(i));
             }
             result.add(groups);
@@ -254,7 +250,7 @@ public class DataUtils {
     //把value对象,填充数据并返回
     //为value为String并为 @{JsonPath}格时返回JsonPath对应data中的值
     public static JSONObject fullRefJSON(JSONObject value, JSONObject data){
-        return fullRefObject(value,data);
+        return (JSONObject)fullRefObject(value,data);
     }
 
     private static <T> T expressionRefObject(String expression, JSONObject data){
@@ -279,7 +275,7 @@ public class DataUtils {
         return result;
     }
 
-    private static <T> T fullRefObject(T value, JSONObject data){
+    private static Object fullRefObject(Object value, JSONObject data){
 
             JSONObject p = copyJSONObject(data);
 
@@ -296,8 +292,14 @@ public class DataUtils {
                     return expressionRefObject(expression,p);
 
                 }else {
-                    return (T) replaceBy(strValue,"@\\{(((?!@\\{).)*)\\}",1,(s)->{
-                        return expressionRefObject(s,p);
+                    return   replaceBy(strValue,"@\\{(((?!@\\{).)*)\\}",1,(s)->{
+                        Object ret = expressionRefObject(s,p);
+                        if (ret instanceof JSON){
+                            return JSON.toJSONString(ret);
+                        }else{
+                            return String.valueOf(ret);
+                        }
+
                     });
                 }
             }
@@ -310,7 +312,7 @@ public class DataUtils {
                     String k1 = ClassUtils.castValue(fullRefObject(k, p),String.class);
                     target.put(k1,v1);
                 });
-                return (T) target;
+                return target;
             }
             else if (value instanceof JSONArray){
                 JSONArray target = new JSONArray();
@@ -318,10 +320,10 @@ public class DataUtils {
                 arrayValue.forEach(v->{
                     target.add(fullRefObject(v,p));
                 });
-                return (T) target;
+                return  target;
             }
             else{
-                return value;
+                return  value;
             }
 
     }

@@ -4,8 +4,7 @@ package fun.utils.api.core.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.apijson.ApiJsonCaller;
-import fun.utils.api.core.common.ApiException;
-import fun.utils.api.core.common.DataUtils;
+import fun.utils.common.DataUtils;
 import fun.utils.api.core.common.WebUtils;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.tools.DesignUtils;
@@ -13,7 +12,6 @@ import fun.utils.api.tools.DocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
@@ -446,6 +444,7 @@ public class DesignController extends BaseController {
                     srcData.put("position", "");
                 }
 
+                srcData.put("sort",(System.currentTimeMillis() / 1000) % 1000000000);
                 JSONObject postData = DataUtils.fullRefJSON(configObj.getJSONObject("post-input"), srcData);
 
                 ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
@@ -465,7 +464,7 @@ public class DesignController extends BaseController {
                 JSONObject getResult = apiJsonCaller.get(getData);
 
                 if (getResult.getInteger("total") > 0){
-                    writeApiError(response,404,"有子参数,不能删除");
+                    writeApiError(response,503,"有子参数,不能删除");
                     return;
                 }
 

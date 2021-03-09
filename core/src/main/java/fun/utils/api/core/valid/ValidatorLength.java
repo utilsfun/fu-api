@@ -1,6 +1,6 @@
 package fun.utils.api.core.valid;
 
-import fun.utils.api.core.common.ClassUtils;
+import fun.utils.common.ClassUtils;
 import org.apache.commons.validator.GenericValidator;
 
 // @Length,parameters:{min:5, max:10},message:"密码长度应在6到12之间"

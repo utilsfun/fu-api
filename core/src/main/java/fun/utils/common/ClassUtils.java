@@ -1,4 +1,4 @@
-package fun.utils.api.core.common;
+package fun.utils.common;
 
 import com.alibaba.fastjson.util.TypeUtils;
 import com.google.common.cache.Cache;

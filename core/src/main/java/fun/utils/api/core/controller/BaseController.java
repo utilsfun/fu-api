@@ -3,7 +3,7 @@ package fun.utils.api.core.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.core.common.DataUtils;
+import fun.utils.common.DataUtils;
 import fun.utils.api.core.services.DoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -53,8 +53,15 @@ public class BaseController {
     public void writeResponse(HttpServletResponse response , JSONObject data) throws IOException {
 
 
+        JSONObject result = DataUtils.copyJSONObject(data);
+
+        if (!result.containsKey("status") && result.containsKey("code") ){
+            int code = result.getInteger("code");
+            result.put("status", code == 200 ? 0 : code );
+        }
+
         //返回内容格式化为 application/json
-        byte[] returnBytes = DataUtils.toWebJSONString(data).getBytes(StandardCharsets.UTF_8);
+        byte[] returnBytes = DataUtils.toWebJSONString(result).getBytes(StandardCharsets.UTF_8);
         response.setContentType("application/json; charset=utf-8");
         //写入返回流
         IOUtils.write(returnBytes, response.getOutputStream());
@@ -95,11 +102,6 @@ public class BaseController {
         data.put("message",message);
         data.put("info",info);
         JSONObject ret = DataUtils.fullRefJSON(errorPage,data);
-        // ret.put("data", pageData);
-        //返回内容格式化为 application/json
-        byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
-        response.setContentType("application/json; charset=utf-8");
-        //写入返回流
-        IOUtils.write(returnBytes, response.getOutputStream());
+        writeResponse(response,ret);
     }
 }

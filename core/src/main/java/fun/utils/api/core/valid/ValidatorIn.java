@@ -1,6 +1,6 @@
 package fun.utils.api.core.valid;
 
-import fun.utils.api.core.common.ClassUtils;
+import fun.utils.common.ClassUtils;
 
 import java.util.List;
 

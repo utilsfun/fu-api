@@ -82,7 +82,7 @@
       "is_hidden": "@{is_hidden}",
       "is_read_only": "@{is_read_only}",
       "examples": "@{examples}",
-      "validations": "@{validations}",
+      "validations": "@{validations}@{''}",
       "status": "@{status}"
     }
   },

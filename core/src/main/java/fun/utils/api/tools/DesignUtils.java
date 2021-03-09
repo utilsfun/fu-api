@@ -3,7 +3,7 @@ package fun.utils.api.tools;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.core.common.DataUtils;
+import fun.utils.common.DataUtils;
 import fun.utils.api.core.common.ValidConfig;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.DocumentDO;

@@ -3,7 +3,7 @@ package fun.utils.api.core.runtime;
 
 import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.apijson.ApiJsonCaller;
-import fun.utils.api.core.common.DataUtils;
+import fun.utils.common.DataUtils;
 import fun.utils.api.core.common.MyJdbcTemplate;
 import fun.utils.api.core.common.MyRedisTemplate;
 import fun.utils.api.core.controller.AppBean;

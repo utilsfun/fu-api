@@ -2,7 +2,8 @@
   "type": "form",
   "size": "none",
   "wrapWithPanel": false,
-  "debug": "@{parameters._debug}",
+  "debug": true,
+  "#debug": "@{parameters._debug}",
   "initApi":{
     "url": "parameter.api?_act=get&_for=@{parameters._for}&id=@{parameters.id}",
     "responseData": {
@@ -47,6 +48,7 @@
               "type": "text",
               "name": "name",
               "label": "名称",
+              "required": true,
               "size": "xs"
             },
             {
@@ -58,6 +60,7 @@
             {
               "name": "position",
               "label": "位置",
+              "required": true,
               "type": "select",
               "options": [
                 {
@@ -78,6 +81,7 @@
             {
               "name": "data_type",
               "label": "类型",
+              "required": true,
               "type": "select",
               "options": [
                 {
@@ -127,7 +131,6 @@
             {
               "type": "text",
               "name": "default_value",
-              "size": "full",
               "label": "默认值"
             }
           ]
@@ -181,6 +184,85 @@
           "label": "别称"
         },
         {
+          "type": "combo",
+          "label": "例子",
+          "name": "examples",
+          "multiple": true,
+          "draggable": true,
+          "flat": true,
+          "controls": [
+            {
+              "name": "text",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "combo",
+          "label": "参数验证",
+          "name": "validations",
+          "multiple": true,
+          "draggable": true,
+          "controls": [
+            {
+              "name": "type",
+              "label": "",
+              "placeholder": "类型",
+              "type": "text",
+              "columnClassName": "w-md",
+              "size": "xs",
+              "options": [
+                {
+                  "label": "@Length",
+                  "value": "@Length"
+                },
+                {
+                  "label": "@Pattern",
+                  "value": "@Pattern"
+                },
+                {
+                  "label": "@In",
+                  "value": "@In"
+                },
+                {
+                  "label": "@Range",
+                  "value": "@Range"
+                },
+                {
+                  "label": "@Url",
+                  "value": "@Url"
+                },
+                {
+                  "label": "@Phone",
+                  "value": "@Phone"
+                },
+                {
+                  "label": "@IdCard",
+                  "value": "@IdCard"
+                },
+                {
+                  "label": "@Email",
+                  "value": "@Email"
+                }
+              ]
+            },
+            {
+              "name": "data",
+              "label": "",
+              "placeholder": "数据(json格式)",
+              "type": "text"
+            },
+            {
+              "name": "message",
+              "placeholder": "验证提示",
+              "label": "",
+              "type": "text"
+            }
+          ]
+        },{
           "type": "divider"
         },
         {
