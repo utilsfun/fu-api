@@ -3,6 +3,7 @@ package fun.utils.api.core.script;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 import javafx.util.Callback;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 public class GroovyService {
 
-    private final Cache<String, GroovyRunner> cacheRunners = CacheBuilder.newBuilder().maximumSize(2000).expireAfterAccess(2, TimeUnit.MINUTES).build();
-    private final Cache<String, GroovySource> cacheSources = CacheBuilder.newBuilder().maximumSize(2000).expireAfterAccess(2, TimeUnit.MINUTES).build();
+    private final Cache<String, GroovyRunner> cacheRunners = CacheBuilder.newBuilder().maximumSize(10000).expireAfterAccess(2, TimeUnit.MINUTES).build();
+    private final Cache<String, GroovySource> cacheSources = CacheBuilder.newBuilder().maximumSize(10000).expireAfterAccess(2, TimeUnit.MINUTES).build();
 
     @Getter
     private final GroovyShell shell = new GroovyShell();
@@ -64,5 +65,9 @@ public class GroovyService {
     public void expireSource(String id) throws Exception {
         cacheSources.invalidate(id);
     }
+
+
+
+
 
 }

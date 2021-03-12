@@ -10,15 +10,23 @@ import groovy.lang.Script;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.groovy.runtime.InvokerHelper;
 
 import java.util.*;
 
 @Slf4j
 public class GroovyRunner {
 
+    @Getter
     private final GroovyService groovyService;
+
+    @Getter
     private final GroovyScript groovyScript;
-    private final Script runner;
+
+    @Getter
+    private final Script script;
+
+    @Getter
     private final Class<?> returnClass;
 
     @Getter
@@ -27,8 +35,6 @@ public class GroovyRunner {
     @Getter
     private final String id;
 
-    @Getter
-    private final Map<String,Object> properties = new HashMap<>();
 
     public GroovyRunner(GroovyService groovyService, GroovyScript groovyScript) throws Exception {
 
@@ -96,7 +102,7 @@ public class GroovyRunner {
 
         log.debug(sb.toString());
 
-        runner = groovyService.getShell().parse(sb.toString());
+        script = groovyService.getShell().parse(sb.toString());
 
         String returnType = StringUtils.defaultIfBlank(groovyScript.getReturnType(), "Object");
         returnClass = ClassUtils.loadClass(returnType);
@@ -124,7 +130,8 @@ public class GroovyRunner {
     private String formatCommentText(String source) throws Exception {
         if (StringUtils.isNotBlank(source)) {
             return "/* " + source.replaceAll("\\*/", "") + " */ \r\n";
-        } else {
+        }
+        else {
             return "";
         }
     }
@@ -132,14 +139,15 @@ public class GroovyRunner {
     private String formatCommentLine(String source) throws Exception {
         if (StringUtils.isNotBlank(source)) {
             return "//" + source.replaceAll("[\r\n]+", "") + "\r\n";
-        } else {
+        }
+        else {
             return "";
         }
     }
 
-    private Map<String,Object> parseVariables(JSONObject variables){
+    public Map<String, Object> parseVariables(JSONObject variables) {
 
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
 
         groovyScript.getDeclaredVariables().forEach((name, parameter) -> {
 
@@ -154,7 +162,8 @@ public class GroovyRunner {
 
             if (variables != null && variables.containsKey(name)) {
                 srcObject = variables.get(name);
-            } else {
+            }
+            else {
                 if (StringUtils.isNotBlank(parameter.getDefaultValue())) {
                     srcObject = parameter.getDefaultValue();
                 }
@@ -167,14 +176,17 @@ public class GroovyRunner {
             if (parameter.isArray()) {
                 if (srcObject instanceof List) {
                     srcArray = (List<Object>) srcObject;
-                } else {
+                }
+                else {
                     if (DataUtils.isJSONArray(srcObject)) {
                         srcArray = JSON.parseArray(String.valueOf(srcObject));
-                    } else {
+                    }
+                    else {
                         srcArray = Arrays.asList(StringUtils.split(String.valueOf(srcObject)));
                     }
                 }
-            } else {
+            }
+            else {
                 srcArray.add(srcObject);
             }
 
@@ -188,20 +200,22 @@ public class GroovyRunner {
                 if (valueObj == null) {
                     //类型转换错误
                     throw new UnknownFormatConversionException("参数类型'" + dataType + "'转换错误");
-                } else {
+                }
+                else {
                     valueArray.add(valueObj);
                 }
 
             }
 
-            if (srcArray.size() == 0 && parameter.isRequired() ) {
+            if (srcArray.size() == 0 && parameter.isRequired()) {
                 throw new NullPointerException("参数'" + name + "'必填");
             }
 
             if (parameter.isArray()) {
                 result.put(name, valueArray);
-            } else {
-                result.put(name, valueArray.size() > 0 ? valueArray.get(0) : null );
+            }
+            else {
+                result.put(name, valueArray.size() > 0 ? valueArray.get(0) : null);
             }
 
         });
@@ -210,45 +224,93 @@ public class GroovyRunner {
     }
 
 
-    private Object run(Map<String,Object> variables) throws Exception {
+    public ExecuteContext withProperty(String name, Object object) {
+        ExecuteContext result = new ExecuteContext();
+        result.withProperty(name, object);
+        return result;
+    }
 
-        Binding binding = new Binding();
+    public ExecuteContext withProperties(Map<String, Object> properties) {
+        ExecuteContext result = new ExecuteContext();
+        result.withProperties(properties);
+        return result;
+    }
 
-        if (properties != null){
-            properties.forEach(binding::setProperty);
+
+    public ExecuteContext withVariable(String name, Object object) {
+        ExecuteContext result = new ExecuteContext();
+        result.withVariable(name, object);
+        return result;
+    }
+
+    public ExecuteContext withVariables(Map<String, Object> variables) {
+        ExecuteContext result = new ExecuteContext();
+        result.withVariables(variables);
+        return result;
+    }
+
+    public class ExecuteContext {
+
+        @Getter
+        private final Map<String, Object> properties = new HashMap<>();
+
+        @Getter
+        private final Map<String, Object> variables = new HashMap<>();
+
+
+        public ExecuteContext withProperty(String name, Object object) {
+            this.properties.put(name, object);
+            return this;
         }
 
-        if (variables != null){
-            variables.forEach(binding::setVariable);
+        public ExecuteContext withProperties(Map<String, Object> properties) {
+            this.properties.putAll(properties);
+            return this;
         }
 
-        runner.setBinding(binding);
+        public ExecuteContext withVariable(String name, Object object) {
+            this.variables.put(name, object);
+            return this;
+        }
 
-        return runner.run();
+        public ExecuteContext withVariables(Map<String, Object> variables) {
+            this.variables.putAll(variables);
+            return this;
+        }
 
-    }
+        private Script createScript() {
 
-    public GroovyRunner withProperty(String name,Object object){
-        this.properties.put(name,object);
-        return this;
-    }
+            JSONObject config = groovyScript.getConfig();
+            config = config == null ? new JSONObject() : (JSONObject) config.clone();
+            properties.put("$config", config);
 
-    public GroovyRunner withProperties(Map<String,Object> properties){
-        this.properties.putAll(properties);
-        return this;
-    }
+            Binding binding = new Binding();
 
-    public Object execute(JSONObject values) throws Exception {
+            if (properties != null) {
+                properties.forEach(binding::setProperty);
+            }
 
-        JSONObject config = groovyScript.getConfig();
-        config = config == null ? new JSONObject() : (JSONObject) config.clone();
-        properties.put("$config", config);
+            if (variables != null) {
+                variables.forEach(binding::setVariable);
+            }
 
-        Map<String,Object> variables = parseVariables(values);
-        Object result = run(variables);
+            return InvokerHelper.createScript(script.getClass(), binding);
+        }
 
-        return TypeUtils.castToJavaBean(result, returnClass);
+        public Object invokeMethod(String name, Object args) {
+            Object result = createScript().invokeMethod(name, args);
+            return TypeUtils.castToJavaBean(result, returnClass);
+        }
 
+        public Object run() {
+            Object result = createScript().run();
+            return TypeUtils.castToJavaBean(result, returnClass);
+        }
+
+        public Object execute(JSONObject values) throws Exception {
+            withVariables(parseVariables(values));
+            return run();
+        }
     }
 
 }

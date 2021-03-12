@@ -1,5 +1,6 @@
 package fun.utils.common;
 
+import apijson.JSON;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -113,14 +114,41 @@ public class ClassUtils {
         return TypeUtils.loadClass(className);
     }
 
-    public static <T> T castValue(Object value,  Class<T> cls) {
-        return TypeUtils.castToJavaBean(value,cls);
+    public static <T> T castValue(Object value, Class<T> cls) {
+        return TypeUtils.castToJavaBean(value, cls);
     }
 
     public static Object castValue(Object value, String className) {
-        return TypeUtils.castToJavaBean(value,loadClass(className));
-    }
 
+
+        if (value == null) {
+            return null;
+        }
+
+        if ("JSONString".equalsIgnoreCase(className)) {
+            return JSON.toJSONString(value);
+        }
+
+
+        if ("JSON".equalsIgnoreCase(className)) {
+            return JSON.parse(value);
+        }
+
+
+        if ("JSONObject".equalsIgnoreCase(className)) {
+            return JSON.parseObject(value);
+        }
+
+
+        if ("JSONArray".equalsIgnoreCase(className)) {
+            return JSON.parseArray(value);
+        }
+
+
+        return TypeUtils.castToJavaBean(value, loadClass(className));
+
+
+    }
 
 
 }

@@ -54,6 +54,14 @@ public class FreeTest {
     }
 
 
+    private Object p(Object p){
+        return p;
+    }
+    @Test
+    public void test6() throws IOException {
+
+        System.out.println( p(1==2 ? (System.currentTimeMillis() / 1000) % 1000000000 : 0 ));
+    }
 
 }
 

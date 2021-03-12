@@ -1,9 +1,11 @@
 package fun.utils.api.demo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import org.codehaus.groovy.runtime.InvokerHelper;
 
 import javax.script.*;
 import java.io.IOException;
@@ -16,17 +18,24 @@ public class GroovySpeedTest {
 
 
         ScriptEngine groovyEngine = new ScriptEngineManager().getEngineByName("groovy");
+        ScriptEngine javascriptEngine = new ScriptEngineManager().getEngineByName("javascript");
 
-        CompiledScript compiledScript = ((Compilable) groovyEngine).compile(scriptCode + "; return test();");
 
-        Bindings bindings = groovyEngine.createBindings();
-        bindings.put("a", 23);
-        bindings.put("aObj", new A());
         long bTime = System.currentTimeMillis();
         Object result = null;
-        for (int i = 0; i < 100000; i++) {
-            bindings.put("k", new A());
-            result = compiledScript.eval(bindings);
+        for (int i = 0; i < 10000; i++) {
+
+            Bindings bindings = groovyEngine.createBindings();
+            bindings.put("a", 23);
+            bindings.put("aObj", new A());
+            bindings.put("k", JSONObject.parseObject("{s:33}"));
+          //  CompiledScript compiledScript = ((Compilable) groovyEngine).compile(scriptCode + "; return test();");
+
+            // CompiledScript compiledScript = ((Compilable) groovyEngine).compile("a < 22 ? true : false");
+
+            result = groovyEngine.eval("int j = 100 ; return a < " + 22 + " ? j : k.s ;",bindings);
+
+           // result = compiledScript.eval(bindings);
         }
         System.out.println(JSON.toJSONString(result));
         System.out.println(System.currentTimeMillis() - bTime);
@@ -39,16 +48,18 @@ public class GroovySpeedTest {
         GroovyShell shell = new GroovyShell();
 
 
-        Script runner = shell.parse(scriptCode);
 
+        Script runner = shell.parse(scriptCode);
 
         Binding binding = new Binding();
         binding.setVariable("a", 23);
         binding.setVariable("aObj", new A());
-        runner.setBinding(binding);
+
         long bTime = System.currentTimeMillis();
         Object result = null;
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 10000; i++) {
+
+            runner.setBinding(binding);
             result = runner.invokeMethod("test", null);
         }
         System.out.println(System.currentTimeMillis() - bTime);
@@ -60,6 +71,7 @@ public class GroovySpeedTest {
     public static void test6() throws ScriptException, IOException, NoSuchMethodException {
         GroovyShell shell = new GroovyShell();
         Script runner = shell.parse(scriptCode + "; def main(){ return test();}");
+        System.out.println( runner.getClass().getName());
         Binding binding = new Binding();
         binding.setVariable("a", 23);
         binding.setVariable("aObj", new A());
@@ -67,8 +79,8 @@ public class GroovySpeedTest {
         long bTime = System.currentTimeMillis();
         Object result = null;
         for (int i = 0; i < 1000000; i++) {
-
-            result = runner.run();
+            result = InvokerHelper.createScript(runner.getClass(),binding).invokeMethod("main",null);
+          //  result = runner.invokeMethod("main",null);
         }
         System.out.println(System.currentTimeMillis() - bTime);
         System.out.println(JSON.toJSONString(result));
