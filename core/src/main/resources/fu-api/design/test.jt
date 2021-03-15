@@ -10,6 +10,9 @@
   "data-6": "@{data('parameters.a')}",
   "data-7": "url parameter a = @{data('parameters.a')}",
   "data-8": "@{s = data('parameters.a') ; if (s == '1') return true else return false; }",
-  "@:cc": "'@'loadResource('demo/test1.json');",
-  "load-01": "@self('cc');"
+  "<cc>": "'@'loadResource('demo/test1.json');",
+  "load-01": "@self('cc');",
+  "sub": {
+    "a": "@self('cc');"
+  }
 }
