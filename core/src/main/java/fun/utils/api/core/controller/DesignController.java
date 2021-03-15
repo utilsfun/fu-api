@@ -9,6 +9,7 @@ import fun.utils.api.core.common.WebUtils;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.tools.DesignUtils;
 import fun.utils.api.tools.DocUtils;
+import fun.utils.jtempate.GroovyConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +41,7 @@ public class DesignController extends BaseController {
 
 
     @ResponseBody
-    public void request(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException, SQLException {
+    public void request(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
@@ -55,16 +56,26 @@ public class DesignController extends BaseController {
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
         JSONObject input = WebUtils.getJsonByInput(request);
 
-        // ******* document **********************************************
-        if ("document_list.jpage".equalsIgnoreCase(filename)) {
+        GroovyConverter converter = new GroovyConverter(appBean.getRestTemplate(),webApplicationContext,request);
 
-            JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "document_list.jpage");
+        // ******* jt **********************************************
+        if ( StringUtils.endsWithIgnoreCase(filename,".jt")) {
+
+            JSONObject jsonTemplate = loadJSONObject(classPath, filename);
+            JSONObject data =  converter.convert(jsonTemplate,input);
+            writeJsonSuccess(response,data);
+
+        }
+        // ******* document **********************************************
+        else if ("document_list.jpage".equalsIgnoreCase(filename)) {
+
+            JSONObject jpage = loadJSONObject(classPath,filename);
             DesignUtils.writeResponse(response, jpage, input);
 
         }
         else if ("document_edit.jpage".equalsIgnoreCase(filename)) {
 
-            JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "document_edit.jpage");
+            JSONObject jpage = loadJSONObject(classPath,filename);
             writeResponse(response, jpage, input);
 
         }
@@ -191,13 +202,13 @@ public class DesignController extends BaseController {
 
         else if ("filter_list.jpage".equalsIgnoreCase(filename)) {
 
-            JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "filter_list.jpage");
+            JSONObject jpage = loadJSONObject(classPath,filename);
             writeResponse(response, jpage, input);
 
         }
         else if ("filter_edit.jpage".equalsIgnoreCase(filename)) {
 
-            JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "filter_edit.jpage");
+            JSONObject jpage = loadJSONObject(classPath,filename);
             writeResponse(response, jpage, input);
 
         }
@@ -327,19 +338,19 @@ public class DesignController extends BaseController {
 
         else if ("parameter_list.jpage".equalsIgnoreCase(filename)) {
 
-            JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "parameter_list.jpage");
+            JSONObject jpage = loadJSONObject(classPath,filename);
             writeResponse(response, jpage, input);
 
         }
         else if ("parameter_edit.jpage".equalsIgnoreCase(filename)) {
 
-            JSONObject jpage = WebUtils.loadJSONObject(webApplicationContext, classPath, "parameter_edit.jpage");
+            JSONObject jpage = loadJSONObject(classPath,filename);
             writeResponse(response, jpage, input);
 
         }
         else if ("parameter.api".equalsIgnoreCase(filename)) {
 
-            JSONObject configObj = WebUtils.loadJSONObject(webApplicationContext, classPath, "parameter_config.json");
+            JSONObject configObj = loadJSONObject(classPath, "parameter_config.json");
             String _act = DataUtils.jsonValueByPath(input, "parameters._act", "body.params._act", "body._act");
 
             if ("get".equalsIgnoreCase(_act)) {
@@ -582,13 +593,14 @@ public class DesignController extends BaseController {
         else if ("application_error.do".equalsIgnoreCase(filename)) {
 
             JSONObject fromObj = new JSONObject();
+
             fromObj.put("tag", "API_APPLICATION");
             JSONObject appData = new JSONObject();
-            appData.put("id", "@{id}");
-            appData.put("error_codes", "@{errorCodes}");
+            appData.put("id", "@(data.id);");
+            appData.put("error_codes", "@cast(data.errorCodes,'JSONString');");
             fromObj.put("API_APPLICATION", appData);
 
-            JSONObject putData = DataUtils.fullRefJSON(fromObj, input.getJSONObject("body"));
+            JSONObject putData = converter.convert(fromObj, input.getJSONObject("body"));
 
             ApiJsonCaller apiJsonCaller = doService.getApiJsonCaller();
             JSONObject result = apiJsonCaller.put(putData);

@@ -372,9 +372,11 @@ public class GroovyTest {
         result = groovyEngine.eval(pub + "def ret = loadUrl('https://www.sina.com.cn/api/hotword.json') ; return iif(ret.result.status.code == 0,ret.result.data,ret.error) ",bindings);
         System.out.println(JSON.toJSONString(result));
 
-        result = groovyEngine.eval(pub + "loadResource('demo/test1.json')",bindings);
+        result = groovyEngine.eval(pub + "loadResource('demo/test1.json','base64')",bindings);
         System.out.println(JSON.toJSONString(result));
 
+        result = groovyEngine.eval(pub + "(1)",bindings);
+        System.out.println(JSON.toJSONString(result));
 
 
         System.out.println(System.currentTimeMillis() - bTime);

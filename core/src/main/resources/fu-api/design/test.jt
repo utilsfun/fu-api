@@ -1,0 +1,15 @@
+{
+  "//": "这是个注释",
+  "iif-1": "@iif(true,1,2);",
+  "iif-2": "@iif(data.parameters.a == '1','url parameter a = 1 is true','url parameter a = 1 is false');",
+  "data-1": "@(data.parameters.a);",
+  "data-2": "url parameter a = @(data.parameters.a);",
+  "data-3": "url parameter a = @data('parameters.a');",
+  "data-4": "url parameter a = @(data.'parameters.a');",
+  "data-5": "@{data.parameters.a}",
+  "data-6": "@{data('parameters.a')}",
+  "data-7": "url parameter a = @{data('parameters.a')}",
+  "data-8": "@{s = data('parameters.a') ; if (s == '1') return true else return false; }",
+  "@:cc": "'@'loadResource('demo/test1.json');",
+  "load-01": "@self('cc');"
+}

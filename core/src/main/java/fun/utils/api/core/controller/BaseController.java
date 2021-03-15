@@ -94,6 +94,14 @@ public class BaseController {
         writeJPageError(response, code, message, null);
     }
 
+    public void writeJsonSuccess(HttpServletResponse response ,JSONObject data) throws IOException {
+        JSONObject result = new JSONObject();
+        result.put("status",0);
+        result.put("msg","success");
+        result.put("data",data);
+        writeResponse(response,data);
+    }
+
     public void writeJPageError(HttpServletResponse response , int code, String message, JSONObject info) throws IOException {
 
         JSONObject errorPage = loadJSONObject(publicClassPath,"error.jpage");

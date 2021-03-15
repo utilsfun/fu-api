@@ -32,5 +32,53 @@ public class ConvertTest {
     }
 
 
+    @Test
+    public void test2() throws IOException {
+
+        String regex = "@<%(((?!@<%).)+)%>";
+
+
+        String s1 = "aa@<%=data.1 '@'<%=data.3%> %>;@<%=data.2%>;";
+        List<String> groupValues1 = DataUtils.extractList(s1,regex,1);
+        System.out.println(JSON.toJSONString(groupValues1));
+
+
+    }
+
+    @Test
+    public void test3() throws IOException {
+
+        String regex = "@(([_\\.\\w]+)?\\([^;]*\\));";
+
+
+        String s1 = "aa@<%=data.1 '@'<%=data.3%> %>;@data(2);";
+        List<String> groupValues1 = DataUtils.extractList(s1,regex,1);
+        System.out.println(JSON.toJSONString(groupValues1));
+
+        String s2 = "@data(2); @(data.2); '@'(ddd) @cast(load('url',data.s),'json','cc');";
+        List<String> groupValues2 = DataUtils.extractList(s2,regex,1);
+        System.out.println(JSON.toJSONString(groupValues2));
+
+    }
+
+
+    @Test
+    public void test4() throws IOException {
+
+        String r1 =  "@<%((?!@<%).)+%>";
+        String r2 =  "@([_\\.\\w]+)?\\([^;]*\\);";
+
+        String regex = r1 + "|" + r2;
+
+
+        String s1 = "aa@<%=data.1 '@'<%=data.3%> %>;@data(2); @<%=data.2%>;";
+        List<String> groupValues1 = DataUtils.extractList(s1,regex,0);
+        System.out.println(JSON.toJSONString(groupValues1));
+
+        String s2 = "@data(2); @(data.2); '@'(ddd) @cast(load('url',data.s),'json','cc');";
+        List<String> groupValues2 = DataUtils.extractList(s2,regex,0);
+        System.out.println(JSON.toJSONString(groupValues2));
+
+    }
 
 }
