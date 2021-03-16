@@ -1,0 +1,8 @@
+{
+  "$json1": "@loadResource('demo/test1.json');",
+  "add-demo-3": "@attr('json1');",
+  "sub": {
+    "a": "@attr('json1');"
+  }
+
+}

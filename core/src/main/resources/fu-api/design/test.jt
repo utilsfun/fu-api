@@ -10,15 +10,30 @@
   "data-6": "@{data('parameters.a')}",
   "data-7": "url parameter a = @{data('parameters.a')}",
   "data-8": "@{s = data('parameters.a') ; if (s == '1') return true else return false; }",
-  "$cc": "'@'loadResource('demo/test1.json');",
+  "$cc": "@loadResource('demo/test1.json');",
+  "#ss": "@loadResource('demo/test1.json');",
   "load-01": "@attr('cc');",
-
   "$add2()": "(a,b){return a + b}",
   "$test()": "(){return attr('cc')}",
   "add-demo-1": "@func('add2',88,99);",
   "add-demo-2": "@func('test');",
   "sub": {
-    "a": "@attr('cc');"
+    "a": "@attr('cc');",
+    "b": "@func('test');",
+    "c": "@attr('ss');"
+  },
+  "sub2": {
+    "*": {
+      "@func": "@if",
+      "test": "1==1",
+      "true": {
+        "a": "a",
+        "b": "b"
+      },
+      "false": {
+        "a": "a1",
+        "c": "c"
+      }
+    }
   }
-
 }

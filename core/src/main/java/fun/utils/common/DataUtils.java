@@ -9,7 +9,9 @@ import javafx.util.Callback;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -127,7 +129,7 @@ public class DataUtils {
         return copyJSON(json);
     }
 
-    private static <T> T copyJSON(Object json) {
+    public static <T> T copyJSON(Object json) {
         return (T) JSON.parse(toWebJSONString(json));
     }
 
@@ -422,5 +424,42 @@ public class DataUtils {
            }
         }
         return null;
+    }
+
+    public static boolean testBoolean(Object testValue){
+
+            boolean test = true;
+
+            if (testValue == null) {
+                test = false;
+            }
+            else if (testValue instanceof Boolean) {
+                test = (Boolean) testValue;
+            }
+            else if (testValue instanceof BigDecimal) {
+                test = ((BigDecimal) testValue).intValue() == 1;
+            }
+
+            else if (testValue instanceof Number) {
+                test = ((Number) testValue).intValue() == 1;
+            }
+            else if (testValue instanceof String) {
+
+                String strTest = String.valueOf(testValue);
+                if (StringUtils.isBlank(strTest) || strTest.toLowerCase().matches("false|no|0|0.0|否|假")) {
+                    test = false;
+                }
+            }
+            else if (testValue instanceof Collection) {
+
+                test = !((Collection) testValue).isEmpty();
+            }
+            else if (testValue instanceof Map) {
+
+                test = !((Map) testValue).isEmpty();
+            }
+
+            return test ;
+
     }
 }
