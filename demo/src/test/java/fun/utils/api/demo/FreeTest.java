@@ -57,11 +57,26 @@ public class FreeTest {
     private Object p(Object p){
         return p;
     }
+
     @Test
     public void test6() throws IOException {
 
         System.out.println( p(1==2 ? (System.currentTimeMillis() / 1000) % 1000000000 : 0 ));
     }
+
+    @Test
+    public void test7() throws IOException {
+
+        String s = "t_ldx_fx.fxa_order_all";
+        String s2 = "t_ldx_fx.fxa_order_20210317";
+
+        String regex = "t_ldx_fx\\.((?!\\d{6}).)*";
+
+        System.out.println(s.matches("^"+ regex +"$"));
+        System.out.println(s2.matches("^"+ regex +"$"));
+    }
+
+
 
 }
 
