@@ -3,6 +3,12 @@
   "add-demo-3": "@attr('json1');",
   "sub": {
     "a": "@attr('json1');"
-  }
-
+  },
+  "sub2": [
+    {
+    "@func": "@each",
+    "select": [1,2,3],
+    "for": "@attr('value');"
+    }
+  ]
 }
