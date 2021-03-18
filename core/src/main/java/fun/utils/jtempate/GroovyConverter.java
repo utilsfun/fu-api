@@ -180,27 +180,22 @@ public class GroovyConverter {
         public final JSONObject data;
         public final GroovyConverter converter;
         public final SelfObject parent;
-        public final JSONObject selfNode;
-        public final JSONObject targetNode;
 
         @Getter
         public final JSONObject varNode = new JSONObject();
 
 
-        SelfObject(GroovyConverter converter, JSONObject data, JSONObject node, JSONObject targetNode) {
+        SelfObject(GroovyConverter converter, JSONObject data) {
             this.converter = converter;
             this.data = data;
-            this.selfNode = node;
-            this.targetNode = targetNode;
             this.parent = null;
         }
 
-        SelfObject(JSONObject node, SelfObject parent, JSONObject targetNode) {
+        SelfObject(SelfObject parent) {
             this.converter = parent.converter;
             this.data = parent.data;
-            this.selfNode = node;
             this.parent = parent;
-            this.targetNode = targetNode;
+
         }
 
         public SelfObject getRoot() {
@@ -210,17 +205,6 @@ public class GroovyConverter {
             }
             else {
                 return parent.getRoot();
-            }
-
-        }
-
-        public JSONObject getRootNode() {
-
-            if (null == parent) {
-                return targetNode;
-            }
-            else {
-                return parent.getRootNode();
             }
 
         }
@@ -246,15 +230,7 @@ public class GroovyConverter {
 
         public Object attr(String name) throws ScriptException {
 
-            Object result = getVar(name);
-
-            if (result == null) {
-
-                result = targetNode.get(name);
-
-            }
-
-            return result;
+            return getVar(name);
 
         }
 
@@ -340,7 +316,7 @@ public class GroovyConverter {
     }
 
     public JSONObject convert(JSONObject template, JSONObject data) throws Exception {
-        return (JSONObject) convert(template, new SelfObject(this, data, template, new JSONObject()));
+        return (JSONObject) convert(template, new SelfObject(this, data));
     }
 
 
@@ -367,6 +343,7 @@ public class GroovyConverter {
     private Object expressionEval(String expression, SelfObject self) throws ScriptException {
 
         Bindings bindings = initBindings(self);
+
         return groovyEngine.eval(GROOVY_PUB_EXPR + expression, bindings);
 
     }
@@ -391,7 +368,7 @@ public class GroovyConverter {
 
     }
 
-    public Object convert(Object value, SelfObject self) throws ScriptException {
+    public Object convert(Object value, SelfObject self ) throws ScriptException {
 
 
         if (value == null) {
@@ -441,12 +418,69 @@ public class GroovyConverter {
                 return strResult.replaceAll("'@'", "@");
             }
         }
+
+        else if (value instanceof JSONObject && ((JSONObject)value).containsKey("@func")) {
+
+                JSONObject vObject = (JSONObject)value;
+                String type = vObject.getString("@func");
+
+                if ("@if".equalsIgnoreCase(type)){
+
+                    Object select = convert(vObject.get("select"), self);
+                    Object funcValue = DataUtils.testBoolean(select)? vObject.get("true") : vObject.get("false");
+                    return funcValue ;
+
+                } else  if ("@switch".equalsIgnoreCase(type)){
+
+                    Object select = convert(vObject.get("select"), self);
+                    Object funcValue = vObject.containsKey(select) ? vObject.get(select) : vObject.get("default")  ;
+
+                    return funcValue;
+
+                }else if ("@each".equalsIgnoreCase(type)){
+
+                    Object select = convert(vObject.get("select"), self);
+                    Object body = vObject.get("for");
+
+                    List<Object> funcValue = new ArrayList<>();
+
+                    if (select instanceof List){
+
+                        int index = 0;
+                        for (Object obj:(List)select) {
+
+                            SelfObject subSelf = new SelfObject(self);
+                            subSelf.varNode.put("$key",index ++ );
+                            subSelf.varNode.put("$value",obj);
+                            funcValue.add(convert(body,subSelf));
+                        }
+
+                    }else if (select instanceof Map){
+
+                        Map selectMap = (Map)select;
+
+                        for (Object key:selectMap.keySet()) {
+
+                            SelfObject subSelf = new SelfObject(self);
+                            subSelf.varNode.put("$key",key );
+                            subSelf.varNode.put("$value",selectMap.get(key));
+                            funcValue.add(convert(body,subSelf));
+                        }
+                    }
+
+                   return funcValue;
+
+                }else{
+
+                   return null;
+                }
+
+        }
         else if (value instanceof JSONObject) {
 
             JSONObject target = new JSONObject();
             JSONObject objectValue = (JSONObject) value;
-            SelfObject subSelf = new SelfObject(objectValue, self, target);
-
+            SelfObject subSelf = new SelfObject(self);
 
             List<String> keys = new ArrayList<>(objectValue.keySet());
             for (String k : keys) {
@@ -460,45 +494,39 @@ public class GroovyConverter {
 
                 Object v = objectValue.get(k);
 
-                if (v instanceof JSONObject && ((JSONObject)v).containsKey("@func")){
-
-                    JSONObject vObject = (JSONObject)v;
-                    String type = vObject.getString("@func");
-
-                    if ("@if".equalsIgnoreCase(type)){
-                        String test = vObject.getString("test");
-                        Object v1 ;
-                        if (DataUtils.testBoolean(expressionEval(test,subSelf))){
-                            v1 = vObject.get("true");
-                        }else{
-                            v1 = vObject.get("false");
-                        }
-
-                        if ("*".equals(k) && v1 instanceof Map){
-                          target.putAll((Map)v1);
-                        } else{
-                          target.put(k,v1);
-                        }
-
-                    }
-
-
-
-                }else{
                     Object v1 = convert(v, subSelf);
-                    String k1 = ClassUtils.castValue(convert(k, subSelf), String.class);
-                    target.put(k1, v1);
-                }
+
+                    if ("*".equals(k) && v1 instanceof Map){
+                        //当键为'*', 同时值转换后为 JSONObject,则并入目标JSONObject
+                        target.putAll((Map)v1);
+                    }else{
+                        //键也转换
+                        String k1 = ClassUtils.castValue(convert(k, subSelf), String.class);
+                        //加入目标JSONObject
+                        target.put(k1, v1);
+                    }
 
             }
 
             return target;
         }
         else if (value instanceof JSONArray) {
+
             JSONArray target = new JSONArray();
             JSONArray arrayValue = (JSONArray) value;
+
             for (Object v : arrayValue) {
-                target.add(convert(v, self));
+
+                Object v1 = convert(v, self);
+
+                if ( !(v instanceof List) && v1 instanceof List ){
+                   //当item不为子list,同时转换后为list, 则并入目标list
+                   target.addAll((List)v1);
+                }else{
+                   //加入转换后的值
+                   target.add(v1);
+                }
+
             }
             return target;
         }
