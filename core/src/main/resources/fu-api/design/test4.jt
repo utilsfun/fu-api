@@ -18,19 +18,19 @@
 
   "*": {
     "@func": "@if",
-    "select": "@{ $$.res.code == 200 }",
+    "select": "@{ attr.res.code == 200 }",
     "true":{
       "data": {
-        "rows": "@($$.'res'.'[]'.'API_FILTER');",
-        "total": "@($$.res.total);",
-        "info": "@($$.res.info);"
+        "rows": "@(attr.'res'.'[]'.'API_FILTER');",
+        "total": "@(attr.res.total);",
+        "info": "@(attr.res.info);"
       },
-      "msg": "@($$.res.msg);",
+      "msg": "@(attr.res.msg);",
       "status": 0
     },
     "false": {
-      "status": "@($$.res.code);",
-      "msg": "@($$.res.msg);"
+      "status": "@(attr.res.code);",
+      "msg": "@(attr.res.msg);"
     }
   }
 

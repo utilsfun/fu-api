@@ -374,8 +374,7 @@ public class GroovyConverter {
         bindings.put("func", new FuncObject(self));
         bindings.put("attr", new AttrObject(self));
 
-        bindings.put("$$", new AttrObject(self));
-        bindings.put("@@", context);
+        bindings.put("$my", context);
 
         return bindings;
 
