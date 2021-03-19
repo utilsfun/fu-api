@@ -25,7 +25,13 @@
   "sub2": {
     "*": {
       "@func": "@if",
-      "select": "@(1 > 2);",
+      "select":{
+        "@func": "@if",
+        "select": "@(1 > 2);",
+        "true":true,
+        "false": false
+        }
+      },
       "true": {
         "a": "a",
         "b": "b"
@@ -34,6 +40,13 @@
         "a": "a1",
         "c": "c"
       }
+    },
+  "sub3": {
+    "switch": {
+      "@func": "@switch",
+      "select":"dd",
+      "dd": "dd",
+      "default": "default"
     }
   }
 }

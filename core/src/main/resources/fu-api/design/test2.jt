@@ -8,7 +8,20 @@
     {
     "@func": "@each",
     "select": [1,2,3],
-    "for": "@attr('value');"
+    "for": "第@(attr.'@key' + 1);个数为@attr('@item');"
+    }
+  ],
+  "sub3": [
+    {
+      "@func": "@each",
+      "select": {
+        "a": "1",
+        "b": "2",
+        "c": {
+          "c1": 1
+        }
+      },
+      "for": "健@attr('@key');的值为@attr('@item');"
     }
   ]
 }

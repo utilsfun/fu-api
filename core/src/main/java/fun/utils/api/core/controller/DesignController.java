@@ -3,13 +3,15 @@ package fun.utils.api.core.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.api.apijson.ApiJsonCaller;
 import fun.utils.common.DataUtils;
 import fun.utils.api.core.common.WebUtils;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.tools.DesignUtils;
 import fun.utils.api.tools.DocUtils;
-import fun.utils.jtempate.GroovyConverter;
+import fun.utils.common.apijson.ApiJsonCaller;
+import fun.utils.jsontemplate.ApiJsonBean;
+import fun.utils.jsontemplate.GroovyConverter;
+import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +24,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -56,7 +56,13 @@ public class DesignController extends BaseController {
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
         JSONObject input = WebUtils.getJsonByInput(request);
 
-        GroovyConverter converter = new GroovyConverter(appBean.getRestTemplate(),webApplicationContext,request);
+        GroovyConverter converter = new GroovyConverter();
+        converter.withBean("apijson",new ApiJsonBean(converter, new Callback<String, DataSource>() {
+            @Override
+            public DataSource call(String param) {
+                return doService.getDataSource();
+            }
+        }));
 
         // ******* jt **********************************************
         if ( StringUtils.endsWithIgnoreCase(filename,".jt")) {

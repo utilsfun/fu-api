@@ -1,0 +1,42 @@
+{
+  "$res": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "[]": {
+        "API_FILTER": {
+          "@column": "id,parent_type,parent_id,title,implement_type,point,status,gmt_create,gmt_modified",
+          "@order": "sort"
+        },
+        "query": 2
+      },
+      "total@": "/[]/total",
+      "info@": "/[]/info"
+    },
+    "#template": {
+      "data": {
+        "rows": "@data('\\\\[\\\\].API_FILTER');",
+        "total": "@data('total');",
+        "info": "@data('info');"
+      },
+      "code": "@data('code');",
+      "msg": "@data('msg');"
+    },
+    "template": "@attr('template');"
+  },
+  "*": {
+    "@func": "@if",
+    "select": "@(attr('res').code == 200);",
+    "true":{
+      "data": "@(attr('res').data);",
+      "msg": "@(attr('res').msg);",
+      "status": 0
+    },
+    "false": {
+      "status": "@(attr('res').code);",
+      "msg": "@(attr('res').msg);"
+    }
+  }
+
+}

@@ -1,4 +1,4 @@
-package fun.utils.jtempate;
+package fun.utils.jsontemplate;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -6,20 +6,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import fun.utils.common.ClassUtils;
 import fun.utils.common.DataUtils;
+import javafx.util.Callback;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -36,19 +36,51 @@ public class GroovyConverter {
     }
 
 
-    private final RestTemplate restTemplate;
-
-    private final WebApplicationContext webApplicationContext;
-
-    private final HttpServletRequest request;
 
 
-    public GroovyConverter(RestTemplate restTemplate, WebApplicationContext webApplicationContext, HttpServletRequest request) {
-        this.restTemplate = restTemplate;
-        this.webApplicationContext = webApplicationContext;
-        this.request = request;
+    @Getter @Setter
+    private RestTemplate  restTemplate = new RestTemplate();
+
+    @Getter
+    private final Map<String,Object> context = new HashMap<>();
+
+
+    private final Map<String,Object> beans = new HashMap<>();
+
+
+    public GroovyConverter() {
     }
 
+    public GroovyConverter(Map<String, Object> context) {
+        if (context != null) {
+            this.context.putAll(context);
+        }
+    }
+
+    public GroovyConverter(Map<String, Object> context, Map<String,Object> beans) {
+        if (context != null) {
+            this.context.putAll(context);
+        }
+        if (beans != null) {
+            this.beans.putAll(beans);
+        }
+
+    }
+
+    public GroovyConverter withBean(@NonNull String name, Object bean) throws Exception {
+
+        if (name.matches("(ifBlank|cast|iif|data|loadUrl|loadResource|self|parent|root|func|attr|\\$)")){
+            throw new Exception("bean name can not be a keyword : " + name);
+        }
+        beans.put(name,bean);
+        return  this;
+    }
+
+    public Object getBean(@NonNull String name) {
+
+ return       beans.get(name);
+
+    }
 
     static class IfBlankObject {
         public String call(String... str) {
@@ -228,18 +260,26 @@ public class GroovyConverter {
         }
 
 
+        //取变量值,递归到上级
         public Object attr(String name) throws ScriptException {
 
-            return getVar(name);
+            Object result = getVar(name);
+
+            if (result == null && null != parent) {
+                result =  parent.attr(name);
+            }
+
+            return result;
 
         }
 
-        private Object getVar(String name) throws ScriptException {
+        //取变量值,不递归到上级
+        public Object getVar(String name) throws ScriptException {
 
             String constKey = "#" + name;
             String varKey = "$" + name;
 
-            Object result;
+            Object result = null;
 
             if (varNode.containsKey(name)) {
 
@@ -259,13 +299,6 @@ public class GroovyConverter {
                 varNode.remove(varKey);
                 result =  varNode.get(name);
 
-            }
-            else if (null != parent) {
-
-                result =  parent.getVar(name);
-            }
-            else {
-                return  null;
             }
 
             if (result instanceof String){
@@ -313,9 +346,12 @@ public class GroovyConverter {
             return self.attr(name);
         }
 
+        public Object get(String name) throws ScriptException {
+            return self.attr(name);
+        }
     }
 
-    public JSONObject convert(JSONObject template, JSONObject data) throws Exception {
+    public JSONObject convert(JSONObject template, JSONObject data ) throws Exception {
         return (JSONObject) convert(template, new SelfObject(this, data));
     }
 
@@ -323,6 +359,8 @@ public class GroovyConverter {
     private Bindings initBindings(SelfObject self) throws ScriptException {
 
         Bindings bindings = groovyEngine.createBindings();
+
+        bindings.putAll(beans);
 
         bindings.put("ifBlank", new IfBlankObject());
         bindings.put("cast", new CastObject());
@@ -335,6 +373,9 @@ public class GroovyConverter {
         bindings.put("root", self.getRoot());
         bindings.put("func", new FuncObject(self));
         bindings.put("attr", new AttrObject(self));
+
+        bindings.put("$$", new AttrObject(self));
+        bindings.put("@@", context);
 
         return bindings;
 
@@ -428,14 +469,14 @@ public class GroovyConverter {
 
                     Object select = convert(vObject.get("select"), self);
                     Object funcValue = DataUtils.testBoolean(select)? vObject.get("true") : vObject.get("false");
-                    return funcValue ;
+                    return convert(funcValue,self);
 
                 } else  if ("@switch".equalsIgnoreCase(type)){
 
                     Object select = convert(vObject.get("select"), self);
                     Object funcValue = vObject.containsKey(select) ? vObject.get(select) : vObject.get("default")  ;
 
-                    return funcValue;
+                    return convert(funcValue,self);
 
                 }else if ("@each".equalsIgnoreCase(type)){
 
@@ -450,8 +491,8 @@ public class GroovyConverter {
                         for (Object obj:(List)select) {
 
                             SelfObject subSelf = new SelfObject(self);
-                            subSelf.varNode.put("$key",index ++ );
-                            subSelf.varNode.put("$value",obj);
+                            subSelf.varNode.put("$@key",index ++ );
+                            subSelf.varNode.put("$@item",obj);
                             funcValue.add(convert(body,subSelf));
                         }
 
@@ -462,8 +503,8 @@ public class GroovyConverter {
                         for (Object key:selectMap.keySet()) {
 
                             SelfObject subSelf = new SelfObject(self);
-                            subSelf.varNode.put("$key",key );
-                            subSelf.varNode.put("$value",selectMap.get(key));
+                            subSelf.varNode.put("$@key",key );
+                            subSelf.varNode.put("$@item",selectMap.get(key));
                             funcValue.add(convert(body,subSelf));
                         }
                     }
@@ -472,7 +513,21 @@ public class GroovyConverter {
 
                 }else{
 
-                   return null;
+                    Object func = getBean(type);
+
+
+                    Object funcValue = null;
+
+                    if (func != null && func instanceof Callback){
+
+                        JSONObject input = DataUtils.copyJSONObject(vObject);
+                        input.remove("@func");
+                        funcValue = ((Callback)func).call(convert(input,self));
+
+                    }
+
+                    return convert(funcValue,self);
+
                 }
 
         }

@@ -1,4 +1,4 @@
-package fun.utils.api.apijson;
+package fun.utils.common.apijson;
 
 import apijson.RequestMethod;
 import apijson.framework.APIJSONCreator;
