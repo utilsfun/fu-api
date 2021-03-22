@@ -23,19 +23,19 @@
       "code": "@data('code');",
       "msg": "@data('msg');"
     },
-    "template": "@attr('template');"
+    "template": "@vars('template');"
   },
   "*": {
     "@func": "@if",
-    "select": "@(attr('res').code == 200);",
+    "select": "@(vars('res').code == 200);",
     "true":{
-      "data": "@(attr('res').data);",
-      "msg": "@(attr('res').msg);",
+      "data": "@(vars('res').data);",
+      "msg": "@(vars('res').msg);",
       "status": 0
     },
     "false": {
-      "status": "@(attr('res').code);",
-      "msg": "@(attr('res').msg);"
+      "status": "@(vars('res').code);",
+      "msg": "@(vars('res').msg);"
     }
   }
 

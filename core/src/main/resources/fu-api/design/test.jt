@@ -11,16 +11,17 @@
   "data-7": "url parameter a = @{data('parameters.a')}",
   "data-8": "@{s = data('parameters.a') ; if (s == '1') return true else return false; }",
   "$cc": "@loadResource('demo/test1.json');",
-  "#ss": "@loadResource('demo/test1.json');",
-  "load-01": "@attr('cc');",
+  "$ss#": "@loadResource('demo/test1.json');",
+  "bb#": "@loadResource('demo/test1.json');",
+  "load-01": "@vars('cc');",
   "$add2()": "(a,b){return a + b}",
-  "$test()": "(){return attr('cc')}",
+  "$test()": "(){return vars('cc')}",
   "add-demo-1": "@func('add2',88,99);",
   "add-demo-2": "@func('test');",
   "sub": {
-    "a": "@attr('cc');",
+    "a": "@vars('cc');",
     "b": "@func('test');",
-    "c": "@attr('ss');"
+    "c": "@vars('ss');"
   },
   "sub2": {
     "*": {

@@ -1,10 +1,13 @@
 package fun.utils.common;
 
 import apijson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fun.utils.api.core.script.GroovyRunner;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -115,7 +118,34 @@ public class ClassUtils {
     }
 
     public static <T> T castValue(Object value, Class<T> cls) {
+
+        if (value == null) {
+            return null;
+        }
+
+        if (JSON.class == cls){
+            if (value instanceof String && StringUtils.isBlank((String) value)){
+                return null;
+            }
+            return (T) JSON.parse(value);
+        }
+
+        if (JSONObject.class == cls){
+            if (value instanceof String && StringUtils.isBlank((String) value)){
+                return null;
+            }
+            return (T) JSON.parseObject(value);
+        }
+
+        if (JSONArray.class == cls){
+            if (value instanceof String && StringUtils.isBlank((String) value)){
+                return null;
+            }
+            return (T) JSON.parseArray(value);
+        }
+
         return TypeUtils.castToJavaBean(value, cls);
+
     }
 
     public static Object castValue(Object value, String className) {
@@ -131,16 +161,25 @@ public class ClassUtils {
 
 
         if ("JSON".equalsIgnoreCase(className)) {
+            if (value instanceof String && StringUtils.isBlank((String) value)){
+                return null;
+            }
             return JSON.parse(value);
         }
 
 
         if ("JSONObject".equalsIgnoreCase(className)) {
+            if (value instanceof String && StringUtils.isBlank((String) value)){
+                return null;
+            }
             return JSON.parseObject(value);
         }
 
 
         if ("JSONArray".equalsIgnoreCase(className)) {
+            if (value instanceof String && StringUtils.isBlank((String) value)){
+                return null;
+            }
             return JSON.parseArray(value);
         }
 

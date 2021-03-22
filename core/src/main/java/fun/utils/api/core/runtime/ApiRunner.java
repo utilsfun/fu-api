@@ -255,10 +255,17 @@ public class ApiRunner {
 
                 //按名称从输入中取值
                 srcObject = superJo.get(parameterDO.getName());
+                if (srcObject instanceof String){
+                    srcObject = StringUtils.defaultIfBlank((String)srcObject,null);
+                }
+
                 //如果没有值从别名中取值,直到第一个有值的别称
                 if (srcObject == null && parameterDO.getAlias() != null) {
                     for (String key : parameterDO.getAlias()) {
                         srcObject = superJo.get(key);
+                        if (srcObject instanceof String){
+                            srcObject = StringUtils.defaultIfBlank((String)srcObject,null);
+                        }
                         if (srcObject != null) {
                             break;
                         }
@@ -313,7 +320,7 @@ public class ApiRunner {
                             srcJo = (JSONObject) elementObj;
                         }
                         else {
-                            srcJo = JSON.parseObject(JSON.toJSONString(elementObj));
+                            srcJo = ClassUtils.castValue(elementObj,JSONObject.class);
                         }
 
                         JSONObject valueJo = new JSONObject();

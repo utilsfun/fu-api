@@ -36,16 +36,15 @@ public class GroovyConverter {
     }
 
 
-
-
-    @Getter @Setter
-    private RestTemplate  restTemplate = new RestTemplate();
+    @Getter
+    @Setter
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Getter
-    private final Map<String,Object> context = new HashMap<>();
+    private final Map<String, Object> context = new HashMap<>();
 
 
-    private final Map<String,Object> beans = new HashMap<>();
+    private final Map<String, Object> beans = new HashMap<>();
 
 
     public GroovyConverter() {
@@ -57,7 +56,7 @@ public class GroovyConverter {
         }
     }
 
-    public GroovyConverter(Map<String, Object> context, Map<String,Object> beans) {
+    public GroovyConverter(Map<String, Object> context, Map<String, Object> beans) {
         if (context != null) {
             this.context.putAll(context);
         }
@@ -69,16 +68,16 @@ public class GroovyConverter {
 
     public GroovyConverter withBean(@NonNull String name, Object bean) throws Exception {
 
-        if (name.matches("(ifBlank|cast|iif|data|loadUrl|loadResource|self|parent|root|func|attr|\\$)")){
+        if (name.matches("(ifBlank|cast|iif|data|loadUrl|loadResource|self|parent|root|func|vars|\\$)")) {
             throw new Exception("bean name can not be a keyword : " + name);
         }
-        beans.put(name,bean);
-        return  this;
+        beans.put(name, bean);
+        return this;
     }
 
     public Object getBean(@NonNull String name) {
 
- return       beans.get(name);
+        return beans.get(name);
 
     }
 
@@ -261,12 +260,12 @@ public class GroovyConverter {
 
 
         //取变量值,递归到上级
-        public Object attr(String name) throws ScriptException {
+        public Object vars(String name) throws ScriptException {
 
             Object result = getVar(name);
 
             if (result == null && null != parent) {
-                result =  parent.attr(name);
+                result = parent.vars(name);
             }
 
             return result;
@@ -276,7 +275,6 @@ public class GroovyConverter {
         //取变量值,不递归到上级
         public Object getVar(String name) throws ScriptException {
 
-            String constKey = "#" + name;
             String varKey = "$" + name;
 
             Object result = null;
@@ -286,30 +284,25 @@ public class GroovyConverter {
                 result = varNode.get(name);
 
             }
-            else if (varNode.containsKey(constKey)) {
-
-                varNode.put(name, varNode.get(constKey));
-                varNode.remove(constKey);
-                result =  varNode.get(name);
-
-            }
             else if (varNode.containsKey(varKey)) {
 
                 varNode.put(name, converter.convert(varNode.get(varKey), this));
                 varNode.remove(varKey);
-                result =  varNode.get(name);
+                result = varNode.get(name);
 
             }
 
-            if (result instanceof String){
+            if (result instanceof String) {
 
                 return String.valueOf(result);
 
-            }else if (result instanceof JSON){
+            }
+            else if (result instanceof JSON) {
 
                 return DataUtils.copyJSON(result);
 
-            }else{
+            }
+            else {
 
                 return result;
 
@@ -334,24 +327,24 @@ public class GroovyConverter {
 
     }
 
-    static class AttrObject {
+    static class VarsObject {
 
         public final SelfObject self;
 
-        public AttrObject(SelfObject self) {
+        public VarsObject(SelfObject self) {
             this.self = self;
         }
 
         public Object call(String name) throws ScriptException {
-            return self.attr(name);
+            return self.vars(name);
         }
 
         public Object get(String name) throws ScriptException {
-            return self.attr(name);
+            return self.vars(name);
         }
     }
 
-    public JSONObject convert(JSONObject template, JSONObject data ) throws Exception {
+    public JSONObject convert(JSONObject template, JSONObject data) throws Exception {
         return (JSONObject) convert(template, new SelfObject(this, data));
     }
 
@@ -366,15 +359,19 @@ public class GroovyConverter {
         bindings.put("cast", new CastObject());
         bindings.put("iif", new IifObject());
         bindings.put("data", new DataObject(self.data));
+
         bindings.put("loadUrl", new LoadUrlObject(restTemplate));
         bindings.put("loadResource", new LoadResourceObject());
-        bindings.put("self", self);
-        bindings.put("parent", self.parent);
-        bindings.put("root", self.getRoot());
-        bindings.put("func", new FuncObject(self));
-        bindings.put("attr", new AttrObject(self));
 
-        bindings.put("$my", context);
+
+//        bindings.put("self", self);
+//        bindings.put("parent", self.parent);
+//        bindings.put("root", self.getRoot());
+
+        bindings.put("func", new FuncObject(self));
+        bindings.put("vars", new VarsObject(self));
+
+        bindings.put("$context", context);
 
         return bindings;
 
@@ -408,7 +405,7 @@ public class GroovyConverter {
 
     }
 
-    public Object convert(Object value, SelfObject self ) throws ScriptException {
+    public Object convert(Object value, SelfObject self) throws ScriptException {
 
 
         if (value == null) {
@@ -459,75 +456,79 @@ public class GroovyConverter {
             }
         }
 
-        else if (value instanceof JSONObject && ((JSONObject)value).containsKey("@func")) {
+        else if (value instanceof JSONObject && ((JSONObject) value).containsKey("@func")) {
 
-                JSONObject vObject = (JSONObject)value;
-                String type = vObject.getString("@func");
+            JSONObject vObject = (JSONObject) value;
+            String type = vObject.getString("@func");
 
-                if ("@if".equalsIgnoreCase(type)){
+            if ("@if".equalsIgnoreCase(type)) {
 
-                    Object select = convert(vObject.get("select"), self);
-                    Object funcValue = DataUtils.testBoolean(select)? vObject.get("true") : vObject.get("false");
-                    return convert(funcValue,self);
+                Object select = convert(vObject.get("select"), self);
+                Object funcValue = DataUtils.testBoolean(select) ? vObject.get("true") : vObject.get("false");
+                return convert(funcValue, self);
 
-                } else  if ("@switch".equalsIgnoreCase(type)){
+            }
+            else if ("@switch".equalsIgnoreCase(type)) {
 
-                    Object select = convert(vObject.get("select"), self);
-                    Object funcValue = vObject.containsKey(select) ? vObject.get(select) : vObject.get("default")  ;
+                Object select = convert(vObject.get("select"), self);
+                Object funcValue = vObject.containsKey(select) ? vObject.get(select) : vObject.get("default");
 
-                    return convert(funcValue,self);
+                return convert(funcValue, self);
 
-                }else if ("@each".equalsIgnoreCase(type)){
+            }
+            else if ("@each".equalsIgnoreCase(type)) {
 
-                    Object select = convert(vObject.get("select"), self);
-                    Object body = vObject.get("for");
+                Object select = convert(vObject.get("select"), self);
+                Object body = vObject.get("for");
 
-                    List<Object> funcValue = new ArrayList<>();
+                List<Object> funcValue = new ArrayList<>();
 
-                    if (select instanceof List){
+                if (select instanceof List) {
 
-                        int index = 0;
-                        for (Object obj:(List)select) {
+                    int index = 0;
+                    for (Object obj : (List) select) {
 
-                            SelfObject subSelf = new SelfObject(self);
-                            subSelf.varNode.put("$@key",index ++ );
-                            subSelf.varNode.put("$@item",obj);
-                            funcValue.add(convert(body,subSelf));
-                        }
-
-                    }else if (select instanceof Map){
-
-                        Map selectMap = (Map)select;
-
-                        for (Object key:selectMap.keySet()) {
-
-                            SelfObject subSelf = new SelfObject(self);
-                            subSelf.varNode.put("$@key",key );
-                            subSelf.varNode.put("$@item",selectMap.get(key));
-                            funcValue.add(convert(body,subSelf));
-                        }
+                        SelfObject subSelf = new SelfObject(self);
+                        subSelf.varNode.put("$@key", index++);
+                        subSelf.varNode.put("$@item", obj);
+                        funcValue.add(convert(body, subSelf));
                     }
-
-                   return funcValue;
-
-                }else{
-
-                    Object func = getBean(type);
-
-
-                    Object funcValue = null;
-
-                    if (func != null && func instanceof Callback){
-
-                        JSONObject input = DataUtils.copyJSONObject(vObject);
-                        input.remove("@func");
-                        funcValue = ((Callback)func).call(convert(input,self));
-
-                    }
-
-                    return convert(funcValue,self);
 
                 }
+                else if (select instanceof Map) {
+
+                    Map selectMap = (Map) select;
+
+                    for (Object key : selectMap.keySet()) {
+
+                        SelfObject subSelf = new SelfObject(self);
+                        subSelf.varNode.put("$@key", key);
+                        subSelf.varNode.put("$@item", selectMap.get(key));
+                        funcValue.add(convert(body, subSelf));
+                    }
+                }
+
+                return funcValue;
+
+            }
+            else {
+
+                Object func = getBean(type);
+
+
+                Object funcValue = null;
+
+                if (func != null && func instanceof Callback) {
+
+                    JSONObject input = DataUtils.copyJSONObject(vObject);
+                    input.remove("@func");
+                    funcValue = ((Callback) func).call(convert(input, self));
+
+                }
+
+                return convert(funcValue, self);
+
+            }
 
         }
         else if (value instanceof JSONObject) {
@@ -538,27 +539,62 @@ public class GroovyConverter {
 
             List<String> keys = new ArrayList<>(objectValue.keySet());
             for (String k : keys) {
-                if (k.matches("^#\\w+$") || k.matches("^\\$\\w+$") || k.matches("^\\$\\w+\\(\\)$")) {
-                    subSelf.getVarNode().put(k, objectValue.get(k));
+
+
+                if (k.matches("^\\w+#$")) {
+                    // 值不转换
+                    String k1 = k.replaceFirst("#$", "");
+                    target.put(k1, objectValue.get(k));
                     objectValue.remove(k);
+
                 }
+                else if (k.matches("^\\$\\w+#$")) {
+
+                    // 变量 值 不转换
+                    String k1 = DataUtils.extractBesieged(k, "$", "#");
+                    subSelf.getVarNode().put(k1, objectValue.get(k));
+                    objectValue.remove(k);
+
+                }
+                else if (k.matches("^\\$\\w+$")) {
+                    // 变量 值 转换
+                    String k1 = k;
+                    subSelf.getVarNode().put(k1, objectValue.get(k));
+                    objectValue.remove(k);
+
+                }
+                else if (k.matches("^\\$\\w+\\(\\)$")) {
+
+                    // 自定义方法
+                    String k1 = k;
+                    subSelf.getVarNode().put(k1, objectValue.get(k));
+                    objectValue.remove(k);
+
+                }
+
             }
 
             for (String k : objectValue.keySet()) {
 
                 Object v = objectValue.get(k);
 
-                    Object v1 = convert(v, subSelf);
+                Object v1 = convert(v, subSelf);
 
-                    if ("*".equals(k) && v1 instanceof Map){
-                        //当键为'*', 同时值转换后为 JSONObject,则并入目标JSONObject
-                        target.putAll((Map)v1);
-                    }else{
-                        //键也转换
-                        String k1 = ClassUtils.castValue(convert(k, subSelf), String.class);
-                        //加入目标JSONObject
-                        target.put(k1, v1);
-                    }
+                if ("*".equals(k) && v1 instanceof Map) {
+                    //当键为'*', 同时值转换后为 JSONObject,则并入目标JSONObject
+                    target.putAll((Map) v1);
+                }
+                else {
+
+                    //键也转换
+                    String k1 = k;
+                    k1.replaceAll("^'$'","$");
+                    k1.replaceAll("'#'$","#");
+                    k1 = ClassUtils.castValue(convert(k, subSelf), String.class);
+
+                    //加入目标JSONObject
+                    target.put(k1, v1);
+                }
 
             }
 
@@ -573,12 +609,13 @@ public class GroovyConverter {
 
                 Object v1 = convert(v, self);
 
-                if ( !(v instanceof List) && v1 instanceof List ){
-                   //当item不为子list,同时转换后为list, 则并入目标list
-                   target.addAll((List)v1);
-                }else{
-                   //加入转换后的值
-                   target.add(v1);
+                if (!(v instanceof List) && v1 instanceof List) {
+                    //当item不为子list,同时转换后为list, 则并入目标list
+                    target.addAll((List) v1);
+                }
+                else {
+                    //加入转换后的值
+                    target.add(v1);
                 }
 
             }

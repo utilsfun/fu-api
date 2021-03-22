@@ -15,23 +15,20 @@
       "info@": "/[]/info"
     }
   },
-
   "*": {
     "@func": "@if",
-    "select": "@{ attr.res.code == 200 }",
+    "select": "@{ self.res.code == 200 }",
     "true":{
       "data": {
-        "rows": "@(attr.'res'.'[]'.'API_FILTER');",
-        "total": "@(attr.res.total);",
-        "info": "@(attr.res.info);"
+        "rows": "@(vars.'res'.'[]'.'API_FILTER');",
+        "total": "@(vars.res.total);",
+        "info": "@(vars.res.info);"
       },
-      "msg": "@(attr.res.msg);",
-      "status": 0
+       "status": 0
     },
     "false": {
-      "status": "@(attr.res.code);",
-      "msg": "@(attr.res.msg);"
+      "status": "@(vars.res.code);"
     }
-  }
-
+  },
+  "msg": "@(vars.res.msg);"
 }

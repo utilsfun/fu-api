@@ -1,0 +1,205 @@
+{
+  "status": 0,
+  "msg": "",
+  "data": {
+    "pages": [
+      {
+        "label": "Home",
+        "url": "/",
+        "redirect": "/application/online"
+      },
+      {
+        "label": "应用",
+        "url": "/application",
+        "children": [
+          {
+            "label": "在线文档",
+            "url": "online",
+            "schema": {
+              "type": "iframe",
+              "src": "../document/application.html",
+              "height": "calc(100vh - 150px)"
+            }
+          },
+          {
+            "label": "属性",
+            "url": "edit",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./application_edit.jpage"
+            }
+          },
+          {
+            "label": "文档",
+            "url": "document/list",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./document_list.jpage"
+            }
+          },
+          {
+            "label": "修改文档",
+            "url": "document/edit/:id",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./document_edit.jpage?_for=update&id=${id}"
+            }
+          },
+          {
+            "label": "新建文档",
+            "url": "document/new",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./document_edit.jpage?_for=insert"
+            }
+          },
+          {
+            "label": "公共参数",
+            "url": "parameter/list",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./parameter_list.jpage"
+            }
+          },
+          {
+            "label": "修改公共参数",
+            "url": "parameter/edit/:id",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./parameter_edit.jpage?_for=update&id=${id}"
+            }
+          },
+          {
+            "label": "新建公共参数",
+            "url": "parameter/new",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./parameter_edit.jpage?_for=insert"
+            }
+          },
+          {
+            "label": "过滤器",
+            "url": "filter/list",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./filter_list.jpage"
+            }
+          },
+          {
+            "label": "修改过滤器",
+            "url": "filter/edit/:id",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./filter_edit.jpage?_for=update&id=${id}"
+            }
+          },
+          {
+            "label": "新建过滤器",
+            "url": "filter/new",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./filter_edit.jpage?_for=insert"
+            }
+          },
+          {
+            "label": "接口",
+            "url": "interface",
+            "$interfaces": {
+              "@func": "apijson",
+              "datasource": "default",
+              "method": "get",
+              "request": {
+                "[]": {
+                  "API_INTERFACE": {
+                    "application_id": "1",
+                    "@column": "id,application_id,name,group_name,title,sort,method",
+                    "@order": "group_name,sort"
+                  },
+                  "query": 2
+                },
+                "total@": "/[]/total",
+                "info@": "/[]/info"
+              }
+            },
+            "children": [
+              {
+                "@func": "@each",
+                "select": "@(vars.'interfaces'.'[]'.'API_INTERFACE');",
+                "for": {
+                  "label": "@(vars.'@item'.method);:@(vars.'@item'.name);",
+                  "url": "interface/@(vars.'@item'.id);",
+                  "schema": {
+                    "type": "service",
+                    "className": "p-sm",
+                    "schemaApi": "./interface.jpage?id=@(vars.'@item'.id);"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "label": "配置",
+            "url": "config",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./application_config.jpage"
+            }
+          },
+          {
+            "label": "错误码",
+            "url": "error_code",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./application_error.jpage"
+            }
+          },
+          {
+            "label": "更新日志",
+            "url": "update_log",
+            "schemaApi": "update_log.jpage"
+          }
+        ]
+      },
+      {
+        "label": "系统",
+        "url": "/system",
+        "children": [
+          {
+            "label": "用户管理",
+            "schema": {
+              "type": "page",
+              "title": "用户管理",
+              "body": "页面C"
+            }
+          },
+          {
+            "label": "外部链接",
+            "link": "http://baidu.gitee.io/amis"
+          },
+          {
+            "label": "部门管理",
+            "schemaApi": "/api/mock2/service/form?tpl=tpl3"
+          }
+        ]
+      }
+    ]
+  }
+}

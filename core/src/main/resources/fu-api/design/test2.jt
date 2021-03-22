@@ -1,14 +1,14 @@
 {
   "$json1": "@loadResource('demo/test1.json');",
-  "add-demo-3": "@attr('json1');",
+  "add-demo-3": "@vars('json1');",
   "sub": {
-    "a": "@attr('json1');"
+    "a": "@vars('json1');"
   },
   "sub2": [
     {
     "@func": "@each",
     "select": [1,2,3],
-    "for": "第@(attr.'@key' + 1);个数为@attr('@item');"
+    "for": "第@(vars.'@key' + 1);个数为@vars('@item');"
     }
   ],
   "sub3": [
@@ -21,7 +21,7 @@
           "c1": 1
         }
       },
-      "for": "健@attr('@key');的值为@attr('@item');"
+      "for": "健@vars('@key');的值为@vars('@item');"
     }
   ]
 }
