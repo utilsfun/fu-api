@@ -1,8 +1,10 @@
 package fun.utils.api.core.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import fun.utils.common.DataUtils;
 import fun.utils.api.core.common.WebUtils;
 import fun.utils.api.core.persistence.ApplicationDO;
@@ -55,6 +57,9 @@ public class DesignController extends BaseController {
         String applicationName = app.getName();
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
         JSONObject input = WebUtils.getJsonByInput(request);
+
+        JSONPath.set(input,"$.context.application",JSONObject.toJSON(applicationDO));
+
 
         GroovyConverter converter = new GroovyConverter();
         converter.withBean("apijson",new ApiJsonBean(converter, new Callback<String, DataSource>() {

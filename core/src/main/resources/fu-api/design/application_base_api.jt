@@ -1,0 +1,52 @@
+{
+  "$result": {
+    "@func": "@switch",
+    "select": "@data('parameters._mode');",
+    "info": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_APPLICATION": {
+          "id": "@",
+          "title": "@",
+          "note": "@",
+          "owner": "@",
+          "version": "@",
+          "status": "@"
+        }
+      }
+    },
+    "config": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_APPLICATION": {
+          "id": "@",
+          "config": "@"
+        }
+      }
+    },
+    "error": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_APPLICATION": {
+          "id": "@",
+          "error_codes": "@data('error_codes','JSONString');"
+        }
+      }
+    }
+  },
+
+  "*": {
+    "@": "@{$result}",
+    "msg": "@",
+    "status": "@{ data.code==200 ? 0 : data.code }"
+  }
+}

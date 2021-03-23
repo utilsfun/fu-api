@@ -16,19 +16,22 @@
     }
   },
   "*": {
-    "@func": "@if",
-    "select": "@{ self.res.code == 200 }",
-    "true":{
-      "data": {
-        "rows": "@(vars.'res'.'[]'.'API_FILTER');",
-        "total": "@(vars.res.total);",
-        "info": "@(vars.res.info);"
+    "@": "@{$res}",
+    "msg": "@{:msg}",
+    "*": {
+      "@func": "@if",
+      "select": "@{data.code == 200 }",
+      "true": {
+        "data": {
+          "rows": "@data('\\\\[\\\\].API_FILTER');",
+          "total": "@",
+          "info": "@"
+        },
+        "status": 0
       },
-       "status": 0
-    },
-    "false": {
-      "status": "@(vars.res.code);"
+      "false": {
+        "status": "@{:code}"
+      }
     }
-  },
-  "msg": "@(vars.res.msg);"
+  }
 }

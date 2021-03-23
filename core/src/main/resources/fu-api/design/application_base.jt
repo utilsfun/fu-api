@@ -1,0 +1,309 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "$data": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "API_APPLICATION": {
+        "id": "@data('context.application.id');",
+        "@column": "id,gmt_modified,name,note,owner,title,version,status,config,error_codes",
+        "@json": "error_codes"
+      }
+    },
+    "template#": "@data('API_APPLICATION');"
+  },
+  "body": {
+    "type": "tabs",
+    "mode": "line",
+    "tabs": [
+      {
+        "title": "基本属性",
+        "body": {
+          "type": "form",
+          "data": {
+            "@": "@vars('data');",
+            "id": "@",
+            "name": "@",
+            "gmt_modified": "@",
+            "title": "@",
+            "note": "@",
+            "owner": "@",
+            "version": "@",
+            "status": "@"
+          },
+          "api": "application_base_api.jt?_mode=info",
+          "name": "application_info",
+          "title": "",
+          "mode": "horizontal",
+          "autoFocus": true,
+          "canAccessSuperData": false,
+          "trimValues": true,
+          "controls": [
+            {
+              "type": "hidden",
+              "name": "id"
+            },
+            {
+              "type": "tpl",
+              "label": "名称",
+              "tpl": "${name}"
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "type": "tpl",
+              "label": "更新时间",
+              "tpl": "${gmt_modified|date:YYYY年MM月DD日HH时mm分:YYYY-MM-DD HH:mm:ss}"
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "type": "text",
+              "name": "title",
+              "label": "标题"
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "type": "text",
+              "name": "owner",
+              "label": "作者"
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "type": "text",
+              "name": "version",
+              "label": "版本"
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "type": "textarea",
+              "name": "note",
+              "minRows": 20,
+              "label": "说明"
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "name": "status",
+              "type": "switch",
+              "label": "状态",
+              "trueValue": 0,
+              "falseValue": 1
+            }
+          ],
+          "actions": [
+            {
+              "type": "submit",
+              "level": "primary",
+              "label": "提交"
+            },
+            {
+              "type": "reset",
+              "label": "重置"
+            }
+          ]
+        }
+      },
+      {
+        "title": "应用配置",
+        "body": {
+          "type": "form",
+          "title": "",
+          "data": {
+            "@": "@vars('data');",
+            "id": "@",
+            "config": "@"
+          },
+          "api": "application_base_api.jt?_mode=config",
+          "name": "application_config",
+          "mode": "normal",
+          "autoFocus": true,
+          "canAccessSuperData": false,
+          "trimValues": true,
+          "controls": [
+            {
+              "type": "hidden",
+              "name": "id"
+            },
+            {
+              "type": "editor",
+              "name": "config",
+              "language": "json",
+              "size": "600"
+            }
+          ],
+          "actions": [
+            {
+              "type": "submit",
+              "level": "primary",
+              "label": "提交"
+            },
+            {
+              "type": "reset",
+              "label": "重置"
+            }
+          ]
+        }
+      },
+      {
+        "title": "过滤器",
+        "body": {
+          "type": "crud",
+          "syncLocation": false,
+          "columnsTogglable": false,
+          "data": {
+            "rows": []
+          },
+          "api": "./filter.api?_act=query&_type=application",
+          "loadDataOnce": true,
+          "draggable": true,
+          "saveOrderApi": {
+            "url": "./filter.api?_type=application&_act=sort",
+            "data": {
+              "ids": "${ids}"
+            }
+          },
+          "name": "filter_list",
+          "itemActions": [
+            {
+              "type": "button",
+              "icon": "fa fa-edit",
+              "label": "修改",
+              "actionType": "link",
+              "link": "/application/filter/edit/${id}"
+            },
+            {
+              "label": "删除",
+              "icon": "fa fa-trash text-danger",
+              "type": "button",
+              "actionType": "ajax",
+              "confirmText": "确认要删除filter:${title}？",
+              "api": "post:./filter.api?_act=delete&id=${id}"
+            }
+          ],
+          "headerToolbar": [
+            {
+              "label": "新增",
+              "type": "button",
+              "icon": "fa fa-plus",
+              "level": "info",
+              "actionType": "link",
+              "link": "/application/filter/new",
+              "disabled": false
+            },
+            "bulkActions",
+            "."
+          ],
+          "columns": [
+            {
+              "name": "id",
+              "hidden": true
+            },
+            {
+              "name": "title",
+              "label": "标题",
+              "width": 100
+            },
+            {
+              "name": "implement_type",
+              "label": "实现类型"
+            },
+            {
+              "name": "point",
+              "label": "位置",
+              "type": "mapping",
+              "map": {
+                "enter": "进入时（enter）",
+                "execute": "执行时（execute）",
+                "return": "返回时（return）",
+                "*": "未知位置（${point}）"
+              }
+            },
+            {
+              "name": "status",
+              "label": "状态",
+              "type": "mapping",
+              "map": {
+                "0": "<span class='label label-success'>有效</span>",
+                "1": "<span class='label label-light'>禁用</span>",
+                "*": "<span class='label label-danger'>未知status:{status}</span>"
+              }
+            },
+            {
+              "name": "gmt_modified",
+              "label": "修改时间",
+              "type": "date",
+              "format": "YYYY-MM-DD HH:mm:ss",
+              "width": 120
+            }
+          ]
+        }
+      },
+      {
+        "title": "错误码",
+        "body": {
+          "type": "form",
+          "data": {
+            "@": "@vars('data');",
+            "id": "@",
+            "error_codes": "@"
+          },
+          "api": "application_base_api.jt?_mode=error",
+          "name": "application_error",
+          "title": "",
+          "mode": "normal",
+          "autoFocus": true,
+          "canAccessSuperData": false,
+          "trimValues": true,
+          "controls": [
+            {
+              "type": "hidden",
+              "name": "id"
+            },
+            {
+              "type": "combo",
+              "name": "error_codes",
+              "multiple": true,
+              "draggable": true,
+              "controls": [
+                {
+                  "name": "code",
+                  "label": "错误码",
+                  "type": "number",
+                  "showSteps": false
+                },
+                {
+                  "name": "message",
+                  "label": "说明",
+                  "type": "text"
+                }
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": "submit",
+              "level": "primary",
+              "label": "提交"
+            },
+            {
+              "type": "reset",
+              "label": "重置"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

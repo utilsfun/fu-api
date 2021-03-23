@@ -31,6 +31,15 @@
             }
           },
           {
+            "label": "资料",
+            "url": "base",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./application_base.jt"
+            }
+          },
+          {
             "label": "文档",
             "url": "document/list",
             "schema": {

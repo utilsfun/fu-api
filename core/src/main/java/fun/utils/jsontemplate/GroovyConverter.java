@@ -101,14 +101,14 @@ public class GroovyConverter {
 
     static class DataObject {
 
-        final JSON rootObject;
+        final SelfObject selfObject;
 
-        public DataObject(JSON rootObject) {
-            this.rootObject = rootObject;
+        public DataObject(SelfObject selfObject) {
+            this.selfObject = selfObject;
         }
 
         public boolean contains(String path) {
-            return JSONPath.contains(rootObject, path);
+            return JSONPath.contains(selfObject.getData(), path);
         }
 
         private Object getOrDefault(String path) {
@@ -116,7 +116,7 @@ public class GroovyConverter {
         }
 
         private Object getOrDefault(String path, Object defaultValue) {
-            return JSONPath.contains(rootObject, path) ? JSONPath.eval(rootObject, path) : defaultValue;
+            return JSONPath.contains(selfObject.getData(), path) ? JSONPath.eval(selfObject.getData(), path) : defaultValue;
         }
 
         public Object call(String path) {
@@ -208,12 +208,15 @@ public class GroovyConverter {
 
     static class SelfObject {
 
-        public final JSONObject data;
+
         public final GroovyConverter converter;
         public final SelfObject parent;
 
         @Getter
         public final JSONObject varNode = new JSONObject();
+
+        @Getter @Setter
+        protected JSONObject data;
 
 
         SelfObject(GroovyConverter converter, JSONObject data) {
@@ -260,7 +263,7 @@ public class GroovyConverter {
 
 
         //取变量值,递归到上级
-        public Object vars(String name) throws ScriptException {
+        public Object vars(String name) throws Exception {
 
             Object result = getVar(name);
 
@@ -273,7 +276,7 @@ public class GroovyConverter {
         }
 
         //取变量值,不递归到上级
-        public Object getVar(String name) throws ScriptException {
+        public Object getVar(String name) throws  Exception {
 
             String varKey = "$" + name;
 
@@ -335,11 +338,11 @@ public class GroovyConverter {
             this.self = self;
         }
 
-        public Object call(String name) throws ScriptException {
+        public Object call(String name) throws  Exception {
             return self.vars(name);
         }
 
-        public Object get(String name) throws ScriptException {
+        public Object get(String name) throws  Exception {
             return self.vars(name);
         }
     }
@@ -358,7 +361,7 @@ public class GroovyConverter {
         bindings.put("ifBlank", new IfBlankObject());
         bindings.put("cast", new CastObject());
         bindings.put("iif", new IifObject());
-        bindings.put("data", new DataObject(self.data));
+        bindings.put("data", new DataObject(self));
 
         bindings.put("loadUrl", new LoadUrlObject(restTemplate));
         bindings.put("loadResource", new LoadResourceObject());
@@ -377,12 +380,36 @@ public class GroovyConverter {
 
     }
 
-    private Object expressionEval(String expression, SelfObject self) throws ScriptException {
+    private Object expressionEval(String expression, SelfObject self) throws Exception {
 
-        Bindings bindings = initBindings(self);
 
-        return groovyEngine.eval(GROOVY_PUB_EXPR + expression, bindings);
+        if (DataUtils.isBesieged(expression,"(",")")){
+            expression = DataUtils.extractBesieged(expression,"(",")");
+        }
 
+        if (expression.matches(":[\\._\\w]+")){
+
+            return JSONPath.eval(self.getData(), expression.substring(1));
+
+        }else if (expression.matches("\\$[\\._\\w]+")){
+
+            return self.getVar(expression.substring(1));
+
+        }else {
+
+            try {
+
+                Bindings bindings = initBindings(self);
+
+                return groovyEngine.eval(GROOVY_PUB_EXPR + expression, bindings);
+
+            }catch (ScriptException e){
+
+                throw new  Exception(e.toString() + " with: " + expression,e);
+
+            }
+
+        }
     }
 
 
@@ -405,14 +432,14 @@ public class GroovyConverter {
 
     }
 
-    public Object convert(Object value, SelfObject self) throws ScriptException {
+    public Object convert(Object value, SelfObject self) throws  Exception {
 
 
         if (value == null) {
             return null;
         }
 
-        else if (value instanceof String) {
+        if (value instanceof String) {
 
             String strValue = (String) value;
 
@@ -422,7 +449,7 @@ public class GroovyConverter {
                 return expressionEval(expression, self);
 
             }
-            else if (strValue.matches("^@([_\\.\\w]+)?\\([^;]*\\);$")) {
+            else if (strValue.matches("^@([_\\.\\w]+)?\\([^;]*\\);?$")) {
 
                 String expression = DataUtils.extractBesieged(strValue, "@", ";");
                 return expressionEval(expression, self);
@@ -433,6 +460,12 @@ public class GroovyConverter {
                 Map<String, String> expressionMap = new HashMap<>();
 
                 String strResult = DataUtils.replaceBy(strValue, "@(([_\\.\\w]+)?\\([^;]*\\));", 1, (expr) -> {
+                    String key = "%expr:" + expr.hashCode() + "%";
+                    expressionMap.put(key, expr);
+                    return key;
+                });
+
+                strResult = DataUtils.replaceBy(strResult, "@\\{(\\$|:[\\.\\w_]+)\\}", 1, (expr) -> {
                     String key = "%expr:" + expr.hashCode() + "%";
                     expressionMap.put(key, expr);
                     return key;
@@ -458,28 +491,28 @@ public class GroovyConverter {
 
         else if (value instanceof JSONObject && ((JSONObject) value).containsKey("@func")) {
 
-            JSONObject vObject = (JSONObject) value;
-            String type = vObject.getString("@func");
+            JSONObject objectValue = (JSONObject) value;
+            String type = objectValue.getString("@func");
 
             if ("@if".equalsIgnoreCase(type)) {
 
-                Object select = convert(vObject.get("select"), self);
-                Object funcValue = DataUtils.testBoolean(select) ? vObject.get("true") : vObject.get("false");
+                Object select = convert(objectValue.get("select"), self);
+                Object funcValue = DataUtils.testBoolean(select) ? objectValue.get("true") : objectValue.get("false");
                 return convert(funcValue, self);
 
             }
             else if ("@switch".equalsIgnoreCase(type)) {
 
-                Object select = convert(vObject.get("select"), self);
-                Object funcValue = vObject.containsKey(select) ? vObject.get(select) : vObject.get("default");
+                Object select = convert(objectValue.get("select"), self);
+                Object funcValue = objectValue.containsKey(select) ? objectValue.get(select) : objectValue.get("default");
 
                 return convert(funcValue, self);
 
             }
             else if ("@each".equalsIgnoreCase(type)) {
 
-                Object select = convert(vObject.get("select"), self);
-                Object body = vObject.get("for");
+                Object select = convert(objectValue.get("select"), self);
+                Object body = objectValue.get("for");
 
                 List<Object> funcValue = new ArrayList<>();
 
@@ -520,7 +553,7 @@ public class GroovyConverter {
 
                 if (func != null && func instanceof Callback) {
 
-                    JSONObject input = DataUtils.copyJSONObject(vObject);
+                    JSONObject input = DataUtils.copyJSONObject(objectValue);
                     input.remove("@func");
                     funcValue = ((Callback) func).call(convert(input, self));
 
@@ -536,6 +569,14 @@ public class GroovyConverter {
             JSONObject target = new JSONObject();
             JSONObject objectValue = (JSONObject) value;
             SelfObject subSelf = new SelfObject(self);
+
+
+
+                if (objectValue.containsKey("@")){
+                    subSelf.setData(ClassUtils.castValue(convert(objectValue.get("@"), self),JSONObject.class));
+                    objectValue.remove("@");
+                }
+
 
             List<String> keys = new ArrayList<>(objectValue.keySet());
             for (String k : keys) {
@@ -577,6 +618,14 @@ public class GroovyConverter {
             for (String k : objectValue.keySet()) {
 
                 Object v = objectValue.get(k);
+
+                if ("@".equals(v)){
+                    v = "@{:"+ k +"}";
+                }
+
+                if ("$".equals(v)){
+                    v = "@{$"+ k +"}";
+                }
 
                 Object v1 = convert(v, subSelf);
 
