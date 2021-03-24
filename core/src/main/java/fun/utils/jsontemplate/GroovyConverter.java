@@ -10,6 +10,7 @@ import javafx.util.Callback;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +24,7 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.*;
 
-
+@Slf4j
 public class GroovyConverter {
 
     private static String GROOVY_PUB_EXPR = "";
@@ -174,17 +175,13 @@ public class GroovyConverter {
 
             if (cn.equalsIgnoreCase("JSON")) {
                 return JSON.parseObject(inputStream, JSON.class);
-            }
-            else if (cn.equalsIgnoreCase("JSONObject")) {
+            } else if (cn.equalsIgnoreCase("JSONObject")) {
                 return JSON.parseObject(inputStream, JSONObject.class);
-            }
-            else if (cn.equalsIgnoreCase("JSONArray")) {
+            } else if (cn.equalsIgnoreCase("JSONArray")) {
                 return JSON.parseObject(inputStream, JSONArray.class);
-            }
-            else if (cn.equalsIgnoreCase("String")) {
+            } else if (cn.equalsIgnoreCase("String")) {
                 return IOUtils.toString(inputStream, "utf-8");
-            }
-            else if (cn.equalsIgnoreCase("Base64")) {
+            } else if (cn.equalsIgnoreCase("Base64")) {
                 return new String(Base64.getEncoder().encode(IOUtils.toByteArray(inputStream)));
             }
 
@@ -215,7 +212,8 @@ public class GroovyConverter {
         @Getter
         public final JSONObject varNode = new JSONObject();
 
-        @Getter @Setter
+        @Getter
+        @Setter
         protected JSONObject data;
 
 
@@ -236,27 +234,26 @@ public class GroovyConverter {
 
             if (null == parent) {
                 return this;
-            }
-            else {
+            } else {
                 return parent.getRoot();
             }
 
         }
 
-        public Object func(String method, Object... args) throws ScriptException {
+        public Object func(String method, Object... args) throws Exception {
 
             String methodKey = "$" + method + "()";
 
             if (varNode.containsKey(methodKey)) {
 
                 return converter.expressionInvoke(varNode.getString(methodKey), this, args);
-            }
-            else if (null != parent) {
+
+            } else if (null != parent) {
 
                 return parent.func(method, args);
-            }
-            else {
-                return null;
+            } else {
+
+                throw new Exception("local func is not exist :" + methodKey);
             }
 
         }
@@ -271,14 +268,44 @@ public class GroovyConverter {
                 result = parent.vars(name);
             }
 
+            if (result == null){
+                log.debug("vars(all) is null :" + name);
+            }
             return result;
 
         }
 
         //取变量值,不递归到上级
-        public Object getVar(String name) throws  Exception {
+        public Object getVar(String name) throws Exception {
+
+            if (varNode.containsKey("$")) {
+                Object v = varNode.get("$");
+                varNode.remove("$");
+                if (v instanceof JSONObject) {
+                    JSONObject vMap = (JSONObject) v;
+                    for (String k : vMap.keySet()) {
+                        varNode.put(k.startsWith("$") ? k : "$" + k, vMap.get(k));
+                    }
+                }
+                return getVar(name);
+            }
+
+            if (varNode.containsKey("$#")) {
+                Object v = varNode.get("$#");
+                varNode.remove("$#");
+                if (v instanceof JSONObject) {
+                    JSONObject vMap = (JSONObject) v;
+                    for (String k : vMap.keySet()) {
+                        String key = k.startsWith("$") ? k.substring(1) : k;
+                        key = key.endsWith("#") ? key.substring(0, key.length() - 1) : key;
+                        varNode.put(key, vMap.get(k));
+                    }
+                }
+                return getVar(name);
+            }
 
             String varKey = "$" + name;
+            String constKey = "$" + name + "#";
 
             Object result = null;
 
@@ -286,29 +313,33 @@ public class GroovyConverter {
 
                 result = varNode.get(name);
 
-            }
-            else if (varNode.containsKey(varKey)) {
+            } else if (varNode.containsKey(constKey)) {
+                log.debug("vars $ const :" + name);
+                varNode.put(name, varNode.get(constKey));
+                varNode.remove(constKey);
+                result = varNode.get(name);
 
+            } else if (varNode.containsKey(varKey)) {
+
+                log.debug("vars $ convert :" + name);
                 varNode.put(name, converter.convert(varNode.get(varKey), this));
                 varNode.remove(varKey);
                 result = varNode.get(name);
 
+            }else{
+               log.debug("vars(local) is not exist :" + name);
             }
 
             if (result instanceof String) {
 
                 return String.valueOf(result);
 
-            }
-            else if (result instanceof JSON) {
+            } else if (result instanceof JSON) {
 
                 return DataUtils.copyJSON(result);
 
-            }
-            else {
-
+            } else {
                 return result;
-
             }
 
         }
@@ -324,7 +355,7 @@ public class GroovyConverter {
             this.self = self;
         }
 
-        public Object call(String method, Object... args) throws ScriptException {
+        public Object call(String method, Object... args) throws Exception {
             return self.func(method, args);
         }
 
@@ -338,11 +369,11 @@ public class GroovyConverter {
             this.self = self;
         }
 
-        public Object call(String name) throws  Exception {
+        public Object call(String name) throws Exception {
             return self.vars(name);
         }
 
-        public Object get(String name) throws  Exception {
+        public Object get(String name) throws Exception {
             return self.vars(name);
         }
     }
@@ -383,29 +414,36 @@ public class GroovyConverter {
     private Object expressionEval(String expression, SelfObject self) throws Exception {
 
 
-        if (DataUtils.isBesieged(expression,"(",")")){
-            expression = DataUtils.extractBesieged(expression,"(",")");
+        if (DataUtils.isBesieged(expression, "(", ")")) {
+            expression = DataUtils.extractBesieged(expression, "(", ")");
         }
 
-        if (expression.matches(":[\\._\\w]+")){
+        if (expression.matches(":[\\._\\w]+")) {
 
-            return JSONPath.eval(self.getData(), expression.substring(1));
+            String expr = expression.substring(1);
+            Object result = JSONPath.eval(self.getData(), expr);
+            log.debug( "JSONPath.eval(" + expr + "):" + JSON.toJSONString(result));
+            return result;
 
-        }else if (expression.matches("\\$[\\._\\w]+")){
+        } else if (expression.matches("\\$[\\._\\w]+")) {
 
-            return self.getVar(expression.substring(1));
+            String expr = expression.substring(1);
+            Object result = self.getVar(expr);
+            log.debug( "self.getVar(" + expr + "):" + JSON.toJSONString(result));
+            return result;
 
-        }else {
+        } else {
 
             try {
-
                 Bindings bindings = initBindings(self);
 
-                return groovyEngine.eval(GROOVY_PUB_EXPR + expression, bindings);
+                Object result = groovyEngine.eval(GROOVY_PUB_EXPR + expression, bindings);
+                log.debug( "groovyEngine.eval(" + expression + "):" + JSON.toJSONString(result));
+                return result;
 
-            }catch (ScriptException e){
+            } catch (ScriptException e) {
 
-                throw new  Exception(e.toString() + " with: " + expression,e);
+                throw new Exception(e.toString() + " with: " + expression, e);
 
             }
 
@@ -432,7 +470,7 @@ public class GroovyConverter {
 
     }
 
-    public Object convert(Object value, SelfObject self) throws  Exception {
+    public Object convert(Object value, SelfObject self) throws Exception {
 
 
         if (value == null) {
@@ -448,14 +486,12 @@ public class GroovyConverter {
                 String expression = DataUtils.extractBesieged(strValue, "@{", "}");
                 return expressionEval(expression, self);
 
-            }
-            else if (strValue.matches("^@([_\\.\\w]+)?\\([^;]*\\);?$")) {
+            } else if (strValue.matches("^@([_\\.\\w]+)?\\([^;]*\\);?$")) {
 
                 String expression = DataUtils.extractBesieged(strValue, "@", ";");
                 return expressionEval(expression, self);
 
-            }
-            else {
+            } else {
 
                 Map<String, String> expressionMap = new HashMap<>();
 
@@ -479,17 +515,14 @@ public class GroovyConverter {
                     if (ret instanceof JSON) {
 
                         strResult = strResult.replaceFirst(key, JSON.toJSONString(ret));
-                    }
-                    else {
+                    } else {
                         strResult = strResult.replaceFirst(key, String.valueOf(ret));
                     }
                 }
 
                 return strResult.replaceAll("'@'", "@");
             }
-        }
-
-        else if (value instanceof JSONObject && ((JSONObject) value).containsKey("@func")) {
+        } else if (value instanceof JSONObject && ((JSONObject) value).containsKey("@func")) {
 
             JSONObject objectValue = (JSONObject) value;
             String type = objectValue.getString("@func");
@@ -500,16 +533,14 @@ public class GroovyConverter {
                 Object funcValue = DataUtils.testBoolean(select) ? objectValue.get("true") : objectValue.get("false");
                 return convert(funcValue, self);
 
-            }
-            else if ("@switch".equalsIgnoreCase(type)) {
+            } else if ("@switch".equalsIgnoreCase(type)) {
 
                 Object select = convert(objectValue.get("select"), self);
                 Object funcValue = objectValue.containsKey(select) ? objectValue.get(select) : objectValue.get("default");
 
                 return convert(funcValue, self);
 
-            }
-            else if ("@each".equalsIgnoreCase(type)) {
+            } else if ("@each".equalsIgnoreCase(type)) {
 
                 Object select = convert(objectValue.get("select"), self);
                 Object body = objectValue.get("for");
@@ -527,8 +558,7 @@ public class GroovyConverter {
                         funcValue.add(convert(body, subSelf));
                     }
 
-                }
-                else if (select instanceof Map) {
+                } else if (select instanceof Map) {
 
                     Map selectMap = (Map) select;
 
@@ -543,8 +573,7 @@ public class GroovyConverter {
 
                 return funcValue;
 
-            }
-            else {
+            } else {
 
                 Object func = getBean(type);
 
@@ -563,68 +592,79 @@ public class GroovyConverter {
 
             }
 
-        }
-        else if (value instanceof JSONObject) {
+        } else if (value instanceof JSONObject) {
 
             JSONObject target = new JSONObject();
             JSONObject objectValue = (JSONObject) value;
             SelfObject subSelf = new SelfObject(self);
 
 
+            if (objectValue.containsKey("@")) {
+                subSelf.setData(ClassUtils.castValue(convert(objectValue.get("@"), self), JSONObject.class));
+                objectValue.remove("@");
+            }
 
-                if (objectValue.containsKey("@")){
-                    subSelf.setData(ClassUtils.castValue(convert(objectValue.get("@"), self),JSONObject.class));
-                    objectValue.remove("@");
-                }
+            if (objectValue.containsKey("$")) {
+                self.varNode.put("$", objectValue.get("$"));
+                objectValue.remove("$");
+            }
 
+            if (objectValue.containsKey("$#")) {
+                self.varNode.put("$#", objectValue.get("$#"));
+                objectValue.remove("$#");
+            }
+
+            if (objectValue.containsKey("#")) {
+                //只是一个注释
+                objectValue.remove("#");
+            }
 
             List<String> keys = new ArrayList<>(objectValue.keySet());
             for (String k : keys) {
 
-
-                if (k.matches("^\\w+#$")) {
-                    // 值不转换
-                    String k1 = k.replaceFirst("#$", "");
-                    target.put(k1, objectValue.get(k));
+                if (k.matches("\\$[\\._\\w]+#")) {
+                    // 变量，不转换
+                    subSelf.varNode.put(k, objectValue.get(k));
                     objectValue.remove(k);
 
-                }
-                else if (k.matches("^\\$\\w+#$")) {
+                } else if (k.matches("\\$[\\._\\w]+")) {
 
-                    // 变量 值 不转换
-                    String k1 = DataUtils.extractBesieged(k, "$", "#");
-                    subSelf.getVarNode().put(k1, objectValue.get(k));
+                    //变量,转换
+                    subSelf.varNode.put(k, objectValue.get(k));
                     objectValue.remove(k);
 
-                }
-                else if (k.matches("^\\$\\w+$")) {
-                    // 变量 值 转换
-                    String k1 = k;
-                    subSelf.getVarNode().put(k1, objectValue.get(k));
+                } else if (k.matches("\\$[\\._\\w]+\\(\\)")) {
+                    //方法
+                    subSelf.varNode.put(k, objectValue.get(k));
                     objectValue.remove(k);
-
-                }
-                else if (k.matches("^\\$\\w+\\(\\)$")) {
-
-                    // 自定义方法
-                    String k1 = k;
-                    subSelf.getVarNode().put(k1, objectValue.get(k));
-                    objectValue.remove(k);
-
                 }
 
             }
+
 
             for (String k : objectValue.keySet()) {
 
                 Object v = objectValue.get(k);
 
-                if ("@".equals(v)){
-                    v = "@{:"+ k +"}";
+                if (k.matches("[\\._\\w]+#")) {
+                    // 值,不转换
+                    String k1 = k.substring(0, k.length() - 1);
+                    target.put(k1, objectValue.get(k));
+                    continue;
                 }
 
-                if ("$".equals(v)){
-                    v = "@{$"+ k +"}";
+                if ("*#".equals(k) && v instanceof Map) {
+                    //当键为'*', 同时值转换后为 JSONObject,则不转换并入目标JSONObject
+                    target.putAll((Map) v);
+                    continue;
+                }
+
+                if ("@".equals(v)) {
+                    v = "@{:" + k + "}";
+                }
+
+                if ("$".equals(v)) {
+                    v = "@{$" + k + "}";
                 }
 
                 Object v1 = convert(v, subSelf);
@@ -632,13 +672,12 @@ public class GroovyConverter {
                 if ("*".equals(k) && v1 instanceof Map) {
                     //当键为'*', 同时值转换后为 JSONObject,则并入目标JSONObject
                     target.putAll((Map) v1);
-                }
-                else {
+                } else {
 
                     //键也转换
                     String k1 = k;
-                    k1.replaceAll("^'$'","$");
-                    k1.replaceAll("'#'$","#");
+                    k1.replaceAll("^'$'", "$");
+                    k1.replaceAll("'#'$", "#");
                     k1 = ClassUtils.castValue(convert(k, subSelf), String.class);
 
                     //加入目标JSONObject
@@ -648,8 +687,7 @@ public class GroovyConverter {
             }
 
             return target;
-        }
-        else if (value instanceof JSONArray) {
+        } else if (value instanceof JSONArray) {
 
             JSONArray target = new JSONArray();
             JSONArray arrayValue = (JSONArray) value;
@@ -661,16 +699,14 @@ public class GroovyConverter {
                 if (!(v instanceof List) && v1 instanceof List) {
                     //当item不为子list,同时转换后为list, 则并入目标list
                     target.addAll((List) v1);
-                }
-                else {
+                } else {
                     //加入转换后的值
                     target.add(v1);
                 }
 
             }
             return target;
-        }
-        else {
+        } else {
             return value;
         }
     }

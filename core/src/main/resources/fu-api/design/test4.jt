@@ -17,10 +17,13 @@
   },
   "*": {
     "@": "@{$res}",
+    "$":{
+      "success_code" : 200
+    },
     "msg": "@{:msg}",
     "*": {
       "@func": "@if",
-      "select": "@{data.code == 200 }",
+      "select": "@{data.code == vars.success_code}",
       "true": {
         "data": {
           "rows": "@data('\\\\[\\\\].API_FILTER');",

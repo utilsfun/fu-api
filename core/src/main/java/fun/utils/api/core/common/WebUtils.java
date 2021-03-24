@@ -49,8 +49,12 @@ public class WebUtils {
         result.put("headers", headers);
 
         JSONObject cookies = new JSONObject();
-        for (Cookie cookie : request.getCookies()) {
-            cookies.put(cookie.getName(), cookie.getValue());
+
+        Cookie[] cookieList = request.getCookies();
+        if (cookieList != null) {
+            for (Cookie cookie : cookieList) {
+                cookies.put(cookie.getName(), cookie.getValue());
+            }
         }
         result.put("cookies", cookies);
 
