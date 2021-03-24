@@ -586,6 +586,8 @@ public class GroovyConverter {
                     input.remove("@func");
                     funcValue = ((Callback) func).call(convert(input, self));
 
+                }else{
+                    throw new Exception("can not find func :" + type ) ;
                 }
 
                 return convert(funcValue, self);
@@ -687,6 +689,7 @@ public class GroovyConverter {
             }
 
             return target;
+
         } else if (value instanceof JSONArray) {
 
             JSONArray target = new JSONArray();
@@ -705,9 +708,14 @@ public class GroovyConverter {
                 }
 
             }
+
             return target;
+
         } else {
+
+            // String Array Object 三种可转换，其它原样返回
             return value;
+
         }
     }
 
