@@ -62,12 +62,17 @@ public class DesignController extends BaseController {
 
 
         GroovyConverter converter = new GroovyConverter();
-        converter.withBean("apijson",new ApiJsonBean(converter, new Callback<String, DataSource>() {
+
+        Callback<String, DataSource> dataSourceCallBack = new Callback<String, DataSource>() {
             @Override
             public DataSource call(String param) {
                 return doService.getDataSource();
             }
-        }));
+        };
+
+        converter.withBean("apijson",new ApiJsonBean(converter, dataSourceCallBack));
+
+
 
         // ******* jt **********************************************
         if ( StringUtils.endsWithIgnoreCase(filename,".jt")) {

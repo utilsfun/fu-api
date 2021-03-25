@@ -1,13 +1,17 @@
 package fun.utils.jsontemplate;
 
+import apijson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.common.DataUtils;
 import fun.utils.common.apijson.ApiJsonCaller;
 import javafx.util.Callback;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;
 
+@Slf4j
 public class ApiJsonBean implements Callback<JSONObject, Object> {
 
 
@@ -32,12 +36,15 @@ public class ApiJsonBean implements Callback<JSONObject, Object> {
     @SneakyThrows
     @Override
     public Object call(JSONObject param) {
+
         String datasource = StringUtils.defaultIfBlank(param.getString("datasource"),"default");
         String method = param.getString("method");
 
-        JSONObject request = param.getJSONObject("request");
+        JSONObject request =param.getJSONObject("request");
         if (request == null){
             throw new Exception("field 'request' must be APIJSON JSONObject ");
+        }else {
+            request =  DataUtils.copyJSONObject(request);
         }
 
         Object template = param.get("template");
@@ -45,6 +52,9 @@ public class ApiJsonBean implements Callback<JSONObject, Object> {
         ApiJsonCaller apiJsonCaller = new ApiJsonCaller(dataSourceCallback.call(datasource));
 
         JSONObject data = null;
+
+        log.debug("ApiJsonCaller." + method + " : " + JSON.toJSONString(request));
+
         if ("get".equalsIgnoreCase(method)) {
             data = apiJsonCaller.get(request);
         }

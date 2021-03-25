@@ -1,0 +1,153 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": [
+    {
+      "type": "crud",
+      "syncLocation": false,
+      "columnsTogglable": false,
+      "data": {
+        "rows": []
+      },
+      "api": "./filter_api.jt?_act=query&_type=@{:parameters._type}",
+      "loadDataOnce": true,
+      "draggable": true,
+      "saveOrderApi": {
+        "url": "./filter_api.jt?_type=@{:parameters._type}&_act=sort",
+        "data": {
+          "ids": "${ids}"
+        }
+      },
+      "name": "filter_list",
+      "itemActions": [
+        {
+          "type": "button",
+          "icon": "fa fa-edit",
+          "label": "修改",
+          "actionType": "dialog",
+          "reload": "filter_list",
+          "dialog": {
+            "size": "lg",
+            "title": "修改",
+            "body": {
+              "type": "service",
+              "schemaApi": "./filter_edit.jt?_for=update&id=${id}"
+            },
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "action",
+                "actionType": "reset",
+                "label": "重置"
+              },
+              {
+                "type": "action",
+                "actionType": "close",
+                "label": "关闭"
+              }
+            ]
+          }
+        },
+        {
+          "label": "删除",
+          "icon": "fa fa-trash text-danger",
+          "type": "button",
+          "actionType": "ajax",
+          "confirmText": "确认要删除filter:${title}？",
+          "api": "post:./filter_api.jt?_act=delete&id=${id}&_type=@{:parameters._type}&_id=@{:parameters._id}"
+        }
+      ],
+      "headerToolbar": [
+        {
+          "label": "",
+          "type": "button",
+          "icon": "fa fa-refresh",
+          "actionType": "reload",
+          "target": "filter_list"
+        },
+        {
+          "label": "新增",
+          "type": "button",
+          "icon": "fa fa-plus",
+          "level": "info",
+          "actionType": "dialog",
+          "reload": "filter_list",
+          "dialog": {
+            "size": "lg",
+            "title": "新增",
+            "body": {
+              "type": "service",
+              "schemaApi": "./filter_edit.jt?_for=insert&_type=@{:parameters._type}&_id=@{:parameters._id}"
+            },
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "action",
+                "actionType": "reset",
+                "label": "重置"
+              },
+              {
+                "type": "action",
+                "actionType": "close",
+                "label": "关闭"
+              }
+            ]
+          }
+        },
+        "bulkActions",
+        "."
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "hidden": true
+        },
+        {
+          "name": "title",
+          "label": "标题",
+          "width": 100
+        },
+        {
+          "name": "implement_type",
+          "label": "实现类型"
+        },
+        {
+          "name": "point",
+          "label": "位置",
+          "type": "mapping",
+          "map": {
+            "enter": "进入时（enter）",
+            "execute": "执行时（execute）",
+            "return": "返回时（return）",
+            "*": "未知位置（${point}）"
+          }
+        },
+        {
+          "name": "status",
+          "label": "状态",
+          "type": "mapping",
+          "map": {
+            "0": "<span class='label label-success'>有效</span>",
+            "1": "<span class='label label-light'>禁用</span>",
+            "*": "<span class='label label-danger'>未知status:{status}</span>"
+          }
+        },
+        {
+          "name": "gmt_modified",
+          "label": "修改时间",
+          "type": "date",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "width": 120
+        }
+      ]
+    }
+  ]
+}

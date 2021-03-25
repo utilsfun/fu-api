@@ -1,0 +1,157 @@
+{
+  "@func": "@switch",
+  "select": "@data('parameters._act');",
+  "query": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "[]": {
+        "API_FILTER": {
+          "parent_type": "@{:parameters._type}",
+          "parent_id": "@{:context.application.id}",
+          "@column": "id,parent_type,parent_id,title,implement_type,point,sort,status,gmt_create,gmt_modified",
+          "@order": "sort"
+        },
+        "query": 2
+      },
+      "total@": "/[]/total",
+      "info@": "/[]/info"
+    },
+    "template#": {
+      "@func": "@if",
+      "select": "@{data.code == 200}",
+      "true": {
+        "data": {
+          "rows": "@data('\\\\[\\\\].API_FILTER',[]);",
+          "total": "@",
+          "info": "@"
+        },
+        "status": 0,
+        "msg": "success"
+      },
+      "false": {
+        "status": "@{:code}",
+        "msg": "@{:msg}"
+      }
+    }
+  },
+  "sort": {
+    "$result": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "API_FILTER[]": {
+          "@func": "@each",
+          "select": "@{StringUtils.split(data('body.ids'),',')}",
+          "for": {
+            "id": "@{vars('@item')}",
+            "sort": "@{vars('@key')+1}"
+          }
+        }
+      }
+    },
+    "*": {
+      "@": "@{$result}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }",
+      "detail": "@{:.}"
+    }
+  },
+  "get": {
+    "@func": "@switch",
+    "select": "@data('parameters._for');",
+    "update": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "get",
+      "request": {
+        "API_FILTER": {
+          "id": "@{:parameters.id}"
+        }
+      },
+      "template#": {
+        "data": "@{:API_FILTER}",
+        "msg": "@",
+        "status": "@{data.code==200 ? 0 : data.code }"
+      }
+    },
+    "insert": {
+      "data": {
+        "parent_type": "@{:parameters._type}",
+        "parent_id": "@{:parameters._id}",
+        "implement_type": "groovy",
+        "point": "execute",
+        "status": "0"
+      },
+      "code": "200",
+      "msg": "success"
+    }
+  },
+  "update": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "put",
+    "request": {
+      "@": "@{:body}",
+      "API_FILTER": {
+        "id": "@",
+        "title": "@",
+        "implement_type": "@",
+        "implement_code": "@",
+        "point": "@",
+        "status": "@"
+      }
+    },
+    "template#": {
+      "data": "@{:API_FILTER}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }"
+    }
+  },
+  "insert": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "post",
+    "request": {
+      "@": "@{:body}",
+      "API_FILTER": {
+        "parent_type": "@",
+        "parent_id": "@",
+        "title": "@",
+        "implement_type": "@",
+        "implement_code": "@",
+        "point": "@",
+        "status": "@"
+      }
+    },
+    "template#": {
+      "data": "@{:API_FILTER}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }"
+    }
+  },
+  "delete": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "delete",
+    "request": {
+      "@": "@{:parameters}",
+      "API_FILTER": {
+        "parent_type": "@{:_type}",
+        "parent_id": "@{:_id}",
+        "id": "@{:id}"
+      }
+    },
+    "template#": {
+      "data": "@{:API_FILTER}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }"
+    }
+  },
+  "default": {
+    "msg": "没有找到有效的_act参数(query,get,update,insert,delete)",
+    "status": 404
+  }
+}

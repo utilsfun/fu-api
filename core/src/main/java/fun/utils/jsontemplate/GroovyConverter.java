@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -422,14 +423,14 @@ public class GroovyConverter {
 
             String expr = expression.substring(1);
             Object result = JSONPath.eval(self.getData(), expr);
-            log.debug( "JSONPath.eval(" + expr + "):" + JSON.toJSONString(result));
+            log.debug( "JSONPath.eval(\"" + expr + "\"):" + JSON.toJSONString(result));
             return result;
 
         } else if (expression.matches("\\$[\\._\\w]+")) {
 
             String expr = expression.substring(1);
-            Object result = self.getVar(expr);
-            log.debug( "self.getVar(" + expr + "):" + JSON.toJSONString(result));
+            Object result = self.vars(expr);
+            log.debug( "self.vars(\"" + expr + "\"):" + JSON.toJSONString(result));
             return result;
 
         } else {
@@ -438,7 +439,7 @@ public class GroovyConverter {
                 Bindings bindings = initBindings(self);
 
                 Object result = groovyEngine.eval(GROOVY_PUB_EXPR + expression, bindings);
-                log.debug( "groovyEngine.eval(" + expression + "):" + JSON.toJSONString(result));
+                log.debug( "groovyEngine.eval(\"" + expression + "\"):" + JSON.toJSONString(result));
                 return result;
 
             } catch (ScriptException e) {
@@ -543,14 +544,28 @@ public class GroovyConverter {
             } else if ("@each".equalsIgnoreCase(type)) {
 
                 Object select = convert(objectValue.get("select"), self);
+
                 Object body = objectValue.get("for");
 
-                List<Object> funcValue = new ArrayList<>();
+                if (body == null){
+                    JSONObject bodyObject = DataUtils.copyJSONObject(objectValue);
+                    bodyObject.remove("@func");
+                    bodyObject.remove("select");
+                    body = bodyObject;
+                }
+
+                JSONArray funcValue = new JSONArray();
+
+                if (select instanceof Object[]){
+                    select = Arrays.asList((Object[])select);
+                }
 
                 if (select instanceof List) {
 
                     int index = 0;
                     for (Object obj : (List) select) {
+
+                        log.trace("@each list index:" + index);
 
                         SelfObject subSelf = new SelfObject(self);
                         subSelf.varNode.put("$@key", index++);
@@ -564,11 +579,16 @@ public class GroovyConverter {
 
                     for (Object key : selectMap.keySet()) {
 
+                        log.trace("@each list Map:" + key);
+
                         SelfObject subSelf = new SelfObject(self);
                         subSelf.varNode.put("$@key", key);
                         subSelf.varNode.put("$@item", selectMap.get(key));
                         funcValue.add(convert(body, subSelf));
                     }
+
+                }else{
+                    log.warn("@each select is not list or map :" + JSON.toJSONString(select));
                 }
 
                 return funcValue;
