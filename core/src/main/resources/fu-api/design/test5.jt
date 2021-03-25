@@ -5,7 +5,7 @@
     "method": "get",
     "request": {
       "[]": {
-        "API_FILTER": {
+        "API_FILTER":{
           "@column": "id,parent_type,parent_id,title,implement_type,point,status,gmt_create,gmt_modified",
           "@order": "sort"
         },
@@ -21,13 +21,13 @@
       "success_code" : 200
     },
     "msg": "@{:msg}",
-    "detail": "@{:.}",
+    "detail": "@{cast(cast(data('$'),'JSONString'),'JSONObject')}",
     "*": {
       "@func": "@if",
       "select": "@{data.code == vars.success_code}",
       "true": {
         "data": {
-          "rows": "@data('\\\\[\\\\].API_FILTER');",
+          "rows": "@data('API_FILTER\\\\[\\\\]');",
           "total": "@",
           "info": "@"
         },

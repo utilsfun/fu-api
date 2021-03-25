@@ -4,14 +4,19 @@
   "query": {
     "@func": "apijson",
     "datasource": "default",
-    "method": "get",
+    "method": "get_tree",
     "request": {
-      "[]": {
-        "API_FILTER": {
+      "[]":{
+        "API_PARAMETER": {
           "parent_type": "@{:parameters._type}",
           "parent_id": "@{:parameters._id}",
-          "@column": "id,parent_type,parent_id,title,implement_type,point,sort,status,gmt_create,gmt_modified",
-          "@order": "sort"
+          "@column": "id,parent_type,parent_id,name,title,is_required,note,position,default_value,is_hidden,is_read_only,data_type,status,is_array,gmt_create,gmt_modified",
+          "@order": "position,sort",
+          "@children": {
+            "@column": "children",
+            "parent_type": "parameter",
+            "parent_id@": "/id"
+          }
         },
         "query": 2
       },
@@ -23,7 +28,7 @@
       "select": "@{data.code == 200}",
       "true": {
         "data": {
-          "rows": "@data('\\\\[\\\\].API_FILTER',[]);",
+          "rows": "@data('\\\\[\\\\].API_PARAMETER',[]);",
           "total": "@",
           "info": "@"
         },

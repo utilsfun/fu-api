@@ -157,6 +157,14 @@
         }
       },
       {
+        "title": "公共参数",
+        "body": {
+          "type": "service",
+          "className": "p-sm",
+          "schemaApi": "./parameter_list.jt?_type=application&_id=@{:context.application.id}"
+        }
+      },
+      {
         "title": "过滤器",
         "body": {
           "type": "service",

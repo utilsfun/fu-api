@@ -9,7 +9,7 @@
       "data": {
         "rows": []
       },
-      "api": "./filter_api.jt?_act=query&_type=@{:parameters._type}",
+      "api": "./filter_api.jt?_act=query&&_type=@{:parameters._type}&_id=@{:parameters._id}",
       "loadDataOnce": true,
       "draggable": true,
       "saveOrderApi": {

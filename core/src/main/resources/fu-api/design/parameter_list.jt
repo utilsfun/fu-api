@@ -1,0 +1,239 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": [
+    {
+      "type": "crud",
+      "syncLocation": false,
+      "columnsTogglable": true,
+      "data": {
+        "rows": []
+      },
+      "api": "./parameter_api.jt?_act=query&&_type=@{:parameters._type}&_id=@{:parameters._id}",
+      "loadDataOnce": true,
+      "footable": {
+        "expand": "all"
+      },
+      "draggable": true,
+      "saveOrderApi": {
+        "url": "./parameter_api.jt?_type=@{:parameters._type}&_act=sort",
+        "data": {
+          "ids": "${ids}"
+        }
+      },
+      "name": "parameter_list",
+      "headerToolbar": [
+        {
+          "label": "",
+          "type": "button",
+          "icon": "fa fa-refresh",
+          "actionType": "reload",
+          "target": "filter_list"
+        },
+        {
+          "disabled": false,
+          "type": "button",
+          "reload": "parameter_list",
+          "icon": "fa fa-plus",
+          "label": "新增",
+          "actionType": "dialog",
+          "level": "info",
+          "dialog": {
+            "size": "lg",
+            "title": "新增参数",
+            "body": {
+              "type": "service",
+              "schemaApi": "./parameter_edit.jpage?_for=insert&parent_type=application"
+            },
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "action",
+                "actionType": "reset",
+                "label": "重置"
+              },
+              {
+                "type": "action",
+                "actionType": "close",
+                "label": "关闭"
+              }
+            ]
+          }
+        },
+        "bulkActions",
+        "."
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "hidden": true
+        },
+        {
+          "name": "name",
+          "label": "名称",
+          "width": 80
+        },
+        {
+          "name": "title",
+          "label": "标题",
+          "width": 120
+        },
+
+        {
+          "name": "position",
+          "label": "位置"
+        },
+        {
+          "name": "data_type",
+          "label": "类型",
+          "type": "tpl",
+          "tpl": "<% if (data.is_array == 1){ return data.data_type + '[]'} else { return data.data_type } %> "
+        },
+        {
+          "name": "default_value",
+          "label": "默认值"
+        },
+        {
+          "name": "is_required",
+          "label": "必填",
+          "type": "mapping",
+          "map": {
+            "1": "<span class='label label-info'>是</span>",
+            "0": "",
+            "*": "<span class='label label-danger'>未知:{is_required}</span>"
+          }
+        },
+        {
+          "name": "is_hidden",
+          "label": "隐藏",
+          "type": "mapping",
+          "map": {
+            "1": "<span class='label label-info'>是</span>",
+            "0": "",
+            "*": "<span class='label label-danger'>未知:{is_hidden}</span>"
+          },
+          "toggled": false
+        },
+        {
+          "name": "is_read_only",
+          "label": "只读",
+          "type": "mapping",
+          "map": {
+            "1": "<span class='label label-info'>是</span>",
+            "0": "",
+            "*": "<span class='label label-danger'>:{is_read_only}</span>"
+          },
+          "toggled": false
+        },
+        {
+          "name": "alias",
+          "label": "必填",
+          "toggled": false
+        },
+        {
+          "name": "status",
+          "label": "状态",
+          "type": "mapping",
+          "map": {
+            "0": "<span class='label label-success'>有效</span>",
+            "1": "<span class='label label-light'>禁用</span>",
+            "*": "<span class='label label-danger'>未知status:{status}</span>"
+          }
+        },
+        {
+          "name": "note",
+          "label": "说明",
+          "type": "tpl",
+          "tpl": "${note|truncate:100}"
+        },
+        {
+          "type": "operation",
+          "label": "操作",
+          "width": 100,
+          "buttons": [
+            {
+              "type": "button",
+              "icon": "fa fa-plus",
+              "label": "",
+              "actionType": "dialog",
+              "level": "link",
+              "dialog": {
+                "size": "lg",
+                "title": "新增子参数",
+                "body": {
+                  "type": "service",
+                  "schemaApi": "./parameter_edit.jpage?_for=insert&parent_type=parameter&parent_id=${id}"
+                },
+                "actions": [
+                  {
+                    "type": "submit",
+                    "level": "primary",
+                    "label": "提交"
+                  },
+                  {
+                    "type": "action",
+                    "actionType": "reset",
+                    "label": "重置"
+                  },
+                  {
+                    "type": "action",
+                    "actionType": "close",
+                    "label": "关闭"
+                  }
+                ]
+              },
+              "visibleOn": "data.data_type == 'object'"
+            },
+            {
+              "type": "button",
+              "icon": "fa fa-edit",
+              "label": "",
+              "actionType": "dialog",
+              "reload": "parameter_list",
+              "level": "link",
+              "dialog": {
+                "size": "lg",
+                "title": "修改参数",
+                "body": {
+                  "type": "service",
+                  "schemaApi": "./parameter_edit.jpage?_for=update&id=${id}"
+                },
+                "actions": [
+                  {
+                    "type": "submit",
+                    "level": "primary",
+                    "label": "提交"
+                  },
+                  {
+                    "type": "action",
+                    "actionType": "reset",
+                    "label": "重置"
+                  },
+                  {
+                    "type": "action",
+                    "actionType": "close",
+                    "label": "关闭"
+                  }
+                ]
+              }
+            },
+            {
+              "label": "",
+              "icon": "fa fa-trash text-danger",
+              "type": "button",
+              "actionType": "ajax",
+              "level": "link",
+              "className": "text-danger",
+              "confirmText": "确认要删除参数${name}:${title}？",
+              "api": "post:./parameter.api?_act=delete&id=${id}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -67,6 +67,9 @@ public class ApiJsonBean implements Callback<JSONObject, Object> {
         else if ("delete".equalsIgnoreCase(method)) {
             data = apiJsonCaller.delete(request);
         }
+        else if ("get_tree".equalsIgnoreCase(method)) {
+            data = apiJsonCaller.getTree(request);
+        }
         else {
             throw new Exception("field 'method' must be get,put,post,delete ! but " + method);
         }

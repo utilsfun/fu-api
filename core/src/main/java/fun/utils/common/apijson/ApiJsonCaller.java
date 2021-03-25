@@ -7,11 +7,17 @@ import apijson.framework.APIJSONSQLConfig;
 import apijson.framework.APIJSONSQLExecutor;
 import apijson.orm.SQLConfig;
 import apijson.orm.SQLExecutor;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
+import fun.utils.common.DataUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class ApiJsonCaller {
 
@@ -107,6 +113,68 @@ public class ApiJsonCaller {
 
     public JSONObject put(JSONObject request){
         return new ApiJsonParser(RequestMethod.PUT,false,creator).parseResponse(request);
+    }
+
+
+    public JSONObject getTree(JSONObject request){
+
+        JSONObject result = get(request);
+
+        JSONObject queryObject = request.getJSONObject("[]");
+        for (String key: queryObject.keySet()){
+            Object item = queryObject.get(key);
+            if (item instanceof JSONObject){
+                JSONObject  childrenConfig =  ((JSONObject)item).getJSONObject("@children");
+                if (childrenConfig != null){
+                    JSONArray rows = (JSONArray)JSONPath.eval(result,"\\[\\]." + key);
+
+                    rows.forEach(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object o) {
+                            JSONObject data = (JSONObject) o;
+
+                            JSONObject tempItem = DataUtils.copyJSONObject((JSONObject)item);
+                            JSONObject tempConfig = DataUtils.copyJSONObject(childrenConfig);
+
+                            String childrenName = tempConfig.getString("@column");
+                            tempConfig.remove("@column");
+                            tempItem.remove("@children");
+
+                            tempItem.putAll(tempConfig);
+
+                            List<String> tempKeys = new ArrayList<>();
+                            tempKeys.addAll(tempItem.keySet());
+
+                            for (String tempKey: tempKeys){
+                                if (tempKey.endsWith("@")){
+                                    tempItem.put(tempKey.substring(0,tempKey.length() - 1),JSONPath.eval(data,tempItem.getString(tempKey)));
+                                    tempItem.remove(tempKey);
+                                }
+                            }
+
+                            JSONObject tempGet = new JSONObject();
+                            JSONObject key1Object = new JSONObject();
+                            tempGet.put( key + "[]" ,key1Object);
+                            key1Object.put(key,tempItem);
+
+
+                            JSONObject tempCallerResult = get(tempGet);
+
+                            JSONArray tempRows = tempCallerResult.getJSONArray(key + "[]");
+
+                            if (tempRows != null){
+                                JSONPath.set(data,childrenName,tempRows);
+                                for (Object tmpO : tempRows) {
+                                    accept(tmpO);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        return result;
     }
 
 }
