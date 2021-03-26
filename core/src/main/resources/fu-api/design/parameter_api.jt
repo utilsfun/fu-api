@@ -6,10 +6,10 @@
     "datasource": "default",
     "method": "get_tree",
     "request": {
-      "[]":{
+      "[]": {
         "API_PARAMETER": {
-          "parent_type": "@{:parameters._type}",
-          "parent_id": "@{:parameters._id}",
+          "parent_type": "@{:parameters.parent_type}",
+          "parent_id": "@{:parameters.parent_id}",
           "@column": "id,parent_type,parent_id,name,title,is_required,note,position,default_value,is_hidden,is_read_only,data_type,status,is_array,gmt_create,gmt_modified",
           "@order": "position,sort",
           "@children": {
@@ -47,7 +47,7 @@
       "datasource": "default",
       "method": "put",
       "request": {
-        "API_FILTER[]": {
+        "API_PARAMETER[]": {
           "@func": "@each",
           "select": "@{StringUtils.split(data('body.ids'),',')}",
           "for": {
@@ -72,22 +72,21 @@
       "datasource": "default",
       "method": "get",
       "request": {
-        "API_FILTER": {
-          "id": "@{:parameters.id}"
+        "API_PARAMETER": {
+          "id": "@{:parameters.id}",
+          "@json":"validations"
         }
       },
       "template#": {
-        "data": "@{:API_FILTER}",
+        "data": "@{:API_PARAMETER}",
         "msg": "@",
         "status": "@{data.code==200 ? 0 : data.code }"
       }
     },
     "insert": {
       "data": {
-        "parent_type": "@{:parameters._type}",
-        "parent_id": "@{:parameters._id}",
-        "implement_type": "groovy",
-        "point": "execute",
+        "position": "body",
+        "data_type": "string",
         "status": "0"
       },
       "code": "200",
@@ -100,17 +99,28 @@
     "method": "put",
     "request": {
       "@": "@{:body}",
-      "API_FILTER": {
+      "API_PARAMETER": {
         "id": "@",
+        "parent_type": "@",
+        "parent_id": "@",
+        "name": "@",
+        "alias": "@",
         "title": "@",
-        "implement_type": "@",
-        "implement_code": "@",
-        "point": "@",
+        "note": "@",
+        "position": "@",
+        "data_type": "@",
+        "is_array": "@",
+        "default_value": "@",
+        "is_required": "@",
+        "is_hidden": "@",
+        "is_read_only": "@",
+        "examples": "@",
+        "validations": "@{cast(data.validations,'String')}",
         "status": "@"
       }
     },
     "template#": {
-      "data": "@{:API_FILTER}",
+      "data": "@{:API_PARAMETER}",
       "msg": "@",
       "status": "@{ data.code==200 ? 0 : data.code }"
     }
@@ -121,38 +131,72 @@
     "method": "post",
     "request": {
       "@": "@{:body}",
-      "API_FILTER": {
+      "API_PARAMETER": {
         "parent_type": "@",
         "parent_id": "@",
+        "name": "@",
+        "alias": "@",
         "title": "@",
-        "implement_type": "@",
-        "implement_code": "@",
-        "point": "@",
+        "note": "@",
+        "position": "@",
+        "data_type": "@",
+        "is_array": "@",
+        "default_value": "@",
+        "is_required": "@",
+        "is_hidden": "@",
+        "is_read_only": "@",
+        "examples": "@",
+        "validations": "@{cast(data.validations,'String')}",
         "status": "@"
       }
     },
     "template#": {
-      "data": "@{:API_FILTER}",
+      "data": "@{:API_PARAMETER}",
       "msg": "@",
       "status": "@{ data.code==200 ? 0 : data.code }"
     }
   },
   "delete": {
-    "@func": "apijson",
-    "datasource": "default",
-    "method": "delete",
-    "request": {
-      "@": "@{:parameters}",
-      "API_FILTER": {
-        "parent_type": "@{:_type}",
-        "parent_id": "@{:_id}",
-        "id": "@{:id}"
+    "@func": "@if",
+    "select": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "get",
+      "request": {
+        "[]": {
+          "API_PARAMETER": {
+            "parent_type": "parameter",
+            "parent_id": "@{:parameters.id}",
+            "@column": "id"
+          },
+          "query": 2
+        },
+        "total@": "/[]/total",
+        "info@": "/[]/info"
+      },
+      "template#": "@{data.total == 0}"
+    },
+    "true": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "delete",
+      "request": {
+        "@": "@{:parameters}",
+        "API_PARAMETER": {
+          "parent_type": "@{:parent_type}",
+          "parent_id": "@{:parent_id}",
+          "id": "@{:id}"
+        }
+      },
+      "template#": {
+        "data": "@{:API_PARAMETER}",
+        "msg": "@",
+        "status": "@{ data.code==200 ? 0 : data.code }"
       }
     },
-    "template#": {
-      "data": "@{:API_FILTER}",
-      "msg": "@",
-      "status": "@{ data.code==200 ? 0 : data.code }"
+    "false": {
+      "msg": "有子参数不能删除,请先删除子参数",
+      "status": 404
     }
   },
   "default": {

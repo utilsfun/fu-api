@@ -9,11 +9,11 @@
       "data": {
         "rows": []
       },
-      "api": "./filter.api?_act=query&_type=application",
+      "api": "./filter.api?_act=query&parent_type=application",
       "loadDataOnce": true,
       "draggable": true,
       "saveOrderApi": {
-        "url": "./filter.api?_type=application&_act=sort",
+        "url": "./filter.api?parent_type=application&_act=sort",
         "data": {
           "ids": "${ids}"
         }

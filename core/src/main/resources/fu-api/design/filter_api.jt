@@ -8,8 +8,8 @@
     "request": {
       "[]": {
         "API_FILTER": {
-          "parent_type": "@{:parameters._type}",
-          "parent_id": "@{:parameters._id}",
+          "parent_type": "@{:parameters.parent_type}",
+          "parent_id": "@{:parameters.parent_id}",
           "@column": "id,parent_type,parent_id,title,implement_type,point,sort,status,gmt_create,gmt_modified",
           "@order": "sort"
         },
@@ -79,8 +79,6 @@
     },
     "insert": {
       "data": {
-        "parent_type": "@{:parameters._type}",
-        "parent_id": "@{:parameters._id}",
         "implement_type": "groovy",
         "point": "execute",
         "status": "0"
@@ -139,8 +137,8 @@
     "request": {
       "@": "@{:parameters}",
       "API_FILTER": {
-        "parent_type": "@{:_type}",
-        "parent_id": "@{:_id}",
+        "parent_type": "@{:parent_type}",
+        "parent_id": "@{:parent_id}",
         "id": "@{:id}"
       }
     },

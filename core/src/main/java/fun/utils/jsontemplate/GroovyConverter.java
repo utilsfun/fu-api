@@ -437,9 +437,9 @@ public class GroovyConverter {
 
             try {
                 Bindings bindings = initBindings(self);
-
+                log.debug( "groovyEngine.eval(\"" + expression + "\")");
                 Object result = groovyEngine.eval(GROOVY_PUB_EXPR + expression, bindings);
-                log.debug( "groovyEngine.eval(\"" + expression + "\"):" + JSON.toJSONString(result));
+                log.debug( "return " + JSON.toJSONString(result));
                 return result;
 
             } catch (ScriptException e) {

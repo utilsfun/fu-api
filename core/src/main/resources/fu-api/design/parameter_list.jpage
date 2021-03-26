@@ -6,14 +6,14 @@
       "type": "crud",
       "syncLocation": false,
       "columnsTogglable": true,
-      "api": "./parameter.api?_act=query&_type=application",
+      "api": "./parameter.api?_act=query&parent_type=application",
       "loadDataOnce": true,
       "footable": {
         "expand": "all"
       },
       "draggable": true,
       "saveOrderApi": {
-        "url": "./parameter.api?_type=application&_act=sort",
+        "url": "./parameter.api?parent_type=application&_act=sort",
         "data": {
           "ids": "${ids}"
         }

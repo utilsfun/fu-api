@@ -9,14 +9,14 @@
       "data": {
         "rows": []
       },
-      "api": "./parameter_api.jt?_act=query&&_type=@{:parameters._type}&_id=@{:parameters._id}",
+      "api": "./parameter_api.jt?_act=query&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}",
       "loadDataOnce": true,
       "footable": {
         "expand": "all"
       },
       "draggable": true,
       "saveOrderApi": {
-        "url": "./parameter_api.jt?_type=@{:parameters._type}&_act=sort",
+        "url": "./parameter_api.jt?parent_type=@{:parameters.parent_type}&_act=sort",
         "data": {
           "ids": "${ids}"
         }
@@ -43,7 +43,7 @@
             "title": "新增参数",
             "body": {
               "type": "service",
-              "schemaApi": "./parameter_edit.jpage?_for=insert&parent_type=application"
+              "schemaApi": "./parameter_edit.jpage?_for=insert&parent_type=application&parent_id=@{:parameters.parent_id}"
             },
             "actions": [
               {
@@ -200,7 +200,7 @@
                 "title": "修改参数",
                 "body": {
                   "type": "service",
-                  "schemaApi": "./parameter_edit.jpage?_for=update&id=${id}"
+                  "schemaApi": "./parameter_edit.jt?_for=update&id=${id}&parent_type=${parent_type}&parent_id=${parent_id}"
                 },
                 "actions": [
                   {

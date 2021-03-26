@@ -38,7 +38,7 @@
         "@": "@data('body');",
         "API_APPLICATION": {
           "id": "@",
-          "error_codes": "@data('error_codes','JSONString');"
+          "error_codes": "@{cast(data.error_codes,'String')}"
         }
       }
     }

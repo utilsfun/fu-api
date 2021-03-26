@@ -2,6 +2,7 @@ package fun.utils.api.demo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import fun.utils.common.ClassUtils;
 import fun.utils.common.DataUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -9,6 +10,8 @@ import org.springframework.http.MediaTypeFactory;
 
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FreeTest {
     @Test
@@ -77,6 +80,15 @@ public class FreeTest {
     }
 
 
+    @Test
+    public void test8() throws IOException {
 
+        Object obj = new JSONObject() {{
+            put("1","1");
+            put("2","2");
+            put("3","3");
+        }};
+        System.out.println( ClassUtils.castValue(obj,"String"));
+    }
 }
 

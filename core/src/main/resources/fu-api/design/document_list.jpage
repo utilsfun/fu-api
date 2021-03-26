@@ -6,11 +6,11 @@
       "type": "crud",
       "syncLocation": false,
       "columnsTogglable": false,
-      "api": "./document.api?_act=query&_type=application",
+      "api": "./document.api?_act=query&parent_type=application",
       "loadDataOnce": true,
       "draggable": true,
       "saveOrderApi": {
-        "url": "./document.api?_type=application&_act=sort",
+        "url": "./document.api?parent_type=application&_act=sort",
         "data": {
           "ids": "${ids}"
         }

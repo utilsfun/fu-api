@@ -9,11 +9,11 @@
       "data": {
         "rows": []
       },
-      "api": "./filter_api.jt?_act=query&&_type=@{:parameters._type}&_id=@{:parameters._id}",
+      "api": "./filter_api.jt?_act=query&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}",
       "loadDataOnce": true,
       "draggable": true,
       "saveOrderApi": {
-        "url": "./filter_api.jt?_type=@{:parameters._type}&_act=sort",
+        "url": "./filter_api.jt?parent_type=@{:parameters.parent_type}&_act=sort",
         "data": {
           "ids": "${ids}"
         }
@@ -31,7 +31,7 @@
             "title": "修改",
             "body": {
               "type": "service",
-              "schemaApi": "./filter_edit.jt?_for=update&id=${id}"
+              "schemaApi": "./filter_edit.jt?_for=update&id=${id}&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
             },
             "actions": [
               {
@@ -58,7 +58,7 @@
           "type": "button",
           "actionType": "ajax",
           "confirmText": "确认要删除filter:${title}？",
-          "api": "post:./filter_api.jt?_act=delete&id=${id}&_type=@{:parameters._type}&_id=@{:parameters._id}"
+          "api": "post:./filter_api.jt?_act=delete&id=${id}&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
         }
       ],
       "headerToolbar": [
@@ -81,7 +81,7 @@
             "title": "新增",
             "body": {
               "type": "service",
-              "schemaApi": "./filter_edit.jt?_for=insert&_type=@{:parameters._type}&_id=@{:parameters._id}"
+              "schemaApi": "./filter_edit.jt?_for=insert&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
             },
             "actions": [
               {
