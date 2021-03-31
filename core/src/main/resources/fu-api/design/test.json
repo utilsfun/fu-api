@@ -1,0 +1,211 @@
+{
+  "msg": "",
+  "data": {
+    "pages": [
+      {
+        "redirect": "\/application\/online",
+        "label": "Home",
+        "url": "\/"
+      },
+      {
+        "children": [
+          {
+            "schema": {
+              "src": "..\/document\/application.html",
+              "type": "iframe",
+              "height": "calc(100vh - 150px)"
+            },
+            "label": "\u5728\u7EBF\u6587\u6863",
+            "url": "online"
+          },
+          {
+            "schema": {
+              "schemaApi": ".\/application_home.jview?_tab=base",
+              "className": "p-sm",
+              "type": "service"
+            },
+            "label": "\u5E94\u7528\u8BBE\u8BA1",
+            "url": "design"
+          },
+          {
+            "schema": {
+              "schemaApi": ".\/application_home.jview?_tab=config",
+              "className": "p-sm",
+              "type": "service"
+            },
+            "label": "\u5E94\u7528\u914D\u7F6E",
+            "url": "config"
+          },
+          {
+            "schema": {
+              "schemaApi": ".\/application_home.jview?_tab=parameter",
+              "className": "p-sm",
+              "type": "service"
+            },
+            "label": "\u516C\u5171\u53C2\u6570",
+            "url": "parameter\/list"
+          },
+          {
+            "schema": {
+              "schemaApi": ".\/application_home.jview?_tab=filter",
+              "className": "p-sm",
+              "type": "service"
+            },
+            "label": "\u8FC7\u6EE4\u5668",
+            "url": "filter\/list"
+          },
+          {
+            "schema": {
+              "schemaApi": ".\/application_home.jview?_tab=document",
+              "className": "p-sm",
+              "type": "service"
+            },
+            "label": "\u5E94\u7528\u6587\u6863",
+            "url": "document\/list"
+          },
+          {
+            "schema": {
+              "schemaApi": ".\/interface_list.jview?application_id=1",
+              "className": "p-sm",
+              "type": "service"
+            },
+            "children": [
+              [
+                {
+                  "schema": {
+                    "schemaApi": ".\/interface_home.jview?parent_id=1",
+                    "className": "p-sm",
+                    "type": "service"
+                  },
+                  "label": "get:test1",
+                  "url": 1
+                },
+                {
+                  "schema": {
+                    "schemaApi": ".\/interface_home.jview?parent_id=1&_tab=document",
+                    "className": "p-sm",
+                    "type": "service"
+                  },
+                  "visible": false,
+                  "label": "\u6587\u6863",
+                  "url": "1\/document"
+                }
+              ],
+              [
+                {
+                  "schema": {
+                    "schemaApi": ".\/interface_home.jview?parent_id=2",
+                    "className": "p-sm",
+                    "type": "service"
+                  },
+                  "label": "get:test2",
+                  "url": 2
+                },
+                {
+                  "schema": {
+                    "schemaApi": ".\/interface_home.jview?parent_id=2&_tab=document",
+                    "className": "p-sm",
+                    "type": "service"
+                  },
+                  "visible": false,
+                  "label": "\u6587\u6863",
+                  "url": "2\/document"
+                }
+              ]
+            ],
+            "label": "\u63A5\u53E3",
+            "url": "\/application\/interface"
+          },
+          {
+            "schema": {
+              "schemaApi": ".\/application_config.jpage",
+              "className": "p-sm",
+              "type": "service"
+            },
+            "label": "\u914D\u7F6E",
+            "url": "config"
+          },
+          {
+            "schema": {
+              "schemaApi": ".\/application_error.jpage",
+              "className": "p-sm",
+              "type": "service"
+            },
+            "label": "\u9519\u8BEF\u7801",
+            "url": "error_code"
+          },
+          {
+            "schemaApi": "update_log.jpage",
+            "label": "\u66F4\u65B0\u65E5\u5FD7",
+            "url": "update_log"
+          }
+        ],
+        "label": "\u5E94\u7528",
+        "url": "\/application"
+      },
+      {
+        "schema": {
+          "schemaApi": ".\/document_edit.jt?_for=update&id=${id}",
+          "className": "p-sm",
+          "type": "service"
+        },
+        "visible": false,
+        "label": "\u4FEE\u6539\u5E94\u7528\u6587\u6863",
+        "url": "\/application\/document\/edit\/:id"
+      },
+      {
+        "schema": {
+          "schemaApi": ".\/document_edit.jt?_for=insert&parent_type=application&parent_id=${parent_id}",
+          "className": "p-sm",
+          "type": "service"
+        },
+        "visible": false,
+        "label": "\u65B0\u5EFA\u5E94\u7528\u6587\u6863",
+        "url": "\/application\/document\/new\/:parent_id"
+      },
+      {
+        "schema": {
+          "schemaApi": ".\/document_edit.jt?_for=update&parent_type=interface&id=${id}",
+          "className": "p-sm",
+          "type": "service"
+        },
+        "visible": false,
+        "label": "\u4FEE\u6539\u63A5\u53E3\u6587\u6863",
+        "url": "\/interface\/document\/edit\/:id"
+      },
+      {
+        "schema": {
+          "schemaApi": ".\/document_edit.jt?_for=insert&parent_type=interface&parent_id=${parent_id}",
+          "className": "p-sm",
+          "type": "service"
+        },
+        "visible": false,
+        "label": "\u65B0\u5EFA\u63A5\u53E3\u6587\u6863",
+        "url": "\/interface\/document\/new\/:parent_id"
+      },
+      {
+        "children": [
+          {
+            "schema": {
+              "type": "page",
+              "title": "\u7528\u6237\u7BA1\u7406",
+              "body": "\u9875\u9762C"
+            },
+            "label": "\u7528\u6237\u7BA1\u7406"
+          },
+          {
+            "link": "http:\/\/baidu.gitee.io\/amis",
+            "label": "\u5916\u90E8\u94FE\u63A5"
+          },
+          {
+            "schemaApi": "\/api\/mock2\/service\/form?tpl=tpl3",
+            "label": "\u90E8\u95E8\u7BA1\u7406"
+          }
+        ],
+        "label": "\u7CFB\u7EDF",
+        "url": "\/system"
+      }
+    ]
+  },
+  "status": 0
+}

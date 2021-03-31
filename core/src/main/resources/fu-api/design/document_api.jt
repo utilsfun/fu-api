@@ -67,20 +67,20 @@
       "datasource": "default",
       "method": "get",
       "request": {
-        "API_FILTER": {
+        "API_DOCUMENT": {
           "id": "@{:parameters.id}"
         }
       },
       "template#": {
-        "data": "@{:API_FILTER}",
+        "data": "@{:API_DOCUMENT}",
         "msg": "@",
         "status": "@{data.code==200 ? 0 : data.code }"
       }
     },
     "insert": {
       "data": {
-        "implement_type": "groovy",
-        "point": "execute",
+        "format": "html",
+        "permission": "public",
         "status": "0"
       },
       "code": "200",
@@ -93,12 +93,13 @@
     "method": "put",
     "request": {
       "@": "@{:body}",
-      "API_FILTER": {
+      "API_DOCUMENT": {
         "id": "@",
         "title": "@",
-        "implement_type": "@",
-        "implement_code": "@",
-        "point": "@",
+        "note":"@",
+        "format":"@",
+        "content": "@",
+        "permission":"@",
         "status": "@"
       }
     },
@@ -114,18 +115,19 @@
     "method": "post",
     "request": {
       "@": "@{:body}",
-      "API_FILTER": {
+      "API_DOCUMENT": {
         "parent_type": "@",
         "parent_id": "@",
         "title": "@",
-        "implement_type": "@",
-        "implement_code": "@",
-        "point": "@",
+        "note":"@",
+        "format": "@",
+        "content": "@",
+        "permission": "@",
         "status": "@"
       }
     },
     "template#": {
-      "data": "@{:API_FILTER}",
+      "data": "@{:API_DOCUMENT}",
       "msg": "@",
       "status": "@{ data.code==200 ? 0 : data.code }"
     }
@@ -136,7 +138,7 @@
     "method": "delete",
     "request": {
       "@": "@{:parameters}",
-      "API_FILTER": {
+      "API_DOCUMENT": {
         "parent_type": "@{:parent_type}",
         "parent_id": "@{:parent_id}",
         "id": "@{:id}"

@@ -570,7 +570,13 @@ public class GroovyConverter {
                         SelfObject subSelf = new SelfObject(self);
                         subSelf.varNode.put("$@key", index++);
                         subSelf.varNode.put("$@item", obj);
-                        funcValue.add(convert(body, subSelf));
+                        Object subTarget = convert(body, subSelf);
+                        if (subTarget instanceof List){
+                            funcValue.addAll((List)subTarget);
+                        }else{
+                            funcValue.add(subTarget);
+                        }
+
                     }
 
                 } else if (select instanceof Map) {

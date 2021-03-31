@@ -1,0 +1,201 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": [
+    {
+      "type": "crud",
+      "syncLocation": false,
+      "columnsTogglable": false,
+      "data": {
+        "rows": []
+      },
+      "api": "./interface_list.japi?_act=query&application_id=@{:parameters.application_id}",
+      "loadDataOnce": true,
+      "draggable": true,
+      "saveOrderApi": {
+        "url": "./interface_list.japi?_act=sort",
+        "data": {
+          "ids": "${ids}"
+        }
+      },
+      "name": "interface_list",
+      "headerToolbar": [
+        {
+          "label": "",
+          "type": "button",
+          "icon": "fa fa-refresh",
+          "actionType": "reload",
+          "target": "interface_list"
+        },
+        {
+          "label": "新增",
+          "type": "button",
+          "icon": "fa fa-plus",
+          "level": "info",
+          "actionType": "dialog",
+          "reload": "window",
+          "dialog": {
+            "title": "新增",
+            "body": {
+              "type": "form",
+              "name": "interface-insert-form",
+              "api": {
+                "url": "interface_list.japi?_act=insert",
+                "data": {
+                  "application_id": "@{:parameters.application_id}",
+                  "implement_type": "groovy",
+                  "implement_code": "return true;",
+                  "status": "0",
+                  "&": "$$"
+                }
+              },
+              "controls": [
+                {
+                  "name": "method",
+                  "label": "方法",
+                  "type": "select",
+                  "options": [
+                    {
+                      "label": "get",
+                      "value": "get"
+                    },
+                    {
+                      "label": "post",
+                      "value": "post"
+                    },
+                    {
+                      "label": "put",
+                      "value": "put"
+                    },
+                    {
+                      "label": "delete",
+                      "value": "delete"
+                    },
+                    {
+                      "label": "head",
+                      "value": "head"
+                    }
+                  ],
+                  "required": true
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "text",
+                  "name": "name",
+                  "label": "名称",
+                  "required": true
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "text",
+                  "name": "title",
+                  "label": "标题"
+                }
+              ]
+            },
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "action",
+                "actionType": "reset",
+                "label": "重置"
+              },
+              {
+                "type": "action",
+                "actionType": "close",
+                "label": "关闭"
+              }
+            ]
+          }
+        },
+        "."
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "hidden": true
+        },
+        {
+          "name": "method",
+          "label": "方法",
+          "width": 40
+        },
+        {
+          "name": "name",
+          "label": "名称",
+          "width": 100
+        },
+        {
+          "name": "title",
+          "label": "标题"
+        },
+        {
+          "name": "implement_type",
+          "label": "实现类型",
+          "width": 100
+        },
+        {
+          "name": "status",
+          "label": "状态",
+          "type": "mapping",
+          "map": {
+            "0": "<span class='label label-success'>有效</span>",
+            "1": "<span class='label label-light'>禁用</span>",
+            "*": "<span class='label label-danger'>未知status:{status}</span>"
+          }
+        },
+        {
+          "name": "gmt_modified",
+          "label": "修改时间",
+          "type": "date",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "width": 120
+        },
+        {
+          "type": "operation",
+          "label": "",
+          "width": 100,
+          "buttons": [
+            {
+              "type": "button",
+              "actionType": "link",
+              "level": "link",
+              "label": "管理",
+              "link": "/application/interface/$id"
+            },
+            {
+              "label": "删除",
+              "icon": "fa fa-trash text-danger",
+              "type": "button",
+              "actionType": "ajax",
+              "level": "link",
+              "className": "text-danger",
+              "confirmText": "确认要删除接口${method}:${name}",
+              "api": "post:./interface_list.japi?_act=delete&id=${id}",
+              "reload": "window",
+              "feedback": {
+                "title": "成功",
+                "body": "删除接口${method}:${name}已操作成功",
+                "actions": [
+                  {
+                    "type": "button",
+                    "actionType": "close",
+                    "label": "关闭"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

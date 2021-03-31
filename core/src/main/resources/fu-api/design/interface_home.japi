@@ -1,0 +1,66 @@
+{
+  "$result": {
+    "@func": "@switch",
+    "select": "@data('parameters._mode');",
+    "info": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_INTERFACE": {
+          "id": "@",
+          "name": "@",
+          "group_name": "@",
+          "title": "@",
+          "note": "@",
+          "version": "@",
+          "status": "@",
+          "gmt_modified": "@"
+        }
+      }
+    },
+    "config": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_INTERFACE": {
+          "id": "@",
+          "config": "@"
+        }
+      }
+    },
+    "config": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_INTERFACE": {
+          "id": "@",
+          "config": "@"
+        }
+      }
+    },
+    "error": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_INTERFACE": {
+          "id": "@",
+          "error_codes": "@{cast(data.error_codes,'String')}"
+        }
+      }
+    }
+  },
+
+  "*": {
+    "@": "@{$result}",
+    "msg": "@",
+    "status": "@{ data.code==200 ? 0 : data.code }"
+  }
+}

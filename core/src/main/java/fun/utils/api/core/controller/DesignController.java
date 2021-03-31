@@ -75,14 +75,14 @@ public class DesignController extends BaseController {
 
 
         // ******* jt **********************************************
-        if ( StringUtils.endsWithIgnoreCase(filename,".jt")) {
+        if ( StringUtils.endsWithAny(filename,".jt",".japi",".jview")) {
 
             JSONObject jsonTemplate = loadJSONObject(classPath, filename);
             JSONObject data =  converter.convert(jsonTemplate,input);
             writeJsonSuccess(response,data);
 
         }
-        // ******* document **********************************************
+
         else if ("document_list.jpage".equalsIgnoreCase(filename)) {
 
             JSONObject jpage = loadJSONObject(classPath,filename);

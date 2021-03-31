@@ -27,7 +27,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_base.jt?_tab=base"
+              "schemaApi": "./application_home.jview?_tab=base"
             }
           },
           {
@@ -36,7 +36,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_base.jt?_tab=config"
+              "schemaApi": "./application_home.jview?_tab=config"
             }
           },
           {
@@ -45,7 +45,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi":  "./application_base.jt?_tab=parameter"
+              "schemaApi":  "./application_home.jview?_tab=parameter"
             }
           },
           {
@@ -54,7 +54,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_base.jt?_tab=filter"
+              "schemaApi": "./application_home.jview?_tab=filter"
             }
           },
           {
@@ -63,33 +63,17 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_base.jt?_tab=document"
+              "schemaApi": "./application_home.jview?_tab=document"
             }
           },
-          {
-            "label": "修改文档",
-            "url": "document/edit/:id",
-            "visible": false,
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./document_edit.jpage?_for=update&id=${id}"
-            }
-          },
-          {
-            "label": "新建文档",
-            "url": ":parent_id/document/new",
-            "visible": false,
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./document_edit.jt?_for=insert&parent_id=${parent_id}"
-            }
-          },
-
           {
             "label": "接口",
-            "url": "interface",
+            "url": "/application/interface",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./interface_list.jview?application_id=@{:context.application.id}"
+            },
             "$interfaces": {
               "@func": "apijson",
               "datasource": "default",
@@ -107,21 +91,32 @@
                 "info@": "/[]/info"
               }
             },
-            "children": [
+            "children":
               {
                 "@func": "@each",
                 "select": "@(vars.'interfaces'.'[]'.'API_INTERFACE');",
-                "for": {
-                  "label": "@(vars.'@item'.method);:@(vars.'@item'.name);",
-                  "url": "interface/@(vars.'@item'.id);",
-                  "schema": {
-                    "type": "service",
-                    "className": "p-sm",
-                    "schemaApi": "./interface.jpage?id=@(vars.'@item'.id);"
-                  }
-                }
+                "for": [
+                  {
+                    "label": "@(vars.'@item'.method);:@(vars.'@item'.name);",
+                    "url": "@(vars.'@item'.id);",
+                    "schema": {
+                      "type": "service",
+                      "className": "p-sm",
+                      "schemaApi": "./interface_home.jview?parent_id=@(vars.'@item'.id);"
+                    }
+                  },
+                  {
+                    "label": "文档",
+                    "url": "@(vars.'@item'.id);/document",
+                    "visible": false,
+                    "schema": {
+                      "type": "service",
+                      "className": "p-sm",
+                      "schemaApi": "./interface_home.jview?parent_id=@(vars.'@item'.id);&_tab=document"
+                    }
+                  }]
+
               }
-            ]
           },
           {
             "label": "配置",
@@ -147,6 +142,46 @@
             "schemaApi": "update_log.jpage"
           }
         ]
+      },
+      {
+        "label": "修改应用文档",
+        "url": "/application/document/edit/:id",
+        "visible": false,
+        "schema": {
+          "type": "service",
+          "className": "p-sm",
+          "schemaApi": "./document_edit.jt?_for=update&id=${id}"
+        }
+      },
+      {
+        "label": "新建应用文档",
+        "url": "/application/document/new/:parent_id",
+        "visible": false,
+        "schema": {
+          "type": "service",
+          "className": "p-sm",
+          "schemaApi": "./document_edit.jt?_for=insert&parent_type=application&parent_id=${parent_id}"
+        }
+      },
+      {
+        "label": "修改接口文档",
+        "url": "/interface/document/edit/:id",
+        "visible": false,
+        "schema": {
+          "type": "service",
+          "className": "p-sm",
+          "schemaApi": "./document_edit.jt?_for=update&parent_type=interface&id=${id}"
+        }
+      },
+      {
+        "label": "新建接口文档",
+        "url": "/interface/document/new/:parent_id",
+        "visible": false,
+        "schema": {
+          "type": "service",
+          "className": "p-sm",
+          "schemaApi": "./document_edit.jt?_for=insert&parent_type=interface&parent_id=${parent_id}"
+        }
       },
       {
         "label": "系统",

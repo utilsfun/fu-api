@@ -36,7 +36,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_base.jt"
+              "schemaApi": "./application_home.jview"
             }
           },
           {

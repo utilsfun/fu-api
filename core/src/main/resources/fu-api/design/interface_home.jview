@@ -1,0 +1,371 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "$data": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "API_INTERFACE": {
+        "id": "@data('parameters.parent_id');",
+        "@column": "id,gmt_modified,name,group_name,method,note,title,version,request_example,response_example,implement_type,implement_code,status,config,error_codes",
+        "@json": "error_codes"
+      }
+    },
+    "template#": "@data('API_INTERFACE');"
+  },
+  "body": [
+    {
+      "type": "property",
+      "column": 5,
+      "@": "@vars('data');",
+      "items": [
+        {
+          "label": "方法",
+          "content": "@{:method}"
+        },
+        {
+          "label": "名称",
+          "content": "@{:name}"
+        },
+        {
+          "label": "标题",
+          "content": "@{:title}"
+        },
+        {
+          "label": "更新时间",
+          "content": "@{:gmt_modified}"
+        }
+      ]
+    },
+    {
+      "type": "tabs",
+      "mode": "line",
+      "activeKey": {
+        "@func": "@switch",
+        "select": "@{:parameters._tab}",
+        "base": 0,
+        "document": 6,
+        "default": 0
+      },
+      "tabs": [
+        {
+          "title": "属性",
+          "body": {
+            "type": "form",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "method": "@",
+              "name": "@",
+              "group_name": "@",
+              "title": "@",
+              "note": "@",
+              "version": "@",
+              "status": "@",
+              "gmt_modified": "@"
+            },
+            "api": "interface_home.japi?_mode=info",
+            "name": "info",
+            "title": "",
+            "mode": "horizontal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "text",
+                "name": "title",
+                "label": "标题"
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "type": "text",
+                "name": "group_name",
+                "label": "分组"
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "type": "textarea",
+                "name": "note",
+                "minRows": 20,
+                "label": "说明"
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "type": "text",
+                "name": "version",
+                "label": "版本"
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "name": "status",
+                "type": "switch",
+                "label": "状态",
+                "trueValue": 0,
+                "falseValue": 1
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        },
+        {
+          "title": "参数",
+          "body": {
+            "type": "service",
+            "className": "p-sm",
+            "schemaApi": "./parameter_list.jt?parent_type=interface&parent_id=@{:parameters.parent_id}"
+          }
+        },
+        {
+          "title": "过滤器",
+          "body": {
+            "type": "service",
+            "className": "p-sm",
+            "schemaApi": "./filter_list.jt?parent_type=interface&parent_id=@{:parameters.parent_id}"
+          }
+        },
+        {
+          "title": "实现",
+          "body": {
+            "type": "form",
+            "title": "",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "implement_type": "@",
+              "implement_code": "@"
+            },
+            "api": "interface_home.japi?_mode=implement",
+            "name": "implement",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "name": "implement_type",
+                "label": "实现方式",
+                "type": "select",
+                "options": [
+                  {
+                    "label": "groovy",
+                    "value": "groovy"
+                  }
+                ]
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "name": "implement_code",
+                "label": "实现代码",
+                "type": "editor",
+                "language": "java",
+                "size": "max",
+                "options": {
+                  "automaticLayout": true,
+                  "lineNumbers": 0
+                },
+                "hiddenOn": "this.implement_type != 'groovy'"
+              },
+              {
+                "name": "implement_code",
+                "label": "实现代码",
+                "type": "editor",
+                "language": "javascript",
+                "size": "max",
+                "options": {
+                  "automaticLayout": true,
+                  "lineNumbers": 0
+                },
+                "hiddenOn": "this.implement_type != 'javascript'"
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        },
+        {
+          "title": "配置",
+          "body": {
+            "type": "form",
+            "title": "",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "config": "@"
+            },
+            "api": "interface_home.japi?_mode=config",
+            "name": "config",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "editor",
+                "name": "config",
+                "language": "json",
+                "size": "600"
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        },
+        {
+          "title": "样例",
+          "body": {
+            "type": "form",
+            "title": "",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "config": "@"
+            },
+            "api": "interface_home.japi?_mode=config",
+            "name": "config",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "editor",
+                "name": "config",
+                "language": "json",
+                "size": "600"
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        },
+        {
+          "title": "文档",
+          "body": {
+            "type": "service",
+            "className": "p-sm",
+            "schemaApi": "./document_list.jt?parent_type=interface&parent_id=@{:parameters.parent_id}"
+          }
+        },
+        {
+          "title": "错误码",
+          "body": {
+            "type": "form",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "error_codes": "@"
+            },
+            "api": "interface_home.japi?_mode=error",
+            "name": "error",
+            "title": "",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "combo",
+                "name": "error_codes",
+                "multiple": true,
+                "draggable": true,
+                "controls": [
+                  {
+                    "name": "code",
+                    "label": "错误码",
+                    "type": "number",
+                    "showSteps": false
+                  },
+                  {
+                    "name": "message",
+                    "label": "说明",
+                    "type": "text"
+                  }
+                ]
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

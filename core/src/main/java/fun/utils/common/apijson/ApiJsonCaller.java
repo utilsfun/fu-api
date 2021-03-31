@@ -127,49 +127,50 @@ public class ApiJsonCaller {
                 JSONObject  childrenConfig =  ((JSONObject)item).getJSONObject("@children");
                 if (childrenConfig != null){
                     JSONArray rows = (JSONArray)JSONPath.eval(result,"\\[\\]." + key);
+                    if (rows != null) {
+                        rows.forEach(new Consumer<Object>() {
+                            @Override
+                            public void accept(Object o) {
+                                JSONObject data = (JSONObject) o;
 
-                    rows.forEach(new Consumer<Object>() {
-                        @Override
-                        public void accept(Object o) {
-                            JSONObject data = (JSONObject) o;
+                                JSONObject tempItem = DataUtils.copyJSONObject((JSONObject) item);
+                                JSONObject tempConfig = DataUtils.copyJSONObject(childrenConfig);
 
-                            JSONObject tempItem = DataUtils.copyJSONObject((JSONObject)item);
-                            JSONObject tempConfig = DataUtils.copyJSONObject(childrenConfig);
+                                String childrenName = tempConfig.getString("@column");
+                                tempConfig.remove("@column");
+                                tempItem.remove("@children");
 
-                            String childrenName = tempConfig.getString("@column");
-                            tempConfig.remove("@column");
-                            tempItem.remove("@children");
+                                tempItem.putAll(tempConfig);
 
-                            tempItem.putAll(tempConfig);
+                                List<String> tempKeys = new ArrayList<>();
+                                tempKeys.addAll(tempItem.keySet());
 
-                            List<String> tempKeys = new ArrayList<>();
-                            tempKeys.addAll(tempItem.keySet());
+                                for (String tempKey : tempKeys) {
+                                    if (tempKey.endsWith("@")) {
+                                        tempItem.put(tempKey.substring(0, tempKey.length() - 1), JSONPath.eval(data, tempItem.getString(tempKey)));
+                                        tempItem.remove(tempKey);
+                                    }
+                                }
 
-                            for (String tempKey: tempKeys){
-                                if (tempKey.endsWith("@")){
-                                    tempItem.put(tempKey.substring(0,tempKey.length() - 1),JSONPath.eval(data,tempItem.getString(tempKey)));
-                                    tempItem.remove(tempKey);
+                                JSONObject tempGet = new JSONObject();
+                                JSONObject key1Object = new JSONObject();
+                                tempGet.put(key + "[]", key1Object);
+                                key1Object.put(key, tempItem);
+
+
+                                JSONObject tempCallerResult = get(tempGet);
+
+                                JSONArray tempRows = tempCallerResult.getJSONArray(key + "[]");
+
+                                if (tempRows != null) {
+                                    JSONPath.set(data, childrenName, tempRows);
+                                    for (Object tmpO : tempRows) {
+                                        accept(tmpO);
+                                    }
                                 }
                             }
-
-                            JSONObject tempGet = new JSONObject();
-                            JSONObject key1Object = new JSONObject();
-                            tempGet.put( key + "[]" ,key1Object);
-                            key1Object.put(key,tempItem);
-
-
-                            JSONObject tempCallerResult = get(tempGet);
-
-                            JSONArray tempRows = tempCallerResult.getJSONArray(key + "[]");
-
-                            if (tempRows != null){
-                                JSONPath.set(data,childrenName,tempRows);
-                                for (Object tmpO : tempRows) {
-                                    accept(tmpO);
-                                }
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         }

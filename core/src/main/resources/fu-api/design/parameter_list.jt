@@ -43,7 +43,7 @@
             "title": "新增参数",
             "body": {
               "type": "service",
-              "schemaApi": "./parameter_edit.jpage?_for=insert&parent_type=application&parent_id=@{:parameters.parent_id}"
+              "schemaApi": "./parameter_edit.jpage?_for=insert&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
             },
             "actions": [
               {

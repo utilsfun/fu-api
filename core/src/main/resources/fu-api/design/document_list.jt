@@ -24,40 +24,8 @@
           "type": "button",
           "icon": "fa fa-edit",
           "label": "修改",
-          "actionType": "drawer",
-          "reload": "filter_list",
-          "drawer": {
-            "size": "lg",
-            "title": "修改",
-            "body": {
-              "type": "service",
-              "schemaApi": "./document_edit.jpage?_for=update&id=${id}"
-            },
-            "actions": [
-              {
-                "type": "submit",
-                "level": "primary",
-                "label": "提交"
-              },
-              {
-                "type": "action",
-                "actionType": "reset",
-                "label": "重置"
-              },
-              {
-                "type": "action",
-                "actionType": "close",
-                "label": "关闭"
-              }
-            ]
-          }
-        },
-        {
-          "type": "button",
-          "icon": "fa fa-edit",
-          "label": "修改",
           "actionType": "link",
-          "link": "/application/document/edit/${id}"
+          "link": "/@{:parameters.parent_type}/document/edit/${id}"
         },
         {
           "label": "删除",
@@ -65,17 +33,7 @@
           "type": "button",
           "actionType": "ajax",
           "confirmText": "确认要删除文档《${title}》？",
-          "api": "post:./document.api?_act=delete&id=${id}"
-        }
-      ],
-      "#bulkActions": [
-        {
-          "label": "批量删除",
-          "icon": "fa fa-trash text-danger",
-          "type": "button",
-          "actionType": "ajax",
-          "confirmText": "确认要删除文档 ${ids} ？",
-          "api": "post:./document.api?_act=batch-delete&ids=${ids}"
+          "api": "post:./document_api.jt?_act=delete&id=${id}&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
         }
       ],
       "headerToolbar": [
@@ -92,7 +50,7 @@
           "icon": "fa fa-plus",
           "level": "info",
           "actionType": "link",
-          "link": "/@{:parameters.parent_type}/@{:parameters.parent_id}/document/new",
+          "link": "/@{:parameters.parent_type}/document/new/@{:parameters.parent_id}",
           "disabled": false
         },
         "bulkActions",

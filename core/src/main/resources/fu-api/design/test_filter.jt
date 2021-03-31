@@ -1,0 +1,22 @@
+{
+
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "[]": {
+        "API_FILTER":{
+          "@column": "id,parent_type,parent_id,title,implement_type,point,status,gmt_create,gmt_modified",
+          "@order": "sort"
+        },
+        "API_INTERFACE":{
+          "@column": "id,title,implement_type,status,gmt_create,gmt_modified",
+          "@order": "sort"
+        },
+        "query": 2
+      },
+      "total@": "/[]/total",
+      "info@": "/[]/info"
+    }
+
+}

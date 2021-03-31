@@ -1,0 +1,182 @@
+{
+  "@func": "@switch",
+  "select": "@data('parameters._act');",
+  "query": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "[]": {
+        "API_INTERFACE": {
+          "application_id": "@{:parameters.application_id}",
+          "@column": "id,application_id,name,group_name,title,note,sort,method,response_example,implement_type,version,status,gmt_create,gmt_modified",
+          "@order": "sort"
+        },
+        "query": 2
+      },
+      "total@": "/[]/total",
+      "info@": "/[]/info"
+    },
+    "template#": {
+      "@func": "@if",
+      "select": "@{data.code == 200}",
+      "true": {
+        "data": {
+          "rows": "@data('\\\\[\\\\].API_INTERFACE',[]);",
+          "total": "@",
+          "info": "@"
+        },
+        "status": 0,
+        "msg": "success"
+      },
+      "false": {
+        "status": "@{:code}",
+        "msg": "@{:msg}"
+      }
+    }
+  },
+  "sort": {
+    "$result": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "API_INTERFACE[]": {
+          "@func": "@each",
+          "select": "@{StringUtils.split(data('body.ids'),',')}",
+          "for": {
+            "id": "@{vars('@item')}",
+            "sort": "@{vars('@key')+1}"
+          }
+        }
+      }
+    },
+    "*": {
+      "@": "@{$result}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }",
+      "detail": "@{:.}"
+    }
+  },
+  "insert": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "post",
+    "request": {
+      "@": "@{:body}",
+      "API_INTERFACE": {
+        "application_id": "@",
+        "method": "@",
+        "name": "@",
+        "title": "@",
+        "implement_type": "@",
+        "implement_code": "@",
+        "status": "@"
+      }
+    },
+    "template#": {
+      "data": "@{:API_INTERFACE}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }"
+    }
+  },
+  "delete": {
+    "$_parameter": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "get",
+      "request": {
+        "[]": {
+          "API_PARAMETER": {
+            "parent_type": "interface",
+            "parent_id": "@{:parameters.id}",
+            "@column": "id"
+          },
+          "query": 2
+        },
+        "total@": "/[]/total",
+        "info@": "/[]/info"
+      },
+      "template#": "@{data.total == 0}"
+    },
+    "$_filter": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "get",
+      "request": {
+        "[]": {
+          "API_FILTER": {
+            "parent_type": "interface",
+            "parent_id": "@{:parameters.id}",
+            "@column": "id"
+          },
+          "query": 2
+        },
+        "total@": "/[]/total",
+        "info@": "/[]/info"
+      },
+      "template#": "@{data.total == 0}"
+    },
+    "$_document": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "get",
+      "request": {
+        "[]": {
+          "API_DOCUMENT": {
+            "parent_type": "interface",
+            "parent_id": "@{:parameters.id}",
+            "@column": "id"
+          },
+          "query": 2
+        },
+        "total@": "/[]/total",
+        "info@": "/[]/info"
+      },
+      "template#": "@{data.total == 0}"
+    },
+    "*": {
+      "@func": "@if",
+      "select": "@{$_parameter}",
+      "true": {
+        "@func": "@if",
+        "select": "@{$_filter}",
+        "true": {
+          "@func": "@if",
+          "select": "@{$_document}",
+          "true": {
+            "@func": "apijson",
+            "datasource": "default",
+            "method": "delete",
+            "request": {
+              "API_INTERFACE": {
+                "id": "@{:parameters.id}"
+              }
+            },
+            "template#": {
+              "data": "@{:API_INTERFACE}",
+              "msg": "@",
+              "status": "@{ data.code==200 ? 0 : data.code }"
+            }
+          },
+          "false": {
+            "msg": "不能删除,请先删除对应文档",
+            "status": 404
+          }
+        },
+        "false": {
+          "msg": "不能删除,请先删除对应过滤器",
+          "status": 404
+        }
+      },
+      "false": {
+        "msg": "不能删除,请先删除对应参数",
+        "status": 404
+      }
+    }
+  },
+  "default": {
+    "msg": "没有找到有效的_act参数(query,get,update,insert,delete)",
+    "status": 404
+  }
+}
