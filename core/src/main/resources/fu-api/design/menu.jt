@@ -22,30 +22,48 @@
             }
           },
           {
+            "label": "应用设计",
+            "url": "design",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./application_base.jt?_tab=base"
+            }
+          },
+          {
             "label": "应用配置",
-            "url": "base",
+            "url": "config",
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_base.jt"
+              "schemaApi": "./application_base.jt?_tab=config"
             }
           },
           {
-            "label": "属性",
-            "url": "edit",
+            "label": "公共参数",
+            "url": "parameter/list",
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_edit.jpage"
+              "schemaApi":  "./application_base.jt?_tab=parameter"
             }
           },
           {
-            "label": "文档",
+            "label": "过滤器",
+            "url": "filter/list",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./application_base.jt?_tab=filter"
+            }
+          },
+          {
+            "label": "应用文档",
             "url": "document/list",
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./document_list.jpage"
+              "schemaApi": "./application_base.jt?_tab=document"
             }
           },
           {
@@ -60,72 +78,15 @@
           },
           {
             "label": "新建文档",
-            "url": "document/new",
+            "url": ":parent_id/document/new",
             "visible": false,
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./document_edit.jpage?_for=insert"
+              "schemaApi": "./document_edit.jt?_for=insert&parent_id=${parent_id}"
             }
           },
-          {
-            "label": "公共参数",
-            "url": "parameter/list",
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./parameter_list.jpage"
-            }
-          },
-          {
-            "label": "修改公共参数",
-            "url": "parameter/edit/:id",
-            "visible": false,
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./parameter_edit.jpage?_for=update&id=${id}"
-            }
-          },
-          {
-            "label": "新建公共参数",
-            "url": "parameter/new",
-            "visible": false,
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./parameter_edit.jpage?_for=insert"
-            }
-          },
-          {
-            "label": "过滤器",
-            "url": "filter/list",
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./filter_list.jpage"
-            }
-          },
-          {
-            "label": "修改过滤器",
-            "url": "filter/edit/:id",
-            "visible": false,
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./filter_edit.jpage?_for=update&id=${id}"
-            }
-          },
-          {
-            "label": "新建过滤器",
-            "url": "filter/new",
-            "visible": false,
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./filter_edit.jpage?_for=insert"
-            }
-          },
+
           {
             "label": "接口",
             "url": "interface",

@@ -1,0 +1,152 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": [
+    {
+      "type": "crud",
+      "syncLocation": false,
+      "columnsTogglable": false,
+      "data": {
+        "rows": []
+      },
+      "api": "./document_api.jt?_act=query&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}",
+      "loadDataOnce": true,
+      "draggable": true,
+      "saveOrderApi": {
+        "url": "./document_api.jt?parent_type=@{:parameters.parent_type}&_act=sort",
+        "data": {
+          "ids": "${ids}"
+        }
+      },
+      "name": "document_list",
+      "itemActions": [
+        {
+          "type": "button",
+          "icon": "fa fa-edit",
+          "label": "修改",
+          "actionType": "drawer",
+          "reload": "filter_list",
+          "drawer": {
+            "size": "lg",
+            "title": "修改",
+            "body": {
+              "type": "service",
+              "schemaApi": "./document_edit.jpage?_for=update&id=${id}"
+            },
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "action",
+                "actionType": "reset",
+                "label": "重置"
+              },
+              {
+                "type": "action",
+                "actionType": "close",
+                "label": "关闭"
+              }
+            ]
+          }
+        },
+        {
+          "type": "button",
+          "icon": "fa fa-edit",
+          "label": "修改",
+          "actionType": "link",
+          "link": "/application/document/edit/${id}"
+        },
+        {
+          "label": "删除",
+          "icon": "fa fa-trash text-danger",
+          "type": "button",
+          "actionType": "ajax",
+          "confirmText": "确认要删除文档《${title}》？",
+          "api": "post:./document.api?_act=delete&id=${id}"
+        }
+      ],
+      "#bulkActions": [
+        {
+          "label": "批量删除",
+          "icon": "fa fa-trash text-danger",
+          "type": "button",
+          "actionType": "ajax",
+          "confirmText": "确认要删除文档 ${ids} ？",
+          "api": "post:./document.api?_act=batch-delete&ids=${ids}"
+        }
+      ],
+      "headerToolbar": [
+        {
+          "label": "",
+          "type": "button",
+          "icon": "fa fa-refresh",
+          "actionType": "reload",
+          "target": "document_list"
+        },
+        {
+          "label": "新增",
+          "type": "button",
+          "icon": "fa fa-plus",
+          "level": "info",
+          "actionType": "link",
+          "link": "/@{:parameters.parent_type}/@{:parameters.parent_id}/document/new",
+          "disabled": false
+        },
+        "bulkActions",
+        "."
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "hidden": true
+        },
+        {
+          "name": "title",
+          "label": "标题",
+          "width": 100
+        },
+        {
+          "name": "note",
+          "label": "说明",
+          "type": "tpl",
+          "tpl": "${note|truncate:20}"
+        },
+        {
+          "name": "format",
+          "label": "格式"
+        },
+        {
+          "name": "permission",
+          "label": "权限",
+          "type": "mapping",
+          "map": {
+            "public": "公开（public）",
+            "protected": "保护（protected）",
+            "private": "私有（private）",
+            "*": "未知（${permission}）"
+          }
+        },
+        {
+          "name": "status",
+          "label": "状态",
+          "type": "mapping",
+          "map": {
+            "0": "<span class='label label-success'>有效</span>",
+            "1": "<span class='label label-light'>禁用</span>",
+            "*": "<span class='label label-danger'>未知status:{status}</span>"
+          }
+        },
+        {
+          "name": "gmt_modified",
+          "label": "修改时间",
+          "type": "date",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "width": 120
+        }
+      ]
+    }
+  ]
+}

@@ -17,6 +17,16 @@
   "body": {
     "type": "tabs",
     "mode": "line",
+    "activeKey": {
+      "@func": "@switch",
+      "select": "@{:parameters._tab}",
+      "base": 0,
+      "config": 1,
+      "parameter": 2,
+      "filter": 3,
+      "document": 4,
+      "default": 0
+    },
     "tabs": [
       {
         "title": "基本属性",
@@ -170,6 +180,14 @@
           "type": "service",
           "className": "p-sm",
           "schemaApi": "./filter_list.jt?parent_type=application&parent_id=@{:context.application.id}"
+        }
+      },
+      {
+        "title": "文档",
+        "body": {
+          "type": "service",
+          "className": "p-sm",
+          "schemaApi": "./document_list.jt?parent_type=application&parent_id=@{:context.application.id}"
         }
       },
       {
