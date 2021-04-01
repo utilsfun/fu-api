@@ -1,0 +1,93 @@
+{
+  "type": "form",
+  "size": "none",
+  "wrapWithPanel": false,
+  "debug": "@{:parameters._debug}",
+  "initApi": "source.japi?_act=get&_for=@{:parameters._for}&id=@{:parameters.id}",
+  "api": {
+    "url": "source.japi?_act=@{:parameters._for}",
+    "data": {
+      "application_id": "@{:parameters.application_id}",
+      "&": "$$"
+    }
+  },
+  "name": "source_edit",
+  "title": "",
+  "mode": "horizontal",
+  "autoFocus": true,
+  "canAccessSuperData": false,
+  "trimValues": true,
+  "controls": [
+    {
+      "type": "hidden",
+      "name": "id"
+    },
+    {
+      "name": "type",
+      "label": "类型",
+      "type": "select",
+      "require": true,
+      "options": [
+        {
+          "label": "database",
+          "value": "database"
+        },
+        {
+          "label": "redis",
+          "value": "redis"
+        }
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "text",
+      "name": "name",
+      "require": true,
+      "label": "名称"
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "textarea",
+      "name": "note",
+      "minRows": 3,
+      "label": "说明"
+    },{
+      "type": "divider"
+    },
+    {
+      "name": "config",
+      "require": true,
+      "label": "配置yml",
+      "type": "editor",
+      "language": "yaml",
+      "size": "lg",
+      "options": {
+        "automaticLayout": true,
+        "lineNumbers": 0
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "name": "status",
+      "type": "switch",
+      "require": true,
+      "label": "状态",
+      "trueValue": 0,
+      "falseValue": 1
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "tpl",
+      "label": "更新时间",
+      "tpl": "${gmt_modified|date:YYYY年MM月DD日HH时mm分:YYYY-MM-DD HH:mm:ss}"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "@func": "@switch",
+  "select": "@data('parameters._act');",
+  "query": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "[]": {
+        "API_SOURCE": {
+          "application_id": "@{:parameters.application_id}",
+          "@column": "id,application_id,type,name,note,config,status,gmt_create,gmt_modified",
+          "@order": "type,name"
+        },
+        "query": 2
+      },
+      "total@": "/[]/total",
+      "info@": "/[]/info"
+    },
+    "template#": {
+      "@func": "@if",
+      "select": "@{data.code == 200}",
+      "true": {
+        "data": {
+          "rows": "@data('\\\\[\\\\].API_SOURCE',[]);",
+          "total": "@",
+          "info": "@"
+        },
+        "status": 0,
+        "msg": "success"
+      },
+      "false": {
+        "status": "@{:code}",
+        "msg": "@{:msg}"
+      }
+    }
+  },
+  "get": {
+    "@func": "@switch",
+    "select": "@data('parameters._for');",
+    "update": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "get",
+      "request": {
+        "API_SOURCE": {
+          "id": "@{:parameters.id}"
+        }
+      },
+      "template#": {
+        "data": "@{:API_SOURCE}",
+        "msg": "@",
+        "status": "@{data.code==200 ? 0 : data.code }"
+      }
+    },
+    "insert": {
+      "data": {
+        "status": "0"
+      },
+      "code": "200",
+      "msg": "success"
+    }
+  },
+  "update": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "put",
+    "request": {
+      "@": "@{:body}",
+      "API_SOURCE": {
+        "id": "@",
+        "type": "@",
+        "name": "@",
+        "note": "@",
+        "config": "@",
+        "status": "@"
+      }
+    },
+    "template#": {
+      "data": "@{:API_SOURCE}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }"
+    }
+  },
+  "insert": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "post",
+    "request": {
+      "@": "@{:body}",
+      "API_SOURCE": {
+        "application_id": "@",
+        "type": "@",
+        "name": "@",
+        "note": "@",
+        "config": "@",
+        "status": "@"
+      }
+    },
+    "template#": {
+      "data": "@{:API_SOURCE}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }"
+    }
+  },
+  "delete": {
+    "@func": "apijson",
+    "datasource": "default",
+    "method": "delete",
+    "request": {
+      "@": "@{:parameters}",
+      "API_SOURCE": {
+        "application_id": "@{:application_id}",
+        "id": "@{:id}"
+      }
+    },
+    "template#": {
+      "data": "@{:API_SOURCE}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }"
+    }
+  },
+  "default": {
+    "msg": "没有找到有效的_act参数(query,get,update,insert,delete)",
+    "status": 404
+  }
+}

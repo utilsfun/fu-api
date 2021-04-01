@@ -142,9 +142,19 @@
                   }]
 
               }
+          },
+          {
+            "label": "数据源",
+            "url": "source",
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./source_list.jview?application_id=@{:context.application.id}"
+            }
           }
         ]
       },
+
       {
         "label": "修改应用文档",
         "url": "/application/document/edit/:id",
@@ -190,7 +200,7 @@
         "url": "/system",
         "children": [
           {
-            "label": "用户管理",
+            "label": "",
             "schema": {
               "type": "page",
               "title": "用户管理",
