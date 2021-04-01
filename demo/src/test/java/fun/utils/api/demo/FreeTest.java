@@ -90,5 +90,13 @@ public class FreeTest {
         }};
         System.out.println( ClassUtils.castValue(obj,"String"));
     }
+
+    @Test
+    public void test9() throws IOException {
+
+      String s = "code";
+        System.out.println( StringUtils.substringBefore(s,"/"));
+        System.out.println( StringUtils.substringAfter(s,"/"));
+    }
 }
 

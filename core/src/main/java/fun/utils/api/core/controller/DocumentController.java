@@ -1,8 +1,17 @@
 package fun.utils.api.core.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
+import fun.utils.api.core.common.ValidConfig;
+import fun.utils.api.core.common.WebUtils;
+import fun.utils.api.core.persistence.ApplicationDO;
+import fun.utils.api.core.persistence.ParameterDO;
 import fun.utils.api.core.services.DoService;
-import fun.utils.api.tools.DocUtils;
+import fun.utils.common.DataUtils;
+import fun.utils.jsontemplate.ApiJsonBean;
+import fun.utils.jsontemplate.GroovyConverter;
+import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,32 +26,129 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
-public class DocumentController {
-
-    private final AppBean appBean;
-    private final DoService doService;
-    private final ApiProperties.Application app;
+public class DocumentController extends BaseController {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+    private final String classPath = "classpath:fu-api/document/";
+
     public DocumentController(ApiProperties.Application app, AppBean appBean) {
+        super(app, appBean);
+    }
 
-        this.appBean = appBean;
-        this.app = app;
-        this.doService = appBean.getDoService();
 
-        log.info("Create DocController path:{} name:{}", app.getDocPath(), app.getName());
+    static class ParameterBean {
+
+        private DoService doService;
+
+        public ParameterBean(DoService doService) {
+            this.doService = doService;
+        }
+
+
+        public  JSONObject getParametersDocData(String parameters ) throws ExecutionException {
+            String[] ids = parameters.split(",");
+            List<Long> parameterIds = new ArrayList<>();
+            for (String id:ids) {
+                if (StringUtils.isNumeric(id)) {
+                    parameterIds.add(Long.valueOf(id));
+                }
+            }
+            return getParametersDocData(parameterIds);
+        }
+
+        public  JSONObject getParametersDocData( List<Long> parameterIds ) throws ExecutionException {
+            JSONObject result = new JSONObject();
+            result.put("items",getParametersDocArray(parameterIds));
+            return result;
+        }
+
+        public  JSONArray getParametersDocArray(List<Long> parameterIds ) throws ExecutionException {
+            JSONArray result = new JSONArray();
+            if (parameterIds != null){
+                for (Long childrenId:parameterIds) {
+                    result.add(getParameterDocData(childrenId));
+                }
+            }
+            return result;
+        }
+
+        public  JSONObject getParameterDocData(long parameterId ) throws ExecutionException {
+
+            JSONObject result = new JSONObject();
+            ParameterDO parameterDO = doService.getParameterDO(parameterId);
+
+            String name = parameterDO.getName();
+            if (parameterDO.getAlias() != null && parameterDO.getAlias().size() > 0){
+                name += "\r\n" + parameterDO.getAlias().toString();
+            }
+            result.put("name",name);
+
+            String title = parameterDO.getTitle();
+            result.put("title",title);
+
+            boolean isRequired = parameterDO.getIsRequired() == 1;
+            result.put("isRequired",isRequired ? "是" : "否");
+
+            //result.put("isRequired", parameterDO.getIsRequired());
+
+            String dataType = parameterDO.getDataType();
+            boolean isArray = parameterDO.getIsArray() == 1;
+            if (isArray){
+                dataType += "[] 数组";
+            }
+            result.put("dataType",dataType);
+
+            String defaultValue = parameterDO.getDefaultValue();
+            result.put("defaultValue",defaultValue);
+
+
+            String note = parameterDO.getNote();
+            List<String> notes = new ArrayList<>();
+            if (StringUtils.isNotBlank(note)){
+                notes.add(note);
+            }
+
+            List<ValidConfig> validConfigs = parameterDO.getValidations();
+            if (validConfigs != null){
+
+                for (ValidConfig validConfig:validConfigs) {
+                    if (validConfig == null){
+                        continue;
+                    }
+                    notes.add("须:" + validConfig.getType() + "(" + DataUtils.valueFormat(validConfig.getData(),validConfig.message) + ")" );
+                }
+
+
+            }
+
+            List<String> examples = parameterDO.getExamples();
+            if (examples != null){
+                for (String example:examples) {
+                    notes.add("例:" + example);
+                }
+            }
+
+            result.put("note", StringUtils.join(notes,"\r\n"));
+
+            JSONArray children = getParametersDocArray(parameterDO.getParameterIds());
+            result.put("children",children);
+
+            return result;
+
+        }
     }
 
     @ResponseBody
-    public void request(HttpServletRequest request, HttpServletResponse response) throws ExecutionException, IOException {
+    public void request(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
@@ -55,54 +161,34 @@ public class DocumentController {
 
         String applicationName = app.getName();
 
+        ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
+        JSONObject input = WebUtils.getJsonByInput(request);
 
-        if ("document.jpage".equalsIgnoreCase(filename)) {
+        JSONPath.set(input,"$.context.application",JSONObject.toJSON(applicationDO));
+        JSONPath.set(input,"$.context.api_url",  StringUtils.substringBefore(request.getRequestURL().toString(),app.getDocPath()) + app.getApiPath());
 
-            String id = request.getParameter("id");
-            JSONObject pageData = DocUtils.getDocumentDocData(doService,Long.valueOf(id));
+        GroovyConverter converter = new GroovyConverter();
 
-            String reName = "document_" +  pageData.get("format") + ".jpage";
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/" + reName);
-            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
-
-        }
-        else if ("application.jpage".equalsIgnoreCase(filename)) {
-
-            String referer = request.getHeader("Referer");
-            String thisUrl = StringUtils.defaultIfBlank(referer, request.getRequestURL().toString());
-            String baseUrl = StringUtils.substringBeforeLast(thisUrl,request.getContextPath() + "/" + app.getDocPath());
-            baseUrl += request.getContextPath() ;
-            JSONObject pageData = DocUtils.getApplicationDocData(doService,applicationName);
-            pageData.put("baseUrl",baseUrl);
-            pageData.put("apiPath",app.getApiPath());
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/application.jpage");
-            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
-
-        }
-        else if ("parameters.jpage".equalsIgnoreCase(filename)) {
-
-            String idString = StringUtils.defaultIfBlank(request.getParameter("ids"),"");
-            String[] ids = idString.split(",");
-            List<Long> parameterIds = new ArrayList<>();
-            for (String id:ids) {
-                if (StringUtils.isNumeric(id)) {
-                    parameterIds.add(Long.valueOf(id));
-                }
+        Callback<String, DataSource> dataSourceCallBack = new Callback<String, DataSource>() {
+            @Override
+            public DataSource call(String param) {
+                return doService.getDataSource();
             }
-            JSONObject pageData = DocUtils.getParametersDocData(doService,parameterIds);
+        };
 
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/parameters.jpage");
-            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
+        converter.withBean("apijson",new ApiJsonBean(converter, dataSourceCallBack));
+        converter.withBean("doService",doService);
 
-        }
-        else if ("interface.jpage".equalsIgnoreCase(filename)) {
 
-            String iName = request.getParameter("name");
-            String[] iNames = iName.split(":");
-            JSONObject pageData = DocUtils.getInterfaceDocData(doService,applicationName,iNames[1], iNames[0]);
+        converter.withBean("parameterBean",new ParameterBean(doService));
 
-            Resource resource = webApplicationContext.getResource("classpath:fu-api/document/interface.jpage");
-            DocUtils.writeResponse(response, resource.getInputStream(),pageData);
+
+        // ******* jt **********************************************
+        if ( StringUtils.endsWithAny(filename,".jt",".japi",".jview")) {
+
+            JSONObject jsonTemplate = loadJSONObject(classPath, filename);
+            JSONObject data =  converter.convert(jsonTemplate,input);
+            writeJsonSuccess(response,data);
 
         }
         else {

@@ -124,7 +124,7 @@ public class DoService {
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_document` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS document_ids ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS parameter_ids ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_filter` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS filter_ids ");
-        sqlBuffer.append(" ,(select group_concat(concat(method,':',name) ORDER BY `sort` SEPARATOR ',') from `api_interface` WHERE `status` = 0 and `application_id` = api_application.id GROUP BY `application_id` ) AS interface_names ");
+        sqlBuffer.append(" ,(select group_concat(concat(id,'@@',method,'@@',name,'@@',title) ORDER BY `sort` SEPARATOR ',') from `api_interface` WHERE `status` = 0 and `application_id` = api_application.id GROUP BY `application_id` ) AS interface_names ");
         sqlBuffer.append(" ,(select group_concat(name SEPARATOR ',') from `api_source` WHERE type = 'database' and `status` = 0 and `application_id` = api_application.id) AS database_names ");
         sqlBuffer.append(" ,(select group_concat(name SEPARATOR ',') from `api_source` WHERE type = 'redis' and `status` = 0 and `application_id` = api_application.id) AS redis_names ");
         sqlBuffer.append(" from api_application ");

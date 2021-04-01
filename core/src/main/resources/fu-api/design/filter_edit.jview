@@ -3,9 +3,9 @@
   "size": "none",
   "wrapWithPanel": false,
   "debug": "@{:parameters._debug}",
-  "initApi": "filter_api.jt?_act=get&_for=@{:parameters._for}&id=@{:parameters.id}",
+  "initApi": "filter.japi?_act=get&_for=@{:parameters._for}&id=@{:parameters.id}",
   "api": {
-    "url": "filter_api.jt?_act=@{:parameters._for}",
+    "url": "filter.japi?_act=@{:parameters._for}",
     "data": {
       "parent_type": "@{:parameters.parent_type}",
       "parent_id": "@{:parameters.parent_id}",

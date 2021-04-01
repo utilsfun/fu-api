@@ -2,11 +2,26 @@
   "type": "wrapper",
   "size": "none",
   "body": {
+
     "type": "form",
-    "debug": "@{parameters._debug}",
-    "initApi": "document.api?_act=get&_for=@{parameters._for}&id=@{body.params.id}",
-    "api": "document.api",
-    "redirect": "/application/document/list",
+    "debug": "@{:parameters._debug}",
+    "initApi": "document.japi?_act=get&_for=@{:parameters._for}&id=@{:body.params.id}",
+    "api": {
+      "url": "document.japi?_act=@{:parameters._for}",
+      "data": {
+        "parent_type": "@{:parameters.parent_type}",
+        "parent_id": "@{:body.params.parent_id}",
+        "&": "$$"
+      }
+    },
+
+    "redirect": {
+      "@func": "@switch",
+      "select": "@{:parameters.parent_type}",
+      "application": "/application/document/list",
+      "interface": "/application/interface/@{:body.params.parent_id}/document"
+    },
+
     "name": "document_edit",
     "title": "",
     "mode": "horizontal",
@@ -186,7 +201,12 @@
       {
         "type": "action",
         "actionType": "link",
-        "link": "/application/document/list",
+        "link": {
+          "@func": "@switch",
+          "select": "@{:parameters.parent_type}",
+          "application": "/application/document/list",
+          "interface": "/application/interface/@{:body.params.parent_id}/document"
+        },
         "label": "返回"
       }
     ]

@@ -4,7 +4,7 @@
   "body": [
     {
       "type": "table",
-      "data": "@{$}",
+      "data": "@{ parameterBean.getParametersDocData( data('parameters.ids') ) }",
       "columnsTogglable": false,
       "headerClassName": "font-bold",
       "footable": {

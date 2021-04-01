@@ -9,11 +9,11 @@
       "data": {
         "rows": []
       },
-      "api": "./document_api.jt?_act=query&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}",
+      "api": "./document.japi?_act=query&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}",
       "loadDataOnce": true,
       "draggable": true,
       "saveOrderApi": {
-        "url": "./document_api.jt?parent_type=@{:parameters.parent_type}&_act=sort",
+        "url": "./document.japi?parent_type=@{:parameters.parent_type}&_act=sort",
         "data": {
           "ids": "${ids}"
         }
@@ -33,7 +33,7 @@
           "type": "button",
           "actionType": "ajax",
           "confirmText": "确认要删除文档《${title}》？",
-          "api": "post:./document_api.jt?_act=delete&id=${id}&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
+          "api": "post:./document.japi?_act=delete&id=${id}&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
         }
       ],
       "headerToolbar": [

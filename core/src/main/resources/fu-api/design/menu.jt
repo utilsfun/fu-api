@@ -17,12 +17,12 @@
             "url": "online",
             "schema": {
               "type": "iframe",
-              "src": "../document/application.html",
+              "src": "../document/index.html",
               "height": "calc(100vh - 150px)"
             }
           },
           {
-            "label": "应用设计",
+            "label": "设计",
             "url": "design",
             "schema": {
               "type": "service",
@@ -31,8 +31,9 @@
             }
           },
           {
-            "label": "应用配置",
+            "label": "配置",
             "url": "config",
+            "visible": false,
             "schema": {
               "type": "service",
               "className": "p-sm",
@@ -42,6 +43,7 @@
           {
             "label": "公共参数",
             "url": "parameter/list",
+            "visible": false,
             "schema": {
               "type": "service",
               "className": "p-sm",
@@ -51,6 +53,7 @@
           {
             "label": "过滤器",
             "url": "filter/list",
+            "visible": false,
             "schema": {
               "type": "service",
               "className": "p-sm",
@@ -58,12 +61,34 @@
             }
           },
           {
-            "label": "应用文档",
+            "label": "文档",
             "url": "document/list",
+            "visible": false,
             "schema": {
               "type": "service",
               "className": "p-sm",
               "schemaApi": "./application_home.jview?_tab=document"
+            }
+          },
+          {
+            "label": "错误码",
+            "url": "error_code",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./application_home.jview?_tab=error_codes"
+            }
+          }
+        ,
+          {
+            "label": "更新日志",
+            "url": "update_log",
+            "visible": false,
+            "schema": {
+              "type": "service",
+              "className": "p-sm",
+              "schemaApi": "./application_home.jview?_tab=update_log"
             }
           },
           {
@@ -117,29 +142,6 @@
                   }]
 
               }
-          },
-          {
-            "label": "配置",
-            "url": "config",
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./application_config.jpage"
-            }
-          },
-          {
-            "label": "错误码",
-            "url": "error_code",
-            "schema": {
-              "type": "service",
-              "className": "p-sm",
-              "schemaApi": "./application_error.jpage"
-            }
-          },
-          {
-            "label": "更新日志",
-            "url": "update_log",
-            "schemaApi": "update_log.jpage"
           }
         ]
       },
@@ -150,7 +152,7 @@
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jt?_for=update&id=${id}"
+          "schemaApi": "./document_edit.jview?_for=update&id=${id}"
         }
       },
       {
@@ -160,7 +162,7 @@
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jt?_for=insert&parent_type=application&parent_id=${parent_id}"
+          "schemaApi": "./document_edit.jview?_for=insert&parent_type=application&parent_id=${parent_id}"
         }
       },
       {
@@ -170,7 +172,7 @@
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jt?_for=update&parent_type=interface&id=${id}"
+          "schemaApi": "./document_edit.jview?_for=update&parent_type=interface&id=${id}"
         }
       },
       {
@@ -180,7 +182,7 @@
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jt?_for=insert&parent_type=interface&parent_id=${parent_id}"
+          "schemaApi": "./document_edit.jview?_for=insert&parent_type=interface&parent_id=${parent_id}"
         }
       },
       {

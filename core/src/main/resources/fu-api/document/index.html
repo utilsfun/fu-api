@@ -46,7 +46,7 @@
 
 <script type="text/javascript">
 
-    const pageUrl = window.location.href.replace("\.html",".jpage");
+    const pageUrl = window.location.href.replace("\.html",".jview");
     let amisConfig = {
 
         // 全局 api 适配器。
@@ -77,21 +77,6 @@
    let amisScoped = amisEmbed.embed("#root", page ,{},amisConfig );
 
 
-    window.onresize = () =>{
-
-    if (window.parent){
-        console.log(window.outerHeight);
-        window.parent.postMessage(
-              {
-                type: 'amis:resize',
-                data: {
-                  height: window.outerHeight
-                }
-              },
-              '*'
-            );
-       }
-    }
 </script>
 
 </body>

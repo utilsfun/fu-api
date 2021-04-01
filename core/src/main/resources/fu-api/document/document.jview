@@ -1,0 +1,62 @@
+{
+  "@": "@{doService.getDocumentDO(cast(data('parameters.id'),'Long'))}",
+  "*": {
+    "type": "wrapper",
+    "size": "none",
+    "body": {
+      "type": "collapse",
+      "headingClassName": "font-bold no-border b-info text-base text-info",
+      "body": [
+        {
+          "type": "tpl",
+          "tpl": "@{:note}",
+          "inline": false
+        },
+        {
+          "@func": "@switch",
+          "select": "@{StringUtils.substringBefore(data.format,'/')}",
+          "amis": "@cast(data('content'),'JSONObject');",
+          "html": {
+            "type": "html",
+            "html": "@{:content}"
+          },
+          "image": {
+            "type": "html",
+            "name": "document.content",
+            "html": "<img style='width: 100%; max-width: max-content; min-width: 256px;' src='data:@{:format};base64,@{:content}' />",
+            "inputClassName": "no-border"
+          },
+          "json": {
+            "type": "json",
+            "levelExpand": 4,
+            "source": "@cast(data('content'),'JSONObject');"
+          },
+          "code": {
+            "type": "form",
+            "data": {
+              "content": "@{:content}"
+            },
+            "title": "",
+            "submitText": "",
+            "wrapWithPanel": false,
+            "controls": [
+              {
+                "type": "editor",
+                "name": "content",
+                "language": "@{StringUtils.substringAfter(data.format,'/')}",
+                "size": "ss",
+                "options": {
+                  "automaticLayout": true,
+                  "lineNumbers": 0
+                },
+                "inputClassName": "no-border",
+                "disabled": true
+              }
+            ]
+          }
+        }
+      ],
+      "title": "@{:title}"
+    }
+  }
+}

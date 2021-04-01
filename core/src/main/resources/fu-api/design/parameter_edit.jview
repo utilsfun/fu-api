@@ -3,9 +3,9 @@
   "size": "none",
   "wrapWithPanel": false,
   "debug": "@{:cookies._debug}",
-  "initApi": "parameter_api.jt?_act=get&_for=@{:parameters._for}&id=@{:parameters.id}",
+  "initApi": "parameter.japi?_act=get&_for=@{:parameters._for}&id=@{:parameters.id}",
   "api": {
-    "url": "parameter_api.jt?_act=@{:parameters._for}",
+    "url": "parameter.japi?_act=@{:parameters._for}",
     "data": {
       "parent_type": "@{:parameters.parent_type}",
       "parent_id": "@{:parameters.parent_id}",
@@ -122,7 +122,8 @@
             {
               "type": "text",
               "name": "default_value",
-              "label": "默认值"
+              "label": "默认值",
+              "size": "ms"
             }
           ]
         },

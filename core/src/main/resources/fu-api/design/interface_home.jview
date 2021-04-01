@@ -136,7 +136,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./parameter_list.jt?parent_type=interface&parent_id=@{:parameters.parent_id}"
+            "schemaApi": "./parameter_list.jview?parent_type=interface&parent_id=@{:parameters.parent_id}"
           }
         },
         {
@@ -144,7 +144,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./filter_list.jt?parent_type=interface&parent_id=@{:parameters.parent_id}"
+            "schemaApi": "./filter_list.jview?parent_type=interface&parent_id=@{:parameters.parent_id}"
           }
         },
         {
@@ -308,7 +308,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./document_list.jt?parent_type=interface&parent_id=@{:parameters.parent_id}"
+            "schemaApi": "./document_list.jview?parent_type=interface&parent_id=@{:parameters.parent_id}"
           }
         },
         {

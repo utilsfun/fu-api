@@ -6,7 +6,22 @@
     {
       "type": "service",
       "data": {
-        "interface": "@{$}"
+        "@": "@{doService.getInterfaceDO(data('context.application.name'),data('parameters.name'),data('parameters.method'))}",
+        "interface":{
+          "documentIds": "@",
+          "applicationName": "@",
+          "requestExample": "@",
+          "responseExample": "@",
+          "errorCodes": "@",
+          "filterIds": "@",
+          "gmtModified": "@",
+          "name": "@",
+          "note": "@",
+          "owner": "@",
+          "parameterIds": "@",
+          "title": "@",
+          "method": "@"
+        }
       },
       "body": [
         {
@@ -35,7 +50,7 @@
         },
         {
           "type": "tpl",
-          "tpl": "${application.baseUrl}/${application.apiPath}/${interface.name}",
+          "tpl": "@data('context.api_url');/${interface.name}",
           "className": "text-base",
           "inline": true
         },
@@ -43,7 +58,7 @@
           "label": "",
           "type": "button",
           "actionType": "copy",
-          "content": "${application.baseUrl}/${application.apiPath}/${interface.name}",
+          "content": "@data('context.api_url');/${interface.name}",
           "level": "link",
           "icon": "fa fa-copy"
         },
@@ -55,7 +70,7 @@
           "body": {
             "type": "service",
             "initFetchSchema": true,
-            "schemaApi": "parameters.jpage?ids=${interface.parameterIds|join}"
+            "schemaApi": "parameters.jview?ids=${interface.parameterIds|join}"
           }
         },
         {
@@ -65,7 +80,7 @@
             {
               "type": "service",
               "initFetchSchema": true,
-              "schemaApi": "document.jpage?id=${item}"
+              "schemaApi": "document.jview?id=${item}"
             }
           ]
         },

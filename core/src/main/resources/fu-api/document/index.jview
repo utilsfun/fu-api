@@ -4,7 +4,20 @@
   "body": {
     "type": "service",
     "data": {
-      "application": "@{$}"
+      "@": "@{:context.application}",
+      "application": {
+        "documentIds": "@",
+        "filterIds": "@",
+        "errorCodes": "@",
+        "gmtModified": "@",
+        "interfaceNames": "@",
+        "name": "@",
+        "note": "@",
+        "owner": "@",
+        "parameterIds": "@",
+        "title": "@",
+        "version": "@"
+      }
     },
     "body": [
       {
@@ -47,7 +60,7 @@
           {
             "type": "service",
             "initFetchSchema": true,
-            "schemaApi": "document.jpage?id=${item}"
+            "schemaApi": "document.jview?id=${item}"
           }
         ]
       },
@@ -59,7 +72,7 @@
         "body": {
           "type": "service",
           "initFetchSchema": true,
-          "schemaApi": "parameters.jpage?ids=${application.parameterIds|join}"
+          "schemaApi": "parameters.jview?ids=${application.parameterIds|join}"
         }
       },
       {
@@ -68,7 +81,7 @@
         "headingClassName": "font-bold no-border b-info text-base text-info",
         "body": {
           "type": "each",
-          "name": "application.interfaces",
+          "name": "application.interfaceNames",
           "items": [
             {
               "type": "form",
@@ -88,7 +101,7 @@
                   "className": "m-t-sm m-b-sm",
                   "options": [
                     {
-                      "label": "${index|plus:1}、${name} ${title}",
+                      "label": "${index|plus:1}、${item|split:@@|nth:1}:${item|split:@@|nth:2} ${item|split:@@|nth:3}",
                       "className": "font-bold no-border b-info text-base text-info text-left m-none p-none",
                       "value": "false",
                       "visibleOn": "this.collapsed === 'true'",
@@ -97,7 +110,7 @@
                       "level": "link"
                     },
                     {
-                      "label": "${index|plus:1}、${name} ${title}",
+                      "label": "${index|plus:1}、${item|split:@@|nth:1}:${item|split:@@|nth:2} ${item|split:@@|nth:3}",
                       "className": "font-bold no-border b-info text-base text-info text-left m-none p-none",
                       "value": "true",
                       "visibleOn": "this.collapsed === 'false'",
@@ -114,9 +127,11 @@
                   "visibleOn": "this.collapsed === 'true'",
                   "schemaApi": {
                     "method": "get",
-                    "url": "interface.jpage",
+                    "url": "interface.jview",
                     "data": {
-                      "name": "${method}:${name}",
+                      "id": "${item|split:@@|nth:0}",
+                      "method": "${item|split:@@|nth:1}",
+                      "name": "${item|split:@@|nth:2}",
                       "index": "${index}"
                     }
                   }
