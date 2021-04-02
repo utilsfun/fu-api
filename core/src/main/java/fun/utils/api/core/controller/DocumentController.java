@@ -168,17 +168,12 @@ public class DocumentController extends BaseController {
         JSONPath.set(input,"$.context.api_url",  StringUtils.substringBefore(request.getRequestURL().toString(),app.getDocPath()) + app.getApiPath());
 
         GroovyConverter converter = new GroovyConverter();
+        converter.setRestTemplate(appBean.getRestTemplate());
 
-        Callback<String, DataSource> dataSourceCallBack = new Callback<String, DataSource>() {
-            @Override
-            public DataSource call(String param) {
-                return doService.getDataSource();
-            }
-        };
+        Callback<String, DataSource> dataSourceCallBack = param -> doService.getDataSource();
 
         converter.withBean("apijson",new ApiJsonBean(converter, dataSourceCallBack));
         converter.withBean("doService",doService);
-
 
         converter.withBean("parameterBean",new ParameterBean(doService));
 
@@ -191,7 +186,10 @@ public class DocumentController extends BaseController {
             writeJsonSuccess(response,data);
 
         }
-        else {
+        else
+
+            {
+
             Resource resource = webApplicationContext.getResource("classpath:fu-api/document/" + uri);
             if (resource == null || !resource.exists()) {
                 //静态文件资源不存在
@@ -222,7 +220,6 @@ public class DocumentController extends BaseController {
                 IOUtils.write(returnBytes, response.getOutputStream());
             }
         }
-
 
     }
 

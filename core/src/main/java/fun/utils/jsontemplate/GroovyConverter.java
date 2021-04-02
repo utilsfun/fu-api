@@ -40,10 +40,8 @@ public class GroovyConverter {
 
     @Getter
     @Setter
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = null;
 
-    @Getter
-    private final Map<String, Object> context = new HashMap<>();
 
 
     private final Map<String, Object> beans = new HashMap<>();
@@ -52,16 +50,8 @@ public class GroovyConverter {
     public GroovyConverter() {
     }
 
-    public GroovyConverter(Map<String, Object> context) {
-        if (context != null) {
-            this.context.putAll(context);
-        }
-    }
 
-    public GroovyConverter(Map<String, Object> context, Map<String, Object> beans) {
-        if (context != null) {
-            this.context.putAll(context);
-        }
+    public GroovyConverter(Map<String, Object> beans) {
         if (beans != null) {
             this.beans.putAll(beans);
         }
@@ -406,7 +396,6 @@ public class GroovyConverter {
         bindings.put("func", new FuncObject(self));
         bindings.put("vars", new VarsObject(self));
 
-        bindings.put("$context", context);
 
         return bindings;
 

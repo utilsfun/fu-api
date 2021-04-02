@@ -9,7 +9,7 @@
         "redirect": "/application/online"
       },
       {
-        "label": "应用",
+        "label": "设计",
         "url": "/application",
         "children": [
           {
@@ -22,7 +22,7 @@
             }
           },
           {
-            "label": "设计",
+            "label": "应用",
             "url": "design",
             "schema": {
               "type": "service",
@@ -196,24 +196,16 @@
         }
       },
       {
-        "label": "系统",
+        "label": "参考",
         "url": "/system",
         "children": [
           {
-            "label": "",
-            "schema": {
-              "type": "page",
-              "title": "用户管理",
-              "body": "页面C"
-            }
-          },
-          {
-            "label": "外部链接",
+            "label": "amis",
             "link": "http://baidu.gitee.io/amis"
           },
           {
-            "label": "部门管理",
-            "schemaApi": "/api/mock2/service/form?tpl=tpl3"
+            "label": "apijson",
+            "link": "https://gitee.com/Tencent/APIJSON/blob/master/%E8%AF%A6%E7%BB%86%E7%9A%84%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md"
           }
         ]
       }

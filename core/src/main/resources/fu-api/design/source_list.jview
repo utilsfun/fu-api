@@ -11,13 +11,6 @@
       },
       "api": "./source.japi?_act=query&application_id=@{:parameters.application_id}",
       "loadDataOnce": true,
-      "draggable": true,
-      "saveOrderApi": {
-        "url": "./source.japi?_act=sort",
-        "data": {
-          "ids": "${ids}"
-        }
-      },
       "name": "source_list",
       "itemActions": [
         {

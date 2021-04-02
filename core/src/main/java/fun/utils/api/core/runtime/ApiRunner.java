@@ -3,6 +3,7 @@ package fun.utils.api.core.runtime;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import fun.utils.common.DataUtils;
 import fun.utils.api.core.common.ValidConfig;
 import fun.utils.api.core.common.ValidUtils;
@@ -16,10 +17,15 @@ import fun.utils.api.core.script.*;
 import fun.utils.api.core.services.DoService;
 import fun.utils.common.ClassUtils;
 import fun.utils.api.core.common.WebUtils;
+import fun.utils.jsontemplate.ApiJsonBean;
+import fun.utils.jsontemplate.GroovyConverter;
+import javafx.util.Callback;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,7 +103,29 @@ public class ApiRunner {
             return;
         }
 
-        if ("groovy".equalsIgnoreCase(interfaceDO.getImplementType())) {
+        if ("jsontemplate".equalsIgnoreCase(interfaceDO.getImplementType())) {
+
+
+            // converter
+            GroovyConverter converter = runContext.getConverter();
+
+            // data
+            JSONObject data = new JSONObject();
+            data.putAll(runContext.getParameters());
+
+
+            // template
+            String jtString = interfaceDO.getImplementCode();
+            JSONObject jsonTemplate = JSONObject.parseObject(jtString);
+
+
+            //convert
+            JSONObject result =  converter.convert(jsonTemplate,data);
+            runContext.setResult(result);
+
+
+        }
+        else if ("groovy".equalsIgnoreCase(interfaceDO.getImplementType())) {
 
             String id = String.valueOf(interfaceDO.getId());
             JSONObject config = interfaceDO.getConfig();
@@ -207,7 +235,7 @@ public class ApiRunner {
         method.getImports().addAll(PUBLIC_GROOVY_IMPORTS);
 
         GroovyRunner groovyRunner = groovyService.getRunner(method);
-        Object result = groovyRunner.withProperty("$context", runContext).execute(runContext.getParameters());
+        Object result = groovyRunner.withProperty("my", runContext).execute(runContext.getParameters());
 
         if (result instanceof Exception){
             throw (Exception) result;

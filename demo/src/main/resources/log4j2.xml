@@ -10,6 +10,6 @@
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>
-        <logger name="fun.utils" level="trace"></logger>
+        <logger name="fun.utils" level="info"></logger>
     </Loggers>
 </Configuration>

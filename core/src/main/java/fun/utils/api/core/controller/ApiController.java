@@ -5,6 +5,7 @@ import fun.utils.common.DataUtils;
 import fun.utils.api.core.runtime.ApiRunner;
 import fun.utils.api.core.runtime.RunContext;
 import fun.utils.api.core.services.DoService;
+import fun.utils.jsontemplate.GroovyConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -148,6 +149,7 @@ public class ApiController {
             }
             else {
                 //接口出错时
+
                 ret.put("code", exception.code);
                 ret.put("message", exception.getMessage());
                 ret.put("detail", exception.detail);

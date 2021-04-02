@@ -61,6 +61,7 @@ public class DesignController extends BaseController {
 
 
         GroovyConverter converter = new GroovyConverter();
+        converter.setRestTemplate(appBean.getRestTemplate());
 
         Callback<String, DataSource> dataSourceCallBack = new Callback<String, DataSource>() {
             @Override

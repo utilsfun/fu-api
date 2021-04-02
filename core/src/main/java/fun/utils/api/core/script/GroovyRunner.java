@@ -282,7 +282,7 @@ public class GroovyRunner {
 
             JSONObject config = groovyScript.getConfig();
             config = config == null ? new JSONObject() : (JSONObject) config.clone();
-            properties.put("$config", config);
+            properties.put("config", config);
 
             Binding binding = new Binding();
 

@@ -16,6 +16,8 @@
           "note": "@",
           "version": "@",
           "status": "@",
+          "request_example": "@",
+          "response_example": "@",
           "gmt_modified": "@"
         }
       }
@@ -32,7 +34,7 @@
         }
       }
     },
-    "config": {
+    "implement": {
       "@func": "apijson",
       "datasource": "default",
       "method": "put",
@@ -40,7 +42,21 @@
         "@": "@data('body');",
         "API_INTERFACE": {
           "id": "@",
-          "config": "@"
+          "implement_type": "@",
+          "implement_code": "@"
+        }
+      }
+    },
+    "example": {
+      "@func": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_INTERFACE": {
+          "id": "@",
+          "request_example": "@",
+          "response_example": "@"
         }
       }
     },

@@ -175,6 +175,10 @@
                 "type": "select",
                 "options": [
                   {
+                    "label": "jsontemplate",
+                    "value": "jsontemplate"
+                  },
+                  {
                     "label": "groovy",
                     "value": "groovy"
                   }
@@ -193,7 +197,19 @@
                   "automaticLayout": true,
                   "lineNumbers": 0
                 },
-                "hiddenOn": "this.implement_type != 'groovy'"
+                "visibleOn": "this.implement_type == 'groovy'"
+              },
+              {
+                "name": "implement_code",
+                "label": "实现代码",
+                "type": "editor",
+                "language": "json",
+                "size": "max",
+                "options": {
+                  "automaticLayout": true,
+                  "lineNumbers": 0
+                },
+                "visibleOn": "this.implement_type == 'jsontemplate'"
               },
               {
                 "name": "implement_code",
@@ -205,7 +221,7 @@
                   "automaticLayout": true,
                   "lineNumbers": 0
                 },
-                "hiddenOn": "this.implement_type != 'javascript'"
+                "visibleOn": "this.implement_type == 'javascript'"
               }
             ],
             "actions": [
@@ -272,7 +288,7 @@
               "id": "@",
               "config": "@"
             },
-            "api": "interface_home.japi?_mode=config",
+            "api": "interface_home.japi?_mode=example",
             "name": "config",
             "mode": "normal",
             "autoFocus": true,
@@ -285,9 +301,18 @@
               },
               {
                 "type": "editor",
-                "name": "config",
+                "label": "请求样例",
+                "name": "request_example",
                 "language": "json",
-                "size": "600"
+                "size": "ss"
+              }
+            ,
+              {
+                "type": "editor",
+                "label": "返回样例",
+                "name": "response_example",
+                "language": "json",
+                "size": "ss"
               }
             ],
             "actions": [

@@ -11,8 +11,12 @@ import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.InterfaceDO;
 import fun.utils.api.core.services.DoService;
 import fun.utils.common.apijson.ApiJsonCaller;
+import fun.utils.jsontemplate.ApiJsonBean;
+import fun.utils.jsontemplate.GroovyConverter;
+import javafx.util.Callback;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -101,13 +105,15 @@ public class RunContext {
     @Getter @Setter
     private Object result;
 
+    @Getter
+    private GroovyConverter converter;
 
     @Getter @Setter
     private boolean isVoid = false;
 
     protected final Map<String, Object> attributes = new HashMap<>();
 
-    public RunContext(AppBean appBean, String applicationName, String interfaceName, HttpServletResponse response, HttpServletRequest request) throws ExecutionException {
+    public RunContext(AppBean appBean, String applicationName, String interfaceName, HttpServletResponse response, HttpServletRequest request) throws Exception {
 
 
         this.appBean = appBean;
@@ -137,6 +143,21 @@ public class RunContext {
 
         String myName = interfaceDO.getApplicationName() + "." + interfaceDO.getName();
         this.logger = LoggerFactory.getLogger(myName);
+
+
+
+        Callback<String, DataSource> dataSourceCallBack = new Callback<String, DataSource>() {
+            @SneakyThrows
+            @Override
+            public DataSource call(String param) {
+                return getDataSource(param);
+            }
+        };
+
+        converter = new GroovyConverter();
+        converter.withBean("apijson",new ApiJsonBean(converter, dataSourceCallBack));
+        converter.withBean("my",this);
+        converter.setRestTemplate(getRestTemplate());
 
     }
 
