@@ -3,6 +3,7 @@ package fun.utils.api.core.script;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
+import com.google.protobuf.TextFormat;
 import fun.utils.common.DataUtils;
 import fun.utils.common.ClassUtils;
 import groovy.lang.Binding;
@@ -12,10 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 @Slf4j
 public class GroovyRunner {
+
+    private static long parseCount;
 
     @Getter
     private final GroovyService groovyService;
@@ -34,6 +38,7 @@ public class GroovyRunner {
 
     @Getter
     private final String id;
+
 
 
     public GroovyRunner(GroovyService groovyService, GroovyScript groovyScript) throws Exception {
@@ -102,7 +107,11 @@ public class GroovyRunner {
 
         log.debug(sb.toString());
 
+        Long parseBeginTime =System.currentTimeMillis();
         script = groovyService.getShell().parse(sb.toString());
+        parseCount ++;
+
+        log.info(MessageFormat.format("parse script({0}) <{1}> Elapsed Time (ms):{2}", parseCount, groovyScript.getTitle(), System.currentTimeMillis() - parseBeginTime));
 
         String returnType = StringUtils.defaultIfBlank(groovyScript.getReturnType(), "Object");
         returnClass = ClassUtils.loadClass(returnType);

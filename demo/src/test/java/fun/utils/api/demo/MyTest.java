@@ -130,36 +130,6 @@ public class MyTest {
     }
 
 
-    @Test
-    public void testApiJson() throws Exception {
-
-        // Log.DEBUG = false;
-
-       APIJSONCreator creator = new APIJSONCreator() {
-            @Override
-            public SQLConfig createSQLConfig() {
-                return new DemoSQLConfig();
-            }
-
-        };
-
-
-
-
-       ApiJsonParser myParser =  new ApiJsonParser(RequestMethod.GET,false, creator);
-
-
-        JSONObject request = new JSONObject();
-       // request.put("API_APPLICATION",JSON.parseObject("{id:1}"));
-
-        request = JSON.parseObject("{\"API_PARAMETER[]\":{\"API_PARAMETER\":{},\"query\":2}}");
-
-        request.put("total@","/API_PARAMETER[]/total");
-        request.put("info@","/API_PARAMETER[]/info");
-
-        System.out.println( myParser.parseResponse(request));
-    }
-
 
     @Test
     public void testStringFormat() throws Exception {

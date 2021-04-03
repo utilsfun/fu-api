@@ -16,6 +16,7 @@ import java.util.Map;
 
 @SpringBootApplication
 @ComponentScan(value="fun.utils.api.core.controller")
+@ComponentScan(value="fun.utils.api.demo")
 @Configuration
 @Slf4j
 public class DemoApplication {

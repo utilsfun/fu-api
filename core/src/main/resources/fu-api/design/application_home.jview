@@ -1,7 +1,7 @@
 {
   "type": "wrapper",
   "size": "none",
-  "$data": {
+  "$data#": {
     "@func": "apijson",
     "datasource": "default",
     "method": "get",

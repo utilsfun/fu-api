@@ -111,7 +111,8 @@ public class ApiRunner {
 
             // data
             JSONObject data = new JSONObject();
-            data.putAll(runContext.getParameters());
+            data.put( "parameters", runContext.getParameters());
+            data.put( "config", runContext.getConfig());
 
 
             // template
@@ -131,7 +132,8 @@ public class ApiRunner {
             JSONObject config = interfaceDO.getConfig();
             String version = interfaceDO.getGmtModified().toString();
             String groovy = interfaceDO.getImplementCode();
-            executeGroovy(id,runContext.getParameterIds(),config,version,groovy);
+            String title = applicationDO.getName() + "/" + interfaceDO.getMethod() + ":" + interfaceDO.getName() + "/main";
+            executeGroovy("interface:" + id,runContext.getParameterIds(),config,version,title,groovy);
 
         }
         else {
@@ -171,6 +173,7 @@ public class ApiRunner {
 
         //5.接口方法执行
         execute();
+       // runContext.setResult(true);
 
         //6.接口返回过滤器
         //6.1 接口过滤器
@@ -201,7 +204,8 @@ public class ApiRunner {
                     JSONObject config = filterDO.getConfig();
                     String version = filterDO.getGmtModified().toString();
                     String groovy = filterDO.getImplementCode();
-                    executeGroovy(filterId,parameterIds,config,version,groovy);
+                    String title = applicationDO.getName()  + ("application".equalsIgnoreCase(filterDO.getParentType()) ? "": "/" +  interfaceDO.getMethod() + ":" + interfaceDO.getName()) +  "/filter:" +  filterDO.getTitle();
+                    executeGroovy("filter:" + filterId,parameterIds,config,version,title,groovy);
                 }
                 else {
                     throw new Exception(MessageFormat.format("not supply implement type {0}", filterDO.getImplementType()));
@@ -212,10 +216,11 @@ public class ApiRunner {
     }
 
 
-    private void  executeGroovy(Object id, List<Long> parameterIds ,JSONObject config,String version,String groovy) throws Exception {
+    private void  executeGroovy(Object id, List<Long> parameterIds ,JSONObject config,String version,String title,String groovy) throws Exception {
 
         GroovyScript method = new GroovyScript();
         method.setId(String.valueOf(id));
+        method.setTitle(title);
         method.setConfig(config);
         method.setVersion(version);
 
