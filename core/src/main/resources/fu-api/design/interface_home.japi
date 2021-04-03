@@ -3,7 +3,7 @@
     "@func": "@switch",
     "select": "@data('parameters._mode');",
     "info": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "put",
       "request": {
@@ -23,7 +23,7 @@
       }
     },
     "config": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "put",
       "request": {
@@ -35,7 +35,7 @@
       }
     },
     "implement": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "put",
       "request": {
@@ -48,7 +48,7 @@
       }
     },
     "example": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "put",
       "request": {
@@ -61,7 +61,7 @@
       }
     },
     "error": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "put",
       "request": {

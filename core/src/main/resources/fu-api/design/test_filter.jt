@@ -1,6 +1,6 @@
 {
 
-    "@func": "apijson",
+    "@func#": "apijson",
     "datasource": "default",
     "method": "get",
     "request": {

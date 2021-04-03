@@ -100,7 +100,7 @@
               "schemaApi": "./interface_list.jview?application_id=@{:context.application.id}"
             },
             "$interfaces": {
-              "@func": "apijson",
+              "@func#": "apijson",
               "datasource": "default",
               "method": "get",
               "request": {

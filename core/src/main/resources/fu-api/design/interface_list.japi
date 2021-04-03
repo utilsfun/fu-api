@@ -2,7 +2,7 @@
   "@func": "@switch",
   "select": "@data('parameters._act');",
   "query": {
-    "@func": "apijson",
+    "@func#": "apijson",
     "datasource": "default",
     "method": "get",
     "request": {
@@ -37,7 +37,7 @@
   },
   "sort": {
     "$result": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "put",
       "request": {
@@ -59,7 +59,7 @@
     }
   },
   "insert": {
-    "@func": "apijson",
+    "@func#": "apijson",
     "datasource": "default",
     "method": "post",
     "request": {
@@ -82,7 +82,7 @@
   },
   "delete": {
     "$_parameter": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "get",
       "request": {
@@ -100,7 +100,7 @@
       "template#": "@{data.total == 0}"
     },
     "$_filter": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "get",
       "request": {
@@ -118,7 +118,7 @@
       "template#": "@{data.total == 0}"
     },
     "$_document": {
-      "@func": "apijson",
+      "@func#": "apijson",
       "datasource": "default",
       "method": "get",
       "request": {
@@ -145,7 +145,7 @@
           "@func": "@if",
           "select": "@{$_document}",
           "true": {
-            "@func": "apijson",
+            "@func#": "apijson",
             "datasource": "default",
             "method": "delete",
             "request": {

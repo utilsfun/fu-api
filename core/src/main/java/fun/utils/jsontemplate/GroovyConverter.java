@@ -33,6 +33,7 @@ public class GroovyConverter {
     protected static final ScriptEngine groovyEngine = new ScriptEngineManager().getEngineByName("groovy");
 
     static {
+
         GROOVY_PUB_EXPR += "import com.alibaba.fastjson.*; \r\n";
         GROOVY_PUB_EXPR += "import org.apache.commons.lang3.*; \r\n";
     }
@@ -512,23 +513,25 @@ public class GroovyConverter {
 
                 return strResult.replaceAll("'@'", "@");
             }
-        } else if (value instanceof JSONObject && ((JSONObject) value).containsKey("@func")) {
+        } else if (value instanceof JSONObject && (((JSONObject) value).containsKey("@func#") ||((JSONObject) value).containsKey("@func"))) {
 
             JSONObject objectValue = (JSONObject) value;
-            String type = objectValue.getString("@func");
+            boolean isConvert = objectValue.containsKey("@func");
+
+            String type = isConvert ? objectValue.getString("@func") : objectValue.getString("@func#");
 
             if ("@if".equalsIgnoreCase(type)) {
 
                 Object select = convert(objectValue.get("select"), self);
                 Object funcValue = DataUtils.testBoolean(select) ? objectValue.get("true") : objectValue.get("false");
-                return convert(funcValue, self);
+                return isConvert ? convert(funcValue, self) : funcValue;
 
             } else if ("@switch".equalsIgnoreCase(type)) {
 
                 Object select = convert(objectValue.get("select"), self);
                 Object funcValue = objectValue.containsKey(select) ? objectValue.get(select) : objectValue.get("default");
 
-                return convert(funcValue, self);
+                return isConvert ? convert(funcValue, self) : funcValue;
 
             } else if ("@each".equalsIgnoreCase(type)) {
 
@@ -586,7 +589,7 @@ public class GroovyConverter {
                     log.warn("@each select is not list or map :" + JSON.toJSONString(select));
                 }
 
-                return funcValue;
+                return isConvert ? convert(funcValue, self) : funcValue;
 
             } else {
 
@@ -599,13 +602,14 @@ public class GroovyConverter {
 
                     JSONObject input = DataUtils.copyJSONObject(objectValue);
                     input.remove("@func");
+                    input.remove("@func#");
                     funcValue = ((Callback) func).call(convert(input, self));
 
                 }else{
                     throw new Exception("can not find func :" + type ) ;
                 }
 
-                return convert(funcValue, self);
+                return isConvert ? convert(funcValue, self) : funcValue;
 
             }
 

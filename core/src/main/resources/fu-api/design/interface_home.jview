@@ -2,7 +2,7 @@
   "type": "wrapper",
   "size": "none",
   "$data": {
-    "@func": "apijson",
+    "@func#": "apijson",
     "datasource": "default",
     "method": "get",
     "request": {
