@@ -1,7 +1,7 @@
 {
   "type": "wrapper",
   "size": "none",
-  "$data#": {
+  "$data": {
     "@func#": "apijson",
     "datasource": "default",
     "method": "get",
@@ -16,23 +16,27 @@
   },
   "body": [
     {
-      "type": "property",
-      "column": 3,
+      "type": "wrapper",
       "@": "@vars('data');",
-      "items": [
+      "body": [
         {
-          "label": "名称",
-          "content": "@{:name}"
+          "type": "tpl",
+          "tpl": "名称: @{:name}",
+          "className": "m-r p-r"
         },
         {
-          "label": "标题",
-          "content": "@{:title}"
+          "type": "tpl",
+          "tpl": "标题: @{:title}",
+          "className": "m-r p-r"
         },
         {
-          "label": "更新时间",
-          "content": "@{:gmt_modified}"
+          "type": "tpl",
+          "tpl": "更新时间: @{:gmt_modified}",
+          "className": "m-r p-r"
         }
-      ]
+      ],
+      "size": "xs",
+      "className": "text-right"
     },
     {
       "type": "tabs",
@@ -175,7 +179,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./parameter_list.jview?parent_type=application&parent_id=@{:context.application.id}"
+            "schemaApi": "./parameter_list.jpage?parent_type=application&parent_id=@{:context.application.id}"
           }
         },
         {
@@ -183,7 +187,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./filter_list.jview?parent_type=application&parent_id=@{:context.application.id}"
+            "schemaApi": "./filter_list.jpage?parent_type=application&parent_id=@{:context.application.id}"
           }
         },
         {
@@ -191,7 +195,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./document_list.jview?parent_type=application&parent_id=@{:context.application.id}"
+            "schemaApi": "./document_list.jpage?parent_type=application&parent_id=@{:context.application.id}"
           }
         },
         {

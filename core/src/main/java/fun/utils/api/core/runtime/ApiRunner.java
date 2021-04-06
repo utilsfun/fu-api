@@ -3,12 +3,11 @@ package fun.utils.api.core.runtime;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
-import fun.utils.common.DataUtils;
+import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.common.ValidConfig;
 import fun.utils.api.core.common.ValidUtils;
+import fun.utils.api.core.common.WebUtils;
 import fun.utils.api.core.controller.AppBean;
-import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.FilterDO;
 import fun.utils.api.core.persistence.InterfaceDO;
@@ -16,16 +15,12 @@ import fun.utils.api.core.persistence.ParameterDO;
 import fun.utils.api.core.script.*;
 import fun.utils.api.core.services.DoService;
 import fun.utils.common.ClassUtils;
-import fun.utils.api.core.common.WebUtils;
-import fun.utils.jsontemplate.ApiJsonBean;
+import fun.utils.common.DataUtils;
 import fun.utils.jsontemplate.GroovyConverter;
-import javafx.util.Callback;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,11 +112,11 @@ public class ApiRunner {
 
             // template
             String jtString = interfaceDO.getImplementCode();
-            JSONObject jsonTemplate = JSONObject.parseObject(jtString);
+            Object jsonTemplate = JSON.parse(jtString);
 
 
             //convert
-            JSONObject result =  converter.convert(jsonTemplate,data);
+            Object result =  converter.convert(jsonTemplate,data);
             runContext.setResult(result);
 
 

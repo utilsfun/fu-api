@@ -51,8 +51,8 @@
           "@func": "@each",
           "select": "@{StringUtils.split(data('body.ids'),',')}",
           "for": {
-            "id": "@{vars('@item')}",
-            "sort": "@{vars('@key')+1}"
+            "id": "@{$item}",
+            "sort": "@{$key + 1}"
           }
         }
       }
@@ -89,7 +89,7 @@
         "data_type": "string",
         "status": "0"
       },
-      "code": "200",
+      "status": "0",
       "msg": "success"
     }
   },

@@ -1,11 +1,7 @@
 package fun.utils.api.demo;
 
-import apijson.RequestMethod;
-import apijson.framework.*;
-import apijson.orm.SQLConfig;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.common.apijson.ApiJsonParser;
 import fun.utils.common.DataUtils;
 import fun.utils.api.core.script.*;
 import lombok.Data;

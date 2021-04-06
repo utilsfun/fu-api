@@ -1,7 +1,6 @@
 package fun.utils.api.core.common;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.springframework.http.MediaTypeFactory;
 
 import java.util.ArrayList;
 import java.util.List;

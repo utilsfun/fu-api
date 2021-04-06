@@ -20,7 +20,7 @@
         "total": "@data('total');",
         "info": "@data('info');"
       },
-      "code": "@data('code');",
+      "status": "@data('code');",
       "msg": "@data('msg');"
     },
     "template": "@vars('template');"

@@ -45,8 +45,8 @@
           "@func": "@each",
           "select": "@{StringUtils.split(data('body.ids'),',')}",
           "for": {
-            "id": "@{vars('@item')}",
-            "sort": "@{vars('@key')+1}"
+            "id": "@{$item}",
+            "sort": "@{$key + 1}"
           }
         }
       }

@@ -1,4 +1,4 @@
-package fun.utils.common.apijson;
+package fun.utils.apijson;
 
 import apijson.Log;
 import apijson.RequestMethod;

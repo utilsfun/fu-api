@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,8 +147,11 @@ public class ApiAutoConfiguration implements DisposableBean, InitializingBean {
             DesignController designController = new DesignController(app, appBean);
             registerController(designController,app.getDesignPath());
 
-            PublicController pubController = new PublicController(app.getPubPath());
+            PublicController pubController = new PublicController(app, appBean);
             registerController(pubController,app.getPubPath());
+
+//            ImageController imageController = new ImageController();
+//            registerController(imageController,"/image");
 
         }
     }

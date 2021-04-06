@@ -27,7 +27,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_home.jview?_tab=base"
+              "schemaApi": "./application_home.jpage?_tab=base"
             }
           },
           {
@@ -37,7 +37,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_home.jview?_tab=config"
+              "schemaApi": "./application_home.jpage?_tab=config"
             }
           },
           {
@@ -47,7 +47,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi":  "./application_home.jview?_tab=parameter"
+              "schemaApi":  "./application_home.jpage?_tab=parameter"
             }
           },
           {
@@ -57,7 +57,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_home.jview?_tab=filter"
+              "schemaApi": "./application_home.jpage?_tab=filter"
             }
           },
           {
@@ -67,7 +67,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_home.jview?_tab=document"
+              "schemaApi": "./application_home.jpage?_tab=document"
             }
           },
           {
@@ -77,7 +77,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_home.jview?_tab=error_codes"
+              "schemaApi": "./application_home.jpage?_tab=error_codes"
             }
           }
         ,
@@ -88,7 +88,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./application_home.jview?_tab=update_log"
+              "schemaApi": "./application_home.jpage?_tab=update_log"
             }
           },
           {
@@ -97,7 +97,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./interface_list.jview?application_id=@{:context.application.id}"
+              "schemaApi": "./interface_list.jpage?application_id=@{:context.application.id}"
             },
             "$interfaces": {
               "@func#": "apijson",
@@ -122,22 +122,22 @@
                 "select": "@(vars.'interfaces'.'[]'.'API_INTERFACE');",
                 "for": [
                   {
-                    "label": "@(vars.'@item'.method);:@(vars.'@item'.name);",
-                    "url": "@(vars.'@item'.id);",
+                    "label": "@($item.method);:@($item.name);",
+                    "url": "@($item.id);",
                     "schema": {
                       "type": "service",
                       "className": "p-sm",
-                      "schemaApi": "./interface_home.jview?parent_id=@(vars.'@item'.id);"
+                      "schemaApi": "./interface_home.jpage?parent_id=@{$item.id}"
                     }
                   },
                   {
                     "label": "文档",
-                    "url": "@(vars.'@item'.id);/document",
+                    "url": "@{$item.id}/document",
                     "visible": false,
                     "schema": {
                       "type": "service",
                       "className": "p-sm",
-                      "schemaApi": "./interface_home.jview?parent_id=@(vars.'@item'.id);&_tab=document"
+                      "schemaApi": "./interface_home.jpage?parent_id=@{$item.id}&_tab=document"
                     }
                   }]
 
@@ -149,7 +149,7 @@
             "schema": {
               "type": "service",
               "className": "p-sm",
-              "schemaApi": "./source_list.jview?application_id=@{:context.application.id}"
+              "schemaApi": "./source_list.jpage?application_id=@{:context.application.id}"
             }
           }
         ]
@@ -162,7 +162,7 @@
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jview?_for=update&id=${id}"
+          "schemaApi": "./document_edit.jpage?_for=update&parent_type=application&id=${id}"
         }
       },
       {
@@ -172,7 +172,7 @@
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jview?_for=insert&parent_type=application&parent_id=${parent_id}"
+          "schemaApi": "./document_edit.jpage?_for=insert&parent_type=application&parent_id=${parent_id}"
         }
       },
       {
@@ -182,7 +182,7 @@
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jview?_for=update&parent_type=interface&id=${id}"
+          "schemaApi": "./document_edit.jpage?_for=update&parent_type=interface&id=${id}"
         }
       },
       {
@@ -192,7 +192,7 @@
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jview?_for=insert&parent_type=interface&parent_id=${parent_id}"
+          "schemaApi": "./document_edit.jpage?_for=insert&parent_type=interface&parent_id=${parent_id}"
         }
       },
       {

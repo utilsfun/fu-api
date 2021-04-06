@@ -46,8 +46,8 @@
           "@func": "@each",
           "select": "@{StringUtils.split(data('body.ids'),',')}",
           "for": {
-            "id": "@{vars('@item')}",
-            "sort": "@{vars('@key')+1}"
+            "id": "@{$item}",
+            "sort": "@{$key + 1}"
           }
         }
       }
@@ -83,11 +83,11 @@
         "permission": "public",
         "status": "0"
       },
-      "code": "200",
+      "status": "0",
       "msg": "success"
     }
   },
-  "update": {
+  "update0": {
     "@func#": "apijson",
     "datasource": "default",
     "method": "put",
@@ -104,12 +104,42 @@
       }
     },
     "template#": {
-      "data": "@{:API_FILTER}",
+      "data": "@{:API_DOCUMENT}",
       "msg": "@",
       "status": "@{ data.code==200 ? 0 : data.code }"
     }
   },
+  "update": {
+    "@func#": "jdbcTemplate",
+    "datasource": "default",
+    "method": "update",
+    "request": {
+      "@": "@{:body}",
+      "sql": "update API_DOCUMENT set title = ? , note= ? , format = ? , content = ? , permission = ? , status = ? where id = ?",
+      "args": ["@{:title}","@{:note}","@{:format}","@{:content}","@{:permission}","@{:status}","@{:id}"]
+    },
+    "template#": {
+      "msg": "@",
+      "data": "@",
+      "status": "@"
+    }
+  },
   "insert": {
+    "@func#": "jdbcTemplate",
+    "datasource": "default",
+    "method": "update",
+    "request": {
+      "@": "@{:body}",
+      "sql": "insert into API_DOCUMENT(id,parent_type,parent_id,title,note,format,content,permission,status) values(?,?,?,?,?,?,?,?,?)",
+      "args": ["@{System.currentTimeMillis()}","@{:parent_type}","@{:parent_id}","@{:title}","@{:note}","@{:format}","@{:content}","@{:permission}","@{:status}"]
+    },
+    "template#": {
+      "msg": "@",
+      "data": "@",
+      "status": "@"
+    }
+  },
+  "insert0": {
     "@func#": "apijson",
     "datasource": "default",
     "method": "post",
@@ -121,7 +151,6 @@
         "title": "@",
         "note":"@",
         "format": "@",
-        "content": "@",
         "permission": "@",
         "status": "@"
       }

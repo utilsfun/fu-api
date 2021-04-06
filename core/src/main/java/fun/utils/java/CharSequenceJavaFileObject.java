@@ -1,6 +1,5 @@
 package fun.utils.java;
 
-import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import java.net.URI;
  

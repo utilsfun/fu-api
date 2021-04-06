@@ -49,5 +49,8 @@
       "dd": "dd",
       "default": "default"
     }
-  }
+  },
+
+  "sub4": "@{$cc.name + 100}"
+
 }

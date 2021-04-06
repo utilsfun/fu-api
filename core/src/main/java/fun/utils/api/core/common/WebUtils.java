@@ -7,13 +7,9 @@ import fun.utils.common.DataUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
-import org.springframework.core.io.Resource;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -248,30 +244,7 @@ public class WebUtils {
 
     }
 
-    public static JSONObject loadJSONObject(WebApplicationContext webApplicationContext,String classPath,String uri) throws IOException {
-        Resource resource = webApplicationContext.getResource(classPath + uri);
-        JSONObject result = JSON.parseObject(resource.getInputStream(), JSONObject.class);
-        return result;
-    }
 
-    public static JSONArray loadJSONArray(WebApplicationContext webApplicationContext,String classPath,String uri) throws IOException {
-        Resource resource = webApplicationContext.getResource(classPath + uri);
-        JSONArray result = JSON.parseObject(resource.getInputStream(), JSONArray.class);
-        return result;
-    }
-
-
-    public static void writeResponse(HttpServletResponse response , JSONObject template, JSONObject data) throws IOException {
-
-        JSONObject ret = DataUtils.fullRefJSON(template,data);
-
-        // ret.put("data", pageData);
-        //返回内容格式化为 application/json
-        byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
-        response.setContentType("application/json; charset=utf-8");
-        //写入返回流
-        IOUtils.write(returnBytes, response.getOutputStream());
-    }
 
 
 }

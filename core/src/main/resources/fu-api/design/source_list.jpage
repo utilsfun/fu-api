@@ -24,7 +24,7 @@
             "title": "修改",
             "body": {
               "type": "service",
-              "schemaApi": "./source_edit.jview?_for=update&id=${id}&application_id=@{:parameters.application_id}"
+              "schemaApi": "./source_edit.jpage?_for=update&id=${id}&application_id=@{:parameters.application_id}"
             },
             "actions": [
               {
@@ -74,7 +74,7 @@
             "title": "新增",
             "body": {
               "type": "service",
-              "schemaApi": "./source_edit.jview?_for=insert&parent_type=@{:parameters.parent_type}&application_id=@{:parameters.application_id}"
+              "schemaApi": "./source_edit.jpage?_for=insert&parent_type=@{:parameters.parent_type}&application_id=@{:parameters.application_id}"
             },
             "actions": [
               {

@@ -31,7 +31,7 @@
             "title": "修改",
             "body": {
               "type": "service",
-              "schemaApi": "./filter_edit.jview?_for=update&id=${id}&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
+              "schemaApi": "./filter_edit.jpage?_for=update&id=${id}&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
             },
             "actions": [
               {
@@ -81,7 +81,7 @@
             "title": "新增",
             "body": {
               "type": "service",
-              "schemaApi": "./filter_edit.jview?_for=insert&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
+              "schemaApi": "./filter_edit.jpage?_for=insert&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}"
             },
             "actions": [
               {

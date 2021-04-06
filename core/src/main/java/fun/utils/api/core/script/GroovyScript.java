@@ -2,7 +2,6 @@ package fun.utils.api.core.script;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.HashMap;
 import java.util.Map;

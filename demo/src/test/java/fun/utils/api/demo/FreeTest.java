@@ -98,5 +98,19 @@ public class FreeTest {
         System.out.println( StringUtils.substringBefore(s,"/"));
         System.out.println( StringUtils.substringAfter(s,"/"));
     }
+
+    @Test
+    public void test10() throws IOException {
+
+        String src = "code@{$c.c}";
+
+        DataUtils.replaceBy(src, "@\\{((\\$|:)[\\.\\w_]+)\\}", 1, (expr) -> {
+            String key = "%expr:" + expr.hashCode() + "%";
+            System.out.println(key + " =  " + expr);
+            return key;
+        });
+
+    }
+
 }
 

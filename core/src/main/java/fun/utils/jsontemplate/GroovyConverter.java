@@ -10,16 +10,13 @@ import javafx.util.Callback;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import javax.script.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -29,6 +26,8 @@ import java.util.*;
 public class GroovyConverter {
 
     private static String GROOVY_PUB_EXPR = "";
+
+    private static RestTemplate defaultRestTemplate = new RestTemplate();
 
     protected static final ScriptEngine groovyEngine = new ScriptEngineManager().getEngineByName("groovy");
 
@@ -41,7 +40,7 @@ public class GroovyConverter {
 
     @Getter
     @Setter
-    private RestTemplate restTemplate = null;
+    private RestTemplate restTemplate = defaultRestTemplate;
 
 
 
@@ -206,10 +205,10 @@ public class GroovyConverter {
 
         @Getter
         @Setter
-        protected JSONObject data;
+        protected JSON data;
 
 
-        SelfObject(GroovyConverter converter, JSONObject data) {
+        SelfObject(GroovyConverter converter, JSON data) {
             this.converter = converter;
             this.data = data;
             this.parent = null;
@@ -353,7 +352,7 @@ public class GroovyConverter {
 
     }
 
-    static class VarsObject {
+    static class VarsObject implements Callback<String,Object>{
 
         public final SelfObject self;
 
@@ -361,7 +360,8 @@ public class GroovyConverter {
             this.self = self;
         }
 
-        public Object call(String name) throws Exception {
+        @SneakyThrows
+        public Object call(String name)  {
             return self.vars(name);
         }
 
@@ -370,14 +370,42 @@ public class GroovyConverter {
         }
     }
 
-    public JSONObject convert(JSONObject template, JSONObject data) throws Exception {
-        return (JSONObject) convert(template, new SelfObject(this, data));
+    public Object convert(Object template, JSON data) throws Exception {
+        return convert(template, new SelfObject(this, data));
     }
 
 
     private Bindings initBindings(SelfObject self) throws ScriptException {
 
-        Bindings bindings = groovyEngine.createBindings();
+        Bindings bindings = new SimpleBindings(){
+            @SneakyThrows
+            @Override
+            public Object get(Object key) {
+
+                Object result = super.get(key);
+
+                if ( result == null && String.valueOf(key).startsWith("$") && super.containsKey("vars")){
+                    VarsObject vars = (VarsObject)super.get("vars");
+                    result = vars.get(String.valueOf(key).substring(1));
+                }
+
+                return result;
+            }
+
+            @SneakyThrows
+            @Override
+            public boolean containsKey(Object key) {
+                boolean result = super.containsKey(key);
+
+                if ( result == false && String.valueOf(key).startsWith("$") && super.containsKey("vars")){
+//                  VarsObject vars = (VarsObject)super.get("vars");
+//                  result = null != vars.get(String.valueOf(key).substring(1));
+                    result = true;
+                }
+
+                return result;
+            }
+        };
 
         bindings.putAll(beans);
 
@@ -419,7 +447,12 @@ public class GroovyConverter {
         } else if (expression.matches("\\$[\\._\\w]+")) {
 
             String expr = expression.substring(1);
-            Object result = self.vars(expr);
+            String varName = StringUtils.substringBefore(expr,".");
+            String varPath = StringUtils.substringAfter(expr,varName);
+            Object result = self.vars(varName);
+            if (result != null && StringUtils.isNotBlank(varPath)){
+                result = JSONPath.eval(result, varPath);
+            }
             log.debug( "self.vars(\"" + expr + "\"):" + JSON.toJSONString(result));
             return result;
 
@@ -492,7 +525,7 @@ public class GroovyConverter {
                     return key;
                 });
 
-                strResult = DataUtils.replaceBy(strResult, "@\\{(\\$|:[\\.\\w_]+)\\}", 1, (expr) -> {
+                strResult = DataUtils.replaceBy(strResult, "@\\{((\\$|:)[\\.\\w_]+)\\}", 1, (expr) -> {
                     String key = "%expr:" + expr.hashCode() + "%";
                     expressionMap.put(key, expr);
                     return key;
@@ -560,8 +593,8 @@ public class GroovyConverter {
                         log.trace("@each list index:" + index);
 
                         SelfObject subSelf = new SelfObject(self);
-                        subSelf.varNode.put("$@key", index++);
-                        subSelf.varNode.put("$@item", obj);
+                        subSelf.varNode.put("$key", index++);
+                        subSelf.varNode.put("$item", obj);
                         Object subTarget = convert(body, subSelf);
                         if (subTarget instanceof List){
                             funcValue.addAll((List)subTarget);
@@ -580,8 +613,8 @@ public class GroovyConverter {
                         log.trace("@each list Map:" + key);
 
                         SelfObject subSelf = new SelfObject(self);
-                        subSelf.varNode.put("$@key", key);
-                        subSelf.varNode.put("$@item", selectMap.get(key));
+                        subSelf.varNode.put("$key", key);
+                        subSelf.varNode.put("$item", selectMap.get(key));
                         funcValue.add(convert(body, subSelf));
                     }
 

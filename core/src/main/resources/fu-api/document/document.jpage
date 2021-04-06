@@ -23,7 +23,7 @@
           "image": {
             "type": "html",
             "name": "document.content",
-            "html": "<img style='width: 100%; max-width: max-content; min-width: 256px;' src='data:@{:format};base64,@{:content}' />",
+            "html": "<img style='width: 100%; max-width: max-content; min-width: 256px;' src='@{:content}' />",
             "inputClassName": "no-border"
           },
           "json": {

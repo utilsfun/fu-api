@@ -5,7 +5,13 @@
 
     "type": "form",
     "debug": "@{:parameters._debug}",
-    "initApi": "document.japi?_act=get&_for=@{:parameters._for}&id=@{:body.params.id}",
+    "initApi":{
+      "url": "document.japi?_act=get&_for=@{:parameters._for}&id=@{:body.params.id}",
+      "responseData": {
+        "_for": "@{:parameters._for}",
+        "&": "$$"
+      }
+    },
     "api": {
       "url": "document.japi?_act=@{:parameters._for}",
       "data": {
@@ -80,8 +86,8 @@
             "value": "code/xml"
           },
           {
-            "label": "code/yml",
-            "value": "code/yml"
+            "label": "code/yaml",
+            "value": "code/yaml"
           },
           {
             "label": "code/shell",
@@ -109,7 +115,7 @@
           "height": 200,
           "toolbar ": "undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help"
         },
-        "hiddenOn": "this.format != 'html'"
+        "visibleOn": "this.format == 'html'"
       },
       {
         "name": "content",
@@ -121,7 +127,7 @@
           "automaticLayout": true,
           "lineNumbers": 0
         },
-        "hiddenOn": "this.format != 'code/json'"
+        "visibleOn": "this.format == 'code/json' || this.format == 'amis'"
       },
       {
         "name": "content",
@@ -133,19 +139,85 @@
           "automaticLayout": true,
           "lineNumbers": 0
         },
-        "hiddenOn": "this.format != 'code/java'"
+        "visibleOn": "this.format == 'code/java'"
       },
       {
         "name": "content",
         "label": "内容",
         "type": "editor",
-        "language": "json",
+        "language": "sql",
         "size": "ss",
         "options": {
           "automaticLayout": true,
           "lineNumbers": 0
         },
-        "hiddenOn": "this.format != 'amis'"
+        "visibleOn": "this.format == 'code/sql'"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "editor",
+        "language": "javascript",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "visibleOn": "this.format == 'code/javascript'"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "editor",
+        "language": "xml",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "visibleOn": "this.format == 'code/xml'"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "editor",
+        "language": "yaml",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "visibleOn": "this.format == 'code/yaml'"
+      },
+      {
+        "name": "content",
+        "label": "内容",
+        "type": "editor",
+        "language": "shell",
+        "size": "ss",
+        "options": {
+          "automaticLayout": true,
+          "lineNumbers": 0
+        },
+        "visibleOn": "this.format == 'code/shell'"
+      },
+      {
+        "type": "html",
+        "label": "内容",
+        "name": "content",
+        "html": "<img style='width: 100%; max-width: max-content; min-width: 256px;' src='${content}' />",
+        "visibleOn": "this.format == 'image'"
+      },
+      {
+        "label": "上传",
+        "type": "image",
+        "name": "image",
+        "#receiver": "../../image/upload",
+        "receiver": "./image/upload.gsp",
+        "autoFill": {
+          "content": "${value}"
+        },
+        "visibleOn": "this.format == 'image'"
       },
       {
         "type": "divider"

@@ -60,7 +60,7 @@
           {
             "type": "service",
             "initFetchSchema": true,
-            "schemaApi": "document.jview?id=${item}"
+            "schemaApi": "document.jpage?id=${item}"
           }
         ]
       },
@@ -72,7 +72,7 @@
         "body": {
           "type": "service",
           "initFetchSchema": true,
-          "schemaApi": "parameters.jview?ids=${application.parameterIds|join}"
+          "schemaApi": "parameters.jpage?ids=${application.parameterIds|join}"
         }
       },
       {
@@ -127,7 +127,7 @@
                   "visibleOn": "this.collapsed === 'true'",
                   "schemaApi": {
                     "method": "get",
-                    "url": "interface.jview",
+                    "url": "interface.jpage",
                     "data": {
                       "id": "${item|split:@@|nth:0}",
                       "method": "${item|split:@@|nth:1}",

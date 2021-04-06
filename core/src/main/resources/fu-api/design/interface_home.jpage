@@ -16,27 +16,34 @@
   },
   "body": [
     {
-      "type": "property",
-      "column": 5,
-      "@": "@vars('data');",
-      "items": [
+      "type": "wrapper",
+      "body": [
         {
-          "label": "方法",
-          "content": "@{:method}"
+          "type": "tpl",
+          "tpl": "方法: @{$data.method}",
+          "className": "m-r p-r"
         },
         {
-          "label": "名称",
-          "content": "@{:name}"
+          "type": "tpl",
+          "tpl": "名称: @{$data.name}",
+          "className": "m-r p-r"
         },
         {
-          "label": "标题",
-          "content": "@{:title}"
+          "type": "tpl",
+          "tpl": "地址: @data('context.api_url');/@{$data.name}",
+          "className": "text-base",
+          "inline": true
         },
         {
-          "label": "更新时间",
-          "content": "@{:gmt_modified}"
+          "type": "button",
+          "actionType": "copy",
+          "content": "@data('context.api_url');/@{$data.name}",
+          "level": "link",
+          "icon": "fa fa-copy"
         }
-      ]
+      ],
+      "size": "xs",
+      "className": "text-right"
     },
     {
       "type": "tabs",
@@ -136,7 +143,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./parameter_list.jview?parent_type=interface&parent_id=@{:parameters.parent_id}"
+            "schemaApi": "./parameter_list.jpage?parent_type=interface&parent_id=@{:parameters.parent_id}"
           }
         },
         {
@@ -144,7 +151,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./filter_list.jview?parent_type=interface&parent_id=@{:parameters.parent_id}"
+            "schemaApi": "./filter_list.jpage?parent_type=interface&parent_id=@{:parameters.parent_id}"
           }
         },
         {
@@ -305,8 +312,7 @@
                 "name": "request_example",
                 "language": "json",
                 "size": "ss"
-              }
-            ,
+              },
               {
                 "type": "editor",
                 "label": "返回样例",
@@ -333,7 +339,7 @@
           "body": {
             "type": "service",
             "className": "p-sm",
-            "schemaApi": "./document_list.jview?parent_type=interface&parent_id=@{:parameters.parent_id}"
+            "schemaApi": "./document_list.jpage?parent_type=interface&parent_id=@{:parameters.parent_id}"
           }
         },
         {

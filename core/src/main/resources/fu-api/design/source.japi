@@ -57,7 +57,7 @@
       "data": {
         "status": "0"
       },
-      "code": "200",
+      "status": "0",
       "msg": "success"
     }
   },

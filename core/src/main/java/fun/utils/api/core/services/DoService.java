@@ -6,8 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fun.utils.api.core.persistence.*;
-
-import fun.utils.common.apijson.ApiJsonCaller;
+import fun.utils.apijson.ApiJsonCaller;
 import lombok.Getter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;

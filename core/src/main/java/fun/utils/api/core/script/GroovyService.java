@@ -3,7 +3,6 @@ package fun.utils.api.core.script;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import groovy.lang.GroovyShell;
-import groovy.lang.Script;
 import javafx.util.Callback;
 import lombok.Getter;
 import lombok.Setter;

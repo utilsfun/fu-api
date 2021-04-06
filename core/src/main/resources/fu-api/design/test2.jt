@@ -8,7 +8,7 @@
     {
     "@func": "@each",
     "select": [1,2,3],
-    "for": "第@(vars.'@key' + 1);个数为@vars('@item');"
+    "for": "第@{$key + 1}个数为@{$item}"
     }
   ],
   "sub3": [
@@ -21,7 +21,7 @@
           "c1": 1
         }
       },
-      "for": "健@vars('@key');的值为@vars('@item');"
+      "for": "健@{$key}的值为@{$item}"
     }
   ]
 }
