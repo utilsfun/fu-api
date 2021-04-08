@@ -18,8 +18,8 @@ public class PublicController extends BaseController {
 
     protected final String classPath = "classpath:fu-api/public/";
 
-    public PublicController(ApiProperties.Application app, AppBean appBean) {
-        super(app, appBean);
+    public PublicController(ApiProperties.Application appConfig, AppBean appBean) {
+        super(appConfig, appBean);
     }
 
 
@@ -29,7 +29,7 @@ public class PublicController extends BaseController {
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
         UriComponents uc = UriComponentsBuilder.fromUriString(url).build();
 
-        String uri = StringUtils.substringAfter(uc.getPath(), app.getPubPath()).replaceFirst("^/", "");
+        String uri = StringUtils.substringAfter(uc.getPath(), appConfig.getPubPath()).replaceFirst("^/", "");
 
         writeStatusResponse(classPath + uri,response);
 

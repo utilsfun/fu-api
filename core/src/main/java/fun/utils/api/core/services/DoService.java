@@ -120,7 +120,7 @@ public class DoService {
 
     public ApplicationDO loadApplicationDO(String applicationName) {
         StringBuffer sqlBuffer = new StringBuffer();
-        sqlBuffer.append(" select id,name,title,note,owner,config,error_codes,version,status,gmt_create,gmt_modified ");
+        sqlBuffer.append(" select id,name,title,note,owner,config,error_codes,options,version,status,gmt_create,gmt_modified ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_document` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS document_ids ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_parameter` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS parameter_ids ");
         sqlBuffer.append(" ,(select group_concat(id ORDER BY `sort` SEPARATOR ',') from `api_filter` WHERE `status` = 0 and `parent_type` = 'application' and `parent_id` = api_application.id GROUP BY `parent_id` ) AS filter_ids ");

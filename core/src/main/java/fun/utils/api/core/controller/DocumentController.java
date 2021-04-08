@@ -35,8 +35,8 @@ public class DocumentController extends BaseController {
 
     private final String classPath = "classpath:fu-api/document/";
 
-    public DocumentController(ApiProperties.Application app, AppBean appBean) {
-        super(app, appBean);
+    public DocumentController(ApiProperties.Application appConfig, AppBean appBean) {
+        super(appConfig, appBean);
     }
 
 
@@ -149,16 +149,16 @@ public class DocumentController extends BaseController {
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
         UriComponents uc = UriComponentsBuilder.fromUriString(url).build();
 
-        String uri = StringUtils.substringAfter(uc.getPath(), app.getDocPath()).replaceFirst("^/", "");
+        String uri = StringUtils.substringAfter(uc.getPath(), appConfig.getDocPath()).replaceFirst("^/", "");
 
 
-        String applicationName = app.getName();
+        String applicationName = appConfig.getName();
 
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
         JSONObject input = WebUtils.getJsonByInput(request);
 
         JSONPath.set(input,"$.context.application",JSONObject.toJSON(applicationDO));
-        JSONPath.set(input,"$.context.api_url",  StringUtils.substringBefore(request.getRequestURL().toString(),app.getDocPath()) + app.getApiPath());
+        JSONPath.set(input,"$.context.api_url",  StringUtils.substringBefore(request.getRequestURL().toString(), appConfig.getDocPath()) + appConfig.getApiPath());
 
         GroovyConverter converter = new GroovyConverter();
         converter.setRestTemplate(appBean.getRestTemplate());

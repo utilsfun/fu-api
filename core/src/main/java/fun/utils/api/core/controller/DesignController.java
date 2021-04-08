@@ -1,7 +1,6 @@
 package fun.utils.api.core.controller;
 
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import fun.utils.api.core.common.MyJdbcTemplate;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.script.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
@@ -30,8 +28,8 @@ public class DesignController extends BaseController {
     private final String classPath = "classpath:fu-api/design/";
 
 
-    public DesignController(ApiProperties.Application app, AppBean appBean) {
-        super(app, appBean);
+    public DesignController(ApiProperties.Application appConfig, AppBean appBean) {
+        super(appConfig, appBean);
     }
 
 
@@ -41,14 +39,14 @@ public class DesignController extends BaseController {
 
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
         UriComponents uc = UriComponentsBuilder.fromUriString(url).build();
-        String uri = StringUtils.substringAfter(uc.getPath(), app.getDesignPath()).replaceFirst("^/", "");
+        String uri = StringUtils.substringAfter(uc.getPath(), appConfig.getDesignPath()).replaceFirst("^/", "");
 
-        String applicationName = app.getName();
+        String applicationName = appConfig.getName();
         ApplicationDO applicationDO = doService.getApplicationDO(applicationName);
         JSONObject input = WebUtils.getJsonByInput(request);
 
         JSONPath.set(input,"$.context.application",JSONObject.toJSON(applicationDO));
-        JSONPath.set(input,"$.context.api_url",  StringUtils.substringBefore(request.getRequestURL().toString(),app.getDesignPath()) + app.getApiPath());
+        JSONPath.set(input,"$.context.api_url",  StringUtils.substringBefore(request.getRequestURL().toString(), appConfig.getDesignPath()) + appConfig.getApiPath());
 
 
         GroovyConverter converter = new GroovyConverter();

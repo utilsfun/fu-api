@@ -29,18 +29,18 @@ public class ApiController {
 
     private final AppBean appBean;
     private final DoService doService;
-    private final ApiProperties.Application app;
+    private final ApiProperties.Application appConfig;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    public ApiController(ApiProperties.Application app, AppBean appBean) {
+    public ApiController(ApiProperties.Application appConfig, AppBean appBean) {
 
         this.appBean = appBean;
-        this.app = app;
+        this.appConfig = appConfig;
         this.doService = appBean.getDoService();
 
-        log.info("Create ApiController path:{} name:{}", app.getApiPath(), app.getName());
+        log.info("Create ApiController path:{} name:{}", appConfig.getApiPath(), appConfig.getName());
     }
 
     @ResponseBody
@@ -104,8 +104,8 @@ public class ApiController {
         String url = request.getRequestURI().replaceFirst(request.getServletContext().getContextPath(), "");
         UriComponents uc = UriComponentsBuilder.fromUriString(url).build();
 
-        String applicationName = app.getName();
-        String interfaceName = StringUtils.substringAfter(uc.getPath(), app.getApiPath()).replaceFirst("^/", "");
+        String applicationName = appConfig.getName();
+        String interfaceName = StringUtils.substringAfter(uc.getPath(), appConfig.getApiPath()).replaceFirst("^/", "");
 
         RunContext runContext = new RunContext(appBean, applicationName, interfaceName, response, request);
         ApiRunner apiRunner = new ApiRunner(appBean, runContext);

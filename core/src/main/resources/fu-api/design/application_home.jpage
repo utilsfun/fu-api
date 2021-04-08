@@ -8,8 +8,8 @@
     "request": {
       "API_APPLICATION": {
         "id": "@data('context.application.id');",
-        "@column": "id,gmt_modified,name,note,owner,title,version,status,config,error_codes",
-        "@json": "error_codes"
+        "@column": "id,gmt_modified,name,note,owner,title,version,status,config,error_codes,options",
+        "@json": "error_codes,options"
       }
     },
     "template#": "@data('API_APPLICATION');"
@@ -134,7 +134,7 @@
           }
         },
         {
-          "title": "配置",
+          "title": "数据配置",
           "body": {
             "type": "form",
             "title": "",
@@ -199,6 +199,256 @@
           }
         },
         {
+          "title": "应用选项",
+          "body": {
+            "type": "form",
+            "debug": "true",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "options": "@"
+            },
+            "api": "application_home.japi?_mode=options",
+            "name": "application_options",
+            "title": "",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "combo",
+                "name": "qos",
+                "label": "限流",
+                "multiple": true,
+                "draggable": true,
+                "controls": [
+                  {
+                    "name": "key",
+                    "label": "关键字",
+                    "type": "text"
+                  },
+                  {
+                    "name": "mode",
+                    "label": "模式",
+                    "type": "text"
+                  },
+                  {
+                    "name": "max_speed",
+                    "label": "最大速度",
+                    "type": "number"
+                  },
+                  {
+                    "name": "max_thread",
+                    "label": "最大并发",
+                    "type": "number"
+                  }
+                ]
+              },
+              {
+                "type": "combo",
+                "name": "options",
+                "multiLine": true,
+                "multiple": false,
+                "draggable": false,
+                "controls": [
+                  {
+                    "type": "combo",
+                    "name": "result",
+                    "label": "返回模板",
+                    "multiLine": true,
+                    "multiple": false,
+                    "draggable": false,
+                    "controls": [
+                      {
+                        "type": "json-editor",
+                        "label": "正确时",
+                        "name": "success",
+                        "size": "ss"
+                      },
+                      {
+                        "type": "json-editor",
+                        "label": "错误时",
+                        "name": "fail",
+                        "size": "ss"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        },
+        {
+          "title": "返回模板",
+          "body": {
+            "type": "form",
+            "debug": "true",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "template_success": "@{cast(data('config.template_success'),'String')}",
+              "template_error": "@{cast(data('config.template_error'),'String')}"
+            },
+            "api": "application_home.japi?_mode=config_template",
+            "name": "application_config_template",
+            "title": "",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "json-editor",
+                "label": "正确时",
+                "name": "template_success",
+                "size": "ss"
+              },
+              {
+                "type": "json-editor",
+                "label": "错误时",
+                "name": "template_error",
+                "size": "ss"
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        },
+        {
+          "title": "公共数据",
+          "body": {
+            "type": "form",
+            "debug": "true",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "data": "@{cast(data('config.data'),'String')}"
+            },
+            "api": "application_home.japi?_mode=config_data",
+            "name": "application_config_data",
+            "title": "",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "json-editor",
+                "label": "正确时",
+                "name": "data",
+                "size": "600"
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        },
+        {
+          "title": "全局限流",
+          "body": {
+            "type": "form",
+            "data": {
+              "@": "@vars('data');",
+              "id": "@",
+              "qos": "@{:config.qos}"
+            },
+            "api": "application_home.japi?_mode=config_qos",
+            "name": "application_config_qos",
+            "title": "",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "combo",
+                "name": "qos",
+                "multiple": true,
+                "draggable": true,
+                "controls": [
+                  {
+                    "name": "key",
+                    "label": "关键字",
+                    "type": "text"
+                  },
+                  {
+                    "name": "mode",
+                    "label": "模式",
+                    "type": "text"
+                  },
+                  {
+                    "name": "max_speed",
+                    "label": "最大速度",
+                    "type": "number"
+                  },
+                  {
+                    "name": "max_thread",
+                    "label": "最大并发",
+                    "type": "number"
+                  }
+                ]
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "level": "primary",
+                "label": "提交"
+              },
+              {
+                "type": "reset",
+                "label": "重置"
+              }
+            ]
+          }
+        },
+        {
           "title": "错误码",
           "body": {
             "type": "form",
@@ -207,8 +457,8 @@
               "id": "@",
               "error_codes": "@"
             },
-            "api": "application_home.japi?_mode=error",
-            "name": "application_error",
+            "api": "application_home.japi?_mode=error_codes",
+            "name": "application_error_codes",
             "title": "",
             "mode": "normal",
             "autoFocus": true,

@@ -1,4 +1,17 @@
 {
+  "$application": {
+    "@func#": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "API_APPLICATION": {
+        "id": "@data('context.application.id');",
+        "@column": "id,config",
+        "@json": "config"
+      }
+    },
+    "template#": "@data('API_APPLICATION');"
+  },
   "$result": {
     "@func": "@switch",
     "select": "@data('parameters._mode');",
@@ -30,7 +43,7 @@
         }
       }
     },
-    "error": {
+    "error_codes": {
       "@func#": "apijson",
       "datasource": "default",
       "method": "put",
@@ -41,9 +54,84 @@
           "error_codes": "@{cast(data.error_codes,'String')}"
         }
       }
+    },
+    "options": {
+      "@func#": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_APPLICATION": {
+          "id": "@",
+          "options": "@{cast(data.options,'String')}"
+        }
+      }
+    },
+    "config_qos": {
+      "@func#": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_APPLICATION": {
+          "id": "@",
+          "config": {
+            "@func#": "@program",
+            "select": [
+              "",
+              "def config = $application.config == null ? new JSONObject() : $application.config ;",
+              "config.put('qos',data('qos')) ;",
+              "return cast( config ,'String');",
+              ""
+            ]
+          }
+        }
+      }
+    },
+    "config_template": {
+      "@func#": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_APPLICATION": {
+          "id": "@",
+          "config": {
+            "@func#": "@program",
+            "select": [
+              "",
+              "def config = $application.config == null ? new JSONObject() : $application.config ;",
+              "config.put('template_success',cast(data('template_success'),'JSONObject')) ;",
+              "config.put('template_error',cast(data('template_error'),'JSONObject')) ;",
+              "return cast( config ,'String');",
+              ""
+            ]
+          }
+        }
+      }
+    },
+    "config_data": {
+      "@func#": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_APPLICATION": {
+          "id": "@",
+          "config": {
+            "@func#": "@program",
+            "select": [
+              "",
+              "def config = $application.config == null ? new JSONObject() : $application.config ;",
+              "config.put('data',cast(data('data'),'JSONObject')) ;",
+              "return cast( config ,'String');",
+              ""
+            ]
+          }
+        }
+      }
     }
   },
-
   "*": {
     "@": "@{$result}",
     "msg": "@",

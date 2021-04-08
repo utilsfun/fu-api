@@ -41,10 +41,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.2.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-web:5.2.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:2.2.12.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: javax.servlet:jstl:1.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.tomcat.embed:tomcat-embed-jasper:9.0.41" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.tomcat.embed:tomcat-embed-el:9.0.41" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.eclipse.jdt:ecj:3.18.0" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:druid:1.2.4" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.22" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.11.4" level="project" />
@@ -58,17 +54,17 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:5.2.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.29" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.14" level="project" />
-    <orderEntry type="library" name="Maven: com.github.APIJSON:apijson-framework:4.6.6" level="project" />
+    <orderEntry type="library" name="Maven: com.github.APIJSON:apijson-framework:4.6.7" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:4.0.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.Tencent:APIJSON:4.6.6" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Tencent:APIJSON:4.6.7" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.postgresql:postgresql:42.2.18" level="project" />
     <orderEntry type="library" name="Maven: com.github.TommyLemon:unitauto-java:2.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.github.TommyLemon:unitauto-jar:2.6.1" level="project" />
     <orderEntry type="library" name="Maven: io.github.classgraph:classgraph:4.8.87" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.redisson:redisson-spring-data-22:3.14.1" level="project" />
-    <orderEntry type="library" name="Maven: org.redisson:redisson:3.14.1" level="project" />
+    <orderEntry type="library" name="Maven: org.redisson:redisson-spring-data-22:3.15.3" level="project" />
+    <orderEntry type="library" name="Maven: org.redisson:redisson:3.15.3" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.55.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.55.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.55.Final" level="project" />
@@ -80,9 +76,9 @@
     <orderEntry type="library" name="Maven: javax.cache:cache-api:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: io.projectreactor:reactor-core:3.3.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
-    <orderEntry type="library" name="Maven: io.reactivex.rxjava3:rxjava:3.0.7" level="project" />
-    <orderEntry type="library" name="Maven: org.jboss.marshalling:jboss-marshalling-river:2.0.10.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.jboss.marshalling:jboss-marshalling:2.0.10.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.reactivex.rxjava3:rxjava:3.0.10" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.marshalling:jboss-marshalling-river:2.0.11.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.marshalling:jboss-marshalling:2.0.11.Final" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.25" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.5" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.10.5" level="project" />

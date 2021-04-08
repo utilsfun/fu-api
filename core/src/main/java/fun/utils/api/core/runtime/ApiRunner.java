@@ -235,7 +235,7 @@ public class ApiRunner {
         method.getImports().addAll(PUBLIC_GROOVY_IMPORTS);
 
         GroovyRunner groovyRunner = groovyService.getRunner(method);
-        Object result = groovyRunner.withProperty("my", runContext).execute(runContext.getParameters());
+        Object result = groovyRunner.withProperty("$my", runContext).execute(runContext.getParameters());
 
         if (result instanceof Exception){
             throw (Exception) result;

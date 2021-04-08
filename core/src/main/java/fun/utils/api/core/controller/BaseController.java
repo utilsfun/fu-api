@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import fun.utils.api.core.services.DoService;
 import fun.utils.common.DataUtils;
 import fun.utils.jsontemplate.GroovyConverter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -16,12 +15,9 @@ import org.springframework.http.MediaTypeFactory;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.script.*;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,19 +29,19 @@ public class BaseController {
 
     protected final AppBean appBean;
     protected final DoService doService;
-    protected final ApiProperties.Application app;
+    protected final ApiProperties.Application appConfig;
 
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
 
-    public BaseController(ApiProperties.Application app, AppBean appBean) {
+    public BaseController(ApiProperties.Application appConfig, AppBean appBean) {
 
         this.appBean = appBean;
-        this.app = app;
+        this.appConfig = appConfig;
         this.doService = appBean.getDoService();
 
-        log.info("Create {} path:{} name:{}", this.getClass().getSimpleName(), app.getApiPath(), app.getName());
+        log.info("Create {} path:{} name:{}", this.getClass().getSimpleName(), appConfig.getApiPath(), appConfig.getName());
     }
 
 
@@ -103,19 +99,22 @@ public class BaseController {
 
             String code = IOUtils.toString(resource.getInputStream(), "utf-8");
             Bindings bindings = new SimpleBindings();
-            Map<String,Object> owner = new HashMap<>();
+            Map<String,Object> context = new HashMap<>();
 
-            owner.put("request", request);
-            owner.put("response", response);
-            owner.put("session",  request.getSession());
-            owner.put("application", request.getSession().getServletContext());
-            owner.put("webApplicationContext", webApplicationContext);
-            bindings.put("owner",owner);
+            context.put("request", request);
+            context.put("response", response);
+            context.put("session",  request.getSession());
+            context.put("application", request.getSession().getServletContext());
+            context.put("webApplicationContext", webApplicationContext);
 
-//            HttpServletRequest request = owner.get("request") ;
-//            HttpServletResponse response = owner.get("response") ;
-//            HttpSession session = owner.get("session") ;
-//            WebApplicationContext webApplicationContext = owner.get("webApplicationContext") ;
+            bindings.put("$context",context);
+
+
+//            Map<String,Object> context = $context;
+//            HttpServletRequest request = context.get("request") ;
+//            HttpServletResponse response = context.get("response") ;
+//            HttpSession session = context.get("session") ;
+//            WebApplicationContext webApplicationContext = context.get("webApplicationContext") ;
 
             log.debug("groovyEngine.eval(\"" + code + "\")");
             groovyEngine.eval(code, bindings);

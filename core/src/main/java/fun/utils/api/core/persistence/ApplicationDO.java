@@ -48,6 +48,12 @@ public class ApplicationDO {
      * 【错误码】
      */
     private List<ErrorCode> errorCodes;
+
+    /**
+     * 【应用选项】 json
+     */
+    private JSONObject options;
+
     /**
      * 【版本号】
      */

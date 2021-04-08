@@ -131,24 +131,24 @@ public class ApiAutoConfiguration implements DisposableBean, InitializingBean {
 
         log.info("Initialize main program");
 
-        for (ApiProperties.Application app : apiProperties.getApplications()) {
+        for (ApiProperties.Application appConfig : apiProperties.getApplications()) {
 
             AppBean appBean = new AppBean();
             webApplicationContext.getAutowireCapableBeanFactory().autowireBean(appBean);
 
-            log.info("register application {} " , JSON.toJSONString(app));
+            log.info("register application {} " , JSON.toJSONString(appConfig));
 
-            ApiController apiController = new ApiController(app, appBean);
-            registerController(apiController,app.getApiPath());
+            ApiController apiController = new ApiController(appConfig, appBean);
+            registerController(apiController,appConfig.getApiPath());
 
-            DocumentController docController = new DocumentController(app, appBean);
-            registerController(docController,app.getDocPath());
+            DocumentController docController = new DocumentController(appConfig, appBean);
+            registerController(docController,appConfig.getDocPath());
 
-            DesignController designController = new DesignController(app, appBean);
-            registerController(designController,app.getDesignPath());
+            DesignController designController = new DesignController(appConfig, appBean);
+            registerController(designController,appConfig.getDesignPath());
 
-            PublicController pubController = new PublicController(app, appBean);
-            registerController(pubController,app.getPubPath());
+            PublicController pubController = new PublicController(appConfig, appBean);
+            registerController(pubController,appConfig.getPubPath());
 
 //            ImageController imageController = new ImageController();
 //            registerController(imageController,"/image");

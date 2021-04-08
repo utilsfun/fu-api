@@ -12,6 +12,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -553,7 +554,19 @@ public class GroovyConverter {
 
             String type = isConvert ? objectValue.getString("@func") : objectValue.getString("@func#");
 
-            if ("@if".equalsIgnoreCase(type)) {
+            if ("@program".equalsIgnoreCase(type)) {
+
+                Object select =  objectValue.get("select");
+                String program = null;
+                if (select instanceof List){
+                    program = String.join("\r\n", (List)select);
+                }
+
+                Object funcValue = expressionEval(program, self);
+
+                return isConvert ? convert(funcValue, self) : funcValue;
+
+            }else if ("@if".equalsIgnoreCase(type)) {
 
                 Object select = convert(objectValue.get("select"), self);
                 Object funcValue = DataUtils.testBoolean(select) ? objectValue.get("true") : objectValue.get("false");
