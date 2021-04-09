@@ -31,18 +31,6 @@
         }
       }
     },
-    "config": {
-      "@func#": "apijson",
-      "datasource": "default",
-      "method": "put",
-      "request": {
-        "@": "@data('body');",
-        "API_APPLICATION": {
-          "id": "@",
-          "config": "@"
-        }
-      }
-    },
     "error_codes": {
       "@func#": "apijson",
       "datasource": "default",
@@ -52,18 +40,6 @@
         "API_APPLICATION": {
           "id": "@",
           "error_codes": "@{cast(data.error_codes,'String')}"
-        }
-      }
-    },
-    "options": {
-      "@func#": "apijson",
-      "datasource": "default",
-      "method": "put",
-      "request": {
-        "@": "@data('body');",
-        "API_APPLICATION": {
-          "id": "@",
-          "options": "@{cast(data.options,'String')}"
         }
       }
     },

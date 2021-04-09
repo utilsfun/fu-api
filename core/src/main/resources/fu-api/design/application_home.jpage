@@ -45,10 +45,9 @@
         "@func": "@switch",
         "select": "@{:parameters._tab}",
         "base": 0,
-        "config": 1,
-        "parameter": 2,
-        "filter": 3,
-        "document": 4,
+        "parameter": 1,
+        "filter": 2,
+        "document": 7,
         "default": 0
       },
       "tabs": [
@@ -134,47 +133,6 @@
           }
         },
         {
-          "title": "数据配置",
-          "body": {
-            "type": "form",
-            "title": "",
-            "data": {
-              "@": "@vars('data');",
-              "id": "@",
-              "config": "@"
-            },
-            "api": "application_home.japi?_mode=config",
-            "name": "application_config",
-            "mode": "normal",
-            "autoFocus": true,
-            "canAccessSuperData": false,
-            "trimValues": true,
-            "controls": [
-              {
-                "type": "hidden",
-                "name": "id"
-              },
-              {
-                "type": "editor",
-                "name": "config",
-                "language": "json",
-                "size": "600"
-              }
-            ],
-            "actions": [
-              {
-                "type": "submit",
-                "level": "primary",
-                "label": "提交"
-              },
-              {
-                "type": "reset",
-                "label": "重置"
-              }
-            ]
-          }
-        },
-        {
           "title": "公共参数",
           "body": {
             "type": "service",
@@ -188,110 +146,6 @@
             "type": "service",
             "className": "p-sm",
             "schemaApi": "./filter_list.jpage?parent_type=application&parent_id=@{:context.application.id}"
-          }
-        },
-        {
-          "title": "文档",
-          "body": {
-            "type": "service",
-            "className": "p-sm",
-            "schemaApi": "./document_list.jpage?parent_type=application&parent_id=@{:context.application.id}"
-          }
-        },
-        {
-          "title": "应用选项",
-          "body": {
-            "type": "form",
-            "debug": "true",
-            "data": {
-              "@": "@vars('data');",
-              "id": "@",
-              "options": "@"
-            },
-            "api": "application_home.japi?_mode=options",
-            "name": "application_options",
-            "title": "",
-            "mode": "normal",
-            "autoFocus": true,
-            "canAccessSuperData": false,
-            "trimValues": true,
-            "controls": [
-              {
-                "type": "hidden",
-                "name": "id"
-              },
-              {
-                "type": "combo",
-                "name": "qos",
-                "label": "限流",
-                "multiple": true,
-                "draggable": true,
-                "controls": [
-                  {
-                    "name": "key",
-                    "label": "关键字",
-                    "type": "text"
-                  },
-                  {
-                    "name": "mode",
-                    "label": "模式",
-                    "type": "text"
-                  },
-                  {
-                    "name": "max_speed",
-                    "label": "最大速度",
-                    "type": "number"
-                  },
-                  {
-                    "name": "max_thread",
-                    "label": "最大并发",
-                    "type": "number"
-                  }
-                ]
-              },
-              {
-                "type": "combo",
-                "name": "options",
-                "multiLine": true,
-                "multiple": false,
-                "draggable": false,
-                "controls": [
-                  {
-                    "type": "combo",
-                    "name": "result",
-                    "label": "返回模板",
-                    "multiLine": true,
-                    "multiple": false,
-                    "draggable": false,
-                    "controls": [
-                      {
-                        "type": "json-editor",
-                        "label": "正确时",
-                        "name": "success",
-                        "size": "ss"
-                      },
-                      {
-                        "type": "json-editor",
-                        "label": "错误时",
-                        "name": "fail",
-                        "size": "ss"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ],
-            "actions": [
-              {
-                "type": "submit",
-                "level": "primary",
-                "label": "提交"
-              },
-              {
-                "type": "reset",
-                "label": "重置"
-              }
-            ]
           }
         },
         {
@@ -414,23 +268,56 @@
                 "controls": [
                   {
                     "name": "key",
-                    "label": "关键字",
-                    "type": "text"
+                    "label": "限流对象",
+                    "type": "text",
+                    "required": true,
+                    "labelRemark": {
+                      "placement": "bottom",
+                      "content#": "常量如'*'对所有访问统一限流 <br> '@{:request.userIp}' 针对用户IP分别限流 <br> 更多参考 json template "
+                    },
+                    "unique": true,
+                    "options#": [
+                      "*",
+                      "@{:request.userIp}",
+                      "@{:request.sessionId}",
+                      "@{:header.accessKey}",
+                      "@{:parameters.userId}"
+                    ],
+                    "value#": "@{:request.userIp}"
                   },
                   {
                     "name": "mode",
                     "label": "模式",
-                    "type": "text"
+                    "required": true,
+                    "type": "select",
+                    "options": [
+                      {
+                        "label": "全局",
+                        "value": "global"
+                      },
+                      {
+                        "label": "本地",
+                        "value": "local"
+                      }
+                    ],
+                    "value": "local",
+                    "columnClassName": "w-sm"
                   },
                   {
                     "name": "max_speed",
-                    "label": "最大速度",
-                    "type": "number"
+                    "label": "限速(秒)",
+                    "required": true,
+                    "type": "native-number",
+                    "value": 10,
+                    "columnClassName": "w-sm"
                   },
                   {
                     "name": "max_thread",
                     "label": "最大并发",
-                    "type": "number"
+                    "required": true,
+                    "type": "native-number",
+                    "value": 3,
+                    "columnClassName": "w-sm"
                   }
                 ]
               }
@@ -479,7 +366,8 @@
                     "name": "code",
                     "label": "错误码",
                     "type": "number",
-                    "showSteps": false
+                    "showSteps": false,
+                    "columnClassName": "w-sm"
                   },
                   {
                     "name": "message",
@@ -500,6 +388,14 @@
                 "label": "重置"
               }
             ]
+          }
+        },
+        {
+          "title": "文档",
+          "body": {
+            "type": "service",
+            "className": "p-sm",
+            "schemaApi": "./document_list.jpage?parent_type=application&parent_id=@{:context.application.id}"
           }
         }
       ]

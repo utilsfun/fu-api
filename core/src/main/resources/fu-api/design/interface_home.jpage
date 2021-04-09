@@ -373,7 +373,8 @@
                     "name": "code",
                     "label": "错误码",
                     "type": "number",
-                    "showSteps": false
+                    "showSteps": false,
+                    "columnClassName": "w-sm"
                   },
                   {
                     "name": "message",
