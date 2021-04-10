@@ -72,7 +72,7 @@
           },
           {
             "label": "错误码",
-            "url": "error_code",
+            "url": "error_codes",
             "visible": false,
             "schema": {
               "type": "service",

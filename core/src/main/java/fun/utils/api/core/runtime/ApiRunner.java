@@ -3,6 +3,8 @@ package fun.utils.api.core.runtime;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
+import com.google.common.util.concurrent.RateLimiter;
 import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.common.ValidConfig;
 import fun.utils.api.core.common.ValidUtils;
@@ -19,6 +21,7 @@ import fun.utils.common.DataUtils;
 import fun.utils.jsontemplate.GroovyConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RSemaphore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
@@ -26,7 +29,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Semaphore;
 
 import static fun.utils.api.core.common.ApiConst.PUBLIC_GROOVY_IMPORTS;
 
@@ -153,6 +158,9 @@ public class ApiRunner {
         //1.初始化环境数据,参数,资源等
         doInitialize();
 
+        //1.1限流
+        doQos();
+
         //2.接口进入过滤器
         //2.1 应用过滤器
         //2.2 接口过滤器
@@ -210,6 +218,112 @@ public class ApiRunner {
         }
     }
 
+
+    private void doQos() throws Exception {
+
+        JSONArray limitConfigs = applicationDO.getConfig().getJSONArray("qos") ;
+        for (Object item: limitConfigs) {
+
+            JSONObject limitConfig = (JSONObject)item;
+            String keyExpr = limitConfig.getString("key");
+            String key = (String) runContext.getConverter().convert(keyExpr,runContext.getInput());
+            String mode = limitConfig.getString("mode");
+            int maxSpeed = limitConfig.getInteger("max_speed");
+            int maxThreads = limitConfig.getInteger("max_threads");
+            int timeOut = limitConfig.getInteger("time_out");
+
+            if ("local".equalsIgnoreCase(mode)){
+
+                if (maxSpeed > 0){
+
+                    boolean isReady = QosUtils.localRateLimit(key,maxSpeed,timeOut);
+                    if (!isReady){
+                        throw new Exception("QOS local RateLimit " + key + " max:" + maxSpeed );
+                    }
+
+                }
+
+                if (maxThreads > 0){
+
+                    Semaphore semaphore = QosUtils.localThreadLimit(key,maxThreads,timeOut);
+
+                    if (semaphore != null){
+
+                        runContext.getCompletedActions().add(new Runnable() {
+                            @Override
+                            public void run() {
+                                semaphore.release();
+                            }
+                        });
+
+//                        new Thread(() -> {
+//                            try {
+//                                while (!runContext.getResponse().isCommitted()) {
+//                                    Thread.sleep(100);
+//                                }
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            } finally {
+//                                semaphore.release();
+//                            }
+//                        }).start();
+
+
+                    }else{
+                        throw new Exception("QOS local ThreadsLimit " + key + " max:" + maxThreads );
+                    }
+
+                }
+
+
+            }else if ("global".equalsIgnoreCase(mode)) {
+
+                if (maxSpeed > 0) {
+
+                    String globalKey = applicationDO.getName() + ":rate-limiter:" + key;
+                    boolean isReady = QosUtils.globalRateLimit(doService.getRedissonClient(),globalKey, maxSpeed, timeOut);
+                    if (!isReady) {
+                        throw new Exception("QOS global RateLimit " + key + " max:" + maxSpeed);
+                    }
+
+                }
+
+                if (maxThreads > 0){
+
+                    RSemaphore semaphore = QosUtils.globalThreadLimit(doService.getRedissonClient(),key,maxThreads,timeOut);
+
+                    if (semaphore != null){
+
+                        runContext.getCompletedActions().add(new Runnable() {
+                            @Override
+                            public void run() {
+                                semaphore.release();
+                            }
+                        });
+
+//                        new Thread(() -> {
+//                            try {
+//                                while (!runContext.getResponse().isCommitted()) {
+//                                    Thread.sleep(100);
+//                                }
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            } finally {
+//                                semaphore.release();
+//                            }
+//                        }).start();
+
+
+                    }else{
+                        throw new Exception("QOS global ThreadsLimit " + key + " max:" + maxThreads );
+                    }
+
+                }
+            }
+
+        }
+
+    }
 
     private void  executeGroovy(Object id, List<Long> parameterIds ,JSONObject config,String version,String title,String groovy) throws Exception {
 

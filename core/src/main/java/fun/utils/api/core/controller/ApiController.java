@@ -117,6 +117,8 @@ public class ApiController {
             runContext.setResult(e);
         }
 
+        runContext.setCompleted(true);
+
         //是否通过返回对象返回数据, isVoid==true, 代码自行操作response对象返回
         if (!runContext.isVoid()) {
             //

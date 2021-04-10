@@ -8,8 +8,8 @@
     "request": {
       "API_APPLICATION": {
         "id": "@data('context.application.id');",
-        "@column": "id,gmt_modified,name,note,owner,title,version,status,config,error_codes,options",
-        "@json": "error_codes,options"
+        "@column": "id,gmt_modified,name,note,owner,title,version,status,config,error_codes",
+        "@json": "config,error_codes"
       }
     },
     "template#": "@data('API_APPLICATION');"
@@ -152,7 +152,7 @@
           "title": "返回模板",
           "body": {
             "type": "form",
-            "debug": "true",
+            "debug": false,
             "data": {
               "@": "@vars('data');",
               "id": "@",
@@ -174,14 +174,14 @@
               {
                 "type": "json-editor",
                 "label": "正确时",
-                "name": "template_success",
-                "size": "ss"
+                "name": "template_success"
+
               },
               {
                 "type": "json-editor",
                 "label": "错误时",
-                "name": "template_error",
-                "size": "ss"
+                "name": "template_error"
+
               }
             ],
             "actions": [
@@ -201,7 +201,7 @@
           "title": "公共数据",
           "body": {
             "type": "form",
-            "debug": "true",
+            "debug": false,
             "data": {
               "@": "@vars('data');",
               "id": "@",
@@ -221,7 +221,6 @@
               },
               {
                 "type": "json-editor",
-                "label": "正确时",
                 "name": "data",
                 "size": "600"
               }
@@ -241,99 +240,110 @@
         },
         {
           "title": "全局限流",
-          "body": {
-            "type": "form",
-            "data": {
-              "@": "@vars('data');",
-              "id": "@",
-              "qos": "@{:config.qos}"
-            },
-            "api": "application_home.japi?_mode=config_qos",
-            "name": "application_config_qos",
-            "title": "",
-            "mode": "normal",
-            "autoFocus": true,
-            "canAccessSuperData": false,
-            "trimValues": true,
-            "controls": [
-              {
-                "type": "hidden",
-                "name": "id"
+          "body": [
+            {
+              "type": "form",
+              "debug": false,
+              "data": {
+                "@": "@vars('data');",
+                "id": "@",
+                "qos": "@{:config.qos}"
               },
-              {
-                "type": "combo",
-                "name": "qos",
-                "multiple": true,
-                "draggable": true,
-                "controls": [
-                  {
-                    "name": "key",
-                    "label": "限流对象",
-                    "type": "text",
-                    "required": true,
-                    "labelRemark": {
-                      "placement": "bottom",
-                      "content#": "常量如'*'对所有访问统一限流 <br> '@{:request.userIp}' 针对用户IP分别限流 <br> 更多参考 json template "
+              "api": "application_home.japi?_mode=config_qos",
+              "name": "application_config_qos",
+              "title": "",
+              "mode": "normal",
+              "autoFocus": true,
+              "canAccessSuperData": false,
+              "trimValues": true,
+              "controls": [
+                {
+                  "type": "hidden",
+                  "name": "id"
+                },
+                {
+                  "type": "combo",
+                  "name": "qos",
+                  "multiple": true,
+                  "draggable": true,
+                  "controls": [
+                    {
+                      "name": "key",
+                      "label": "限流对象",
+                      "type": "text",
+                      "required": true,
+                      "unique": true,
+                      "options#": [
+                        "*",
+                        "@{:request.userIp}",
+                        "@{:request.sessionId}",
+                        "@{:header.accessKey}",
+                        "@{:parameters.userId}"
+                      ],
+                      "value#": "@{:request.userIp}"
                     },
-                    "unique": true,
-                    "options#": [
-                      "*",
-                      "@{:request.userIp}",
-                      "@{:request.sessionId}",
-                      "@{:header.accessKey}",
-                      "@{:parameters.userId}"
-                    ],
-                    "value#": "@{:request.userIp}"
-                  },
-                  {
-                    "name": "mode",
-                    "label": "模式",
-                    "required": true,
-                    "type": "select",
-                    "options": [
-                      {
-                        "label": "全局",
-                        "value": "global"
-                      },
-                      {
-                        "label": "本地",
-                        "value": "local"
-                      }
-                    ],
-                    "value": "local",
-                    "columnClassName": "w-sm"
-                  },
-                  {
-                    "name": "max_speed",
-                    "label": "限速(秒)",
-                    "required": true,
-                    "type": "native-number",
-                    "value": 10,
-                    "columnClassName": "w-sm"
-                  },
-                  {
-                    "name": "max_thread",
-                    "label": "最大并发",
-                    "required": true,
-                    "type": "native-number",
-                    "value": 3,
-                    "columnClassName": "w-sm"
-                  }
-                ]
-              }
-            ],
-            "actions": [
-              {
-                "type": "submit",
-                "level": "primary",
-                "label": "提交"
-              },
-              {
-                "type": "reset",
-                "label": "重置"
-              }
-            ]
-          }
+                    {
+                      "name": "mode",
+                      "label": "模式",
+                      "required": true,
+                      "type": "select",
+                      "options": [
+                        {
+                          "label": "全局",
+                          "value": "global"
+                        },
+                        {
+                          "label": "本地",
+                          "value": "local"
+                        }
+                      ],
+                      "value": "local",
+                      "columnClassName": "w-sm"
+                    },
+                    {
+                      "name": "max_speed",
+                      "label": "限速(秒)",
+                      "required": true,
+                      "type": "native-number",
+                      "value": 10,
+                      "columnClassName": "w-sm"
+                    },
+                    {
+                      "name": "max_threads",
+                      "label": "最大并发",
+                      "required": true,
+                      "type": "native-number",
+                      "value": 3,
+                      "columnClassName": "w-sm"
+                    },
+                    {
+                      "name": "time_out",
+                      "label": "超时(秒)",
+                      "required": true,
+                      "type": "native-number",
+                      "value": 0,
+                      "columnClassName": "w-sm"
+                    }
+                  ]
+                }
+              ],
+              "actions": [
+                {
+                  "type": "submit",
+                  "level": "primary",
+                  "label": "提交"
+                },
+                {
+                  "type": "reset",
+                  "label": "重置"
+                }
+              ]
+            },
+            {
+              "type": "html",
+              "html#": "常量如'*'对所有访问统一限流 <br> '@{:request.userIp}' 针对用户IP分别限流 <br> 更多参考 json template "
+            }
+          ]
         },
         {
           "title": "错误码",

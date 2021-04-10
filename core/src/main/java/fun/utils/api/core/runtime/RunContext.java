@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -110,6 +111,14 @@ public class RunContext {
 
     @Getter @Setter
     private boolean isVoid = false;
+
+
+    private boolean completed = false;
+
+
+    @Getter
+    private final List<Runnable> completedActions = new ArrayList<>();
+
 
     protected final Map<String, Object> attributes = new HashMap<>();
 
@@ -300,5 +309,24 @@ public class RunContext {
     public boolean isFailed() {
         return getResult() instanceof Exception;
     }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+        if (completed){
+            for (Runnable action:completedActions) {
+                try {
+                    action.run();
+                } catch (Exception e) {
+                    logger.warn("completed call fail",e);
+                }
+            }
+        }
+
+    }
+
+    public boolean isCompleted() {
+       return completed || getResponse().isCommitted();
+    }
+
 
 }
