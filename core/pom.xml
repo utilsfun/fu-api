@@ -103,6 +103,7 @@
         <dependency>
             <groupId>com.github.APIJSON</groupId>
             <artifactId>apijson-framework</artifactId>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>

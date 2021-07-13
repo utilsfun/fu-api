@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 public class ClassUtils {
 
     private final static ConcurrentMap<String, Class<?>> classMappings = new ConcurrentHashMap<>();
-    private final static Cache<String, GroovyRunner> cacheRunner = CacheBuilder.newBuilder().maximumSize(2000).expireAfterAccess(2, TimeUnit.MINUTES).build();
 
     static {
         Class<?>[] classes = new Class[]{

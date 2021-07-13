@@ -114,64 +114,69 @@ public class ApiController {
         try {
             apiRunner.run();
         } catch (Exception e) {
+            e.printStackTrace();
             runContext.setResult(e);
         }
 
-        runContext.setCompleted(true);
 
-        //是否通过返回对象返回数据, isVoid==true, 代码自行操作response对象返回
-        if (!runContext.isVoid()) {
-            //
-            Object retObj = runContext.getResult();
+        try {
 
-            //判断是否为接口错误
-            ApiException exception = null;
+            //是否通过返回对象返回数据, isVoid==true, 代码自行操作response对象返回
+            if (!runContext.isVoid()) {
+                //
+                Object retObj = runContext.getResult();
 
-            if (retObj == null) {
-                exception = ApiException.resultNullException();
+                //判断是否为接口错误
+                ApiException exception = null;
+
+                if (retObj == null) {
+                    exception = ApiException.resultNullException();
+                }
+                else if (retObj instanceof ApiException) {
+                    exception = (ApiException) retObj;
+                }
+                else if (retObj instanceof Exception) {
+                    exception = ApiException.unknownException((Throwable) retObj);
+                }
+                else if (retObj instanceof Throwable) {
+                    exception = ApiException.unknownException((Throwable) retObj);
+                }
+
+                Map<String, Object> ret = new HashMap<>();
+
+                if (exception == null) {
+                    //接口成功时
+                    ret.put("code", 200);
+                    ret.put("message", "success");
+                    ret.put("result", retObj);
+
+                }
+                else {
+                    //接口出错时
+
+                    ret.put("code", exception.code);
+                    ret.put("message", exception.getMessage());
+                    ret.put("detail", exception.detail);
+                }
+
+                //添加返回 header 数据
+                runContext.getResponseHeaders().forEach((k, v) -> {
+                    response.setHeader(k, v);
+                });
+
+
+                //返回内容格式化为 application/json
+                byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
+                response.setContentType("application/json; charset=utf-8");
+
+                //写入返回流
+                IOUtils.write(returnBytes, response.getOutputStream());
+
             }
-            else if (retObj instanceof ApiException) {
-                exception = (ApiException) retObj;
-            }
-            else if (retObj instanceof Exception) {
-                exception = ApiException.unknownException((Throwable) retObj);
-            }
-            else if (retObj instanceof Throwable) {
-                exception = ApiException.unknownException((Throwable) retObj);
-            }
 
-            Map<String, Object> ret = new HashMap<>();
-
-            if (exception == null) {
-                //接口成功时
-                ret.put("code", 200);
-                ret.put("message", "success");
-                ret.put("result", retObj);
-
-            }
-            else {
-                //接口出错时
-
-                ret.put("code", exception.code);
-                ret.put("message", exception.getMessage());
-                ret.put("detail", exception.detail);
-            }
-
-            //添加返回 header 数据
-            runContext.getResponseHeaders().forEach((k, v) -> {
-                response.setHeader(k, v);
-            });
-
-
-            //返回内容格式化为 application/json
-            byte[] returnBytes = DataUtils.toWebJSONString(ret).getBytes(StandardCharsets.UTF_8);
-            response.setContentType("application/json; charset=utf-8");
-
-            //写入返回流
-            IOUtils.write(returnBytes, response.getOutputStream());
-
+        } finally {
+            runContext.setCompleted(true);
         }
-
     }
 
 

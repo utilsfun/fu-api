@@ -51,6 +51,11 @@ public class ApiJsonParser extends AbstractParser<Long> {
     }
 
     @Override
+    public int getMaxObjectCount(){
+        return 100;
+    }
+
+    @Override
     public Parser<Long> createParser() {
         return apijsonCreator.createParser();
     }

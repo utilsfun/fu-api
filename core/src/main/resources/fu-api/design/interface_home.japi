@@ -1,4 +1,17 @@
 {
+  "$interface": {
+    "@func#": "apijson",
+    "datasource": "default",
+    "method": "get",
+    "request": {
+      "API_INTERFACE": {
+        "id": "@data('body.id');",
+        "@column": "id,config",
+        "@json": "config"
+      }
+    },
+    "template#": "@data('API_INTERFACE');"
+  },
   "$result": {
     "@func": "@switch",
     "select": "@data('parameters._mode');",
@@ -25,13 +38,18 @@
     "config": {
       "@func#": "apijson",
       "datasource": "default",
-      "method": "put",
+      "method": "get",
       "request": {
-        "@": "@data('body');",
         "API_INTERFACE": {
-          "id": "@",
-          "config": "@"
+          "id": "@{:parameters.id}",
+          "@column": "id,config",
+          "@json": "config"
         }
+      },
+      "template#": {
+        "data": "@{:API_INTERFACE}",
+        "msg": "@",
+        "code": "@"
       }
     },
     "implement": {
@@ -71,12 +89,54 @@
           "error_codes": "@{cast(data.error_codes,'String')}"
         }
       }
+    },
+    "config_qos": {
+      "@func#": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_INTERFACE": {
+          "id": "@",
+          "config": {
+            "@func#": "@program",
+            "select": [
+              "",
+              "def config = $interface.config == null ? new JSONObject() : $interface.config ;",
+              "config.put('qos',data('qos')) ;",
+              "return cast( config ,'String');",
+              ""
+            ]
+          }
+        }
+      }
+    },
+    "config_data": {
+      "@func#": "apijson",
+      "datasource": "default",
+      "method": "put",
+      "request": {
+        "@": "@data('body');",
+        "API_INTERFACE": {
+          "id": "@",
+          "config": {
+            "@func#": "@program",
+            "select": [
+              "",
+              "def config = $interface.config == null ? new JSONObject() : $interface.config ;",
+              "config.put('data',cast(data('data'),'JSONObject')) ;",
+              "return cast( config ,'String');",
+              ""
+            ]
+          }
+        }
+      }
     }
   },
-
   "*": {
     "@": "@{$result}",
     "msg": "@",
+    "data": "@",
     "status": "@{ data.code==200 ? 0 : data.code }"
   }
 }

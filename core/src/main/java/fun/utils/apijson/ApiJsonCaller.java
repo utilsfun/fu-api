@@ -157,7 +157,6 @@ public class ApiJsonCaller {
                                 tempGet.put(key + "[]", key1Object);
                                 key1Object.put(key, tempItem);
 
-
                                 JSONObject tempCallerResult = get(tempGet);
 
                                 JSONArray tempRows = tempCallerResult.getJSONArray(key + "[]");

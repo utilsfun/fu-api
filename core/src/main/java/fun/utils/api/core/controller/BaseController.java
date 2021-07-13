@@ -123,7 +123,7 @@ public class BaseController {
 
     }
 
-    public void writeStatusResponse(String resourceUrl, HttpServletResponse response) throws IOException {
+    public void writeStaticResponse(String resourceUrl, HttpServletResponse response) throws IOException {
 
         Resource resource = webApplicationContext.getResource(resourceUrl);
         if (resource == null || !resource.exists()) {
@@ -146,6 +146,8 @@ public class BaseController {
             }
 
             response.setContentType(contentType);
+            response.setHeader("Cache-Control", "max-age=1800");
+
             //写入返回流
             byte[] returnBytes = IOUtils.toByteArray(resource.getInputStream());
             IOUtils.write(returnBytes, response.getOutputStream());

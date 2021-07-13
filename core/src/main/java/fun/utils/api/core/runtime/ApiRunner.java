@@ -3,12 +3,10 @@ package fun.utils.api.core.runtime;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
-import com.google.common.util.concurrent.RateLimiter;
 import fun.utils.api.core.common.ApiException;
 import fun.utils.api.core.common.ValidConfig;
 import fun.utils.api.core.common.ValidUtils;
-import fun.utils.api.core.common.WebUtils;
+import fun.utils.common.WebUtils;
 import fun.utils.api.core.controller.AppBean;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.FilterDO;
@@ -29,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 
@@ -158,8 +155,12 @@ public class ApiRunner {
         //1.初始化环境数据,参数,资源等
         doInitialize();
 
-        //1.1限流
-        doQos();
+        //1.1 应用级限流
+        doApplicationQos();
+
+        //1.1 接口级限流
+        doInterfaceQos();
+
 
         //2.接口进入过滤器
         //2.1 应用过滤器
@@ -219,18 +220,41 @@ public class ApiRunner {
     }
 
 
-    private void doQos() throws Exception {
+    private void doApplicationQos() throws Exception {
 
-        JSONArray limitConfigs = applicationDO.getConfig().getJSONArray("qos") ;
+        if (null ==  applicationDO.getConfig()){
+            return;
+        }
+
+        doQos(applicationDO.getConfig());
+    }
+
+    private void doInterfaceQos() throws Exception {
+
+        if (null ==  interfaceDO.getConfig()){
+            return;
+        }
+
+        doQos(interfaceDO.getConfig());
+    }
+
+    private void doQos(JSONObject config) throws Exception {
+
+        JSONArray limitConfigs = config.getJSONArray("qos") ;
+
+        if (null == limitConfigs){
+            return;
+        }
+
         for (Object item: limitConfigs) {
 
             JSONObject limitConfig = (JSONObject)item;
             String keyExpr = limitConfig.getString("key");
             String key = (String) runContext.getConverter().convert(keyExpr,runContext.getInput());
             String mode = limitConfig.getString("mode");
-            int maxSpeed = limitConfig.getInteger("max_speed");
-            int maxThreads = limitConfig.getInteger("max_threads");
-            int timeOut = limitConfig.getInteger("time_out");
+            int maxSpeed = ClassUtils.castValue(limitConfig.getOrDefault("max_speed",0),Integer.class);
+            int maxThreads = ClassUtils.castValue(limitConfig.getOrDefault("max_threads",0),Integer.class);
+            int timeOut =  ClassUtils.castValue(limitConfig.getOrDefault("time_out",60),Integer.class);
 
             if ("local".equalsIgnoreCase(mode)){
 
@@ -349,7 +373,7 @@ public class ApiRunner {
         method.getImports().addAll(PUBLIC_GROOVY_IMPORTS);
 
         GroovyRunner groovyRunner = groovyService.getRunner(method);
-        Object result = groovyRunner.withProperty("$my", runContext).execute(runContext.getParameters());
+        Object result = groovyRunner.withProperty("my", runContext).execute(runContext.getParameters());
 
         if (result instanceof Exception){
             throw (Exception) result;

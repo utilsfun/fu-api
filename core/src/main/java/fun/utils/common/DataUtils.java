@@ -6,14 +6,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import javafx.util.Callback;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +28,7 @@ public class DataUtils {
 
     public static <K, V> Map<K, V> getEmptyIfNull(Map<K, V> map) {
         if (map == null) {
-            return new HashedMap();
+            return new HashMap();
         }
         else {
             return map;

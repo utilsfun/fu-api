@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import fun.utils.api.core.common.ValidConfig;
-import fun.utils.api.core.common.WebUtils;
+import fun.utils.common.WebUtils;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.api.core.persistence.ParameterDO;
 import fun.utils.api.core.services.DoService;
@@ -178,7 +178,7 @@ public class DocumentController extends BaseController {
 
         } else {
 
-            writeStatusResponse(classPath + uri,response);
+            writeStaticResponse(classPath + uri,response);
 
         }
 

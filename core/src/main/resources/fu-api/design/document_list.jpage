@@ -25,7 +25,7 @@
           "icon": "fa fa-edit",
           "label": "修改",
           "actionType": "link",
-          "link": "/@{:parameters.parent_type}/document/edit/${id}"
+          "link": "/@{:parameters.parent_type}/@{:parameters.parent_id}/document/edit/${id}"
         },
         {
           "label": "删除",

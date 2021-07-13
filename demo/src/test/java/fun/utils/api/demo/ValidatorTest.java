@@ -8,7 +8,6 @@ import fun.utils.api.core.valid.ValidatorIn;
 import fun.utils.api.core.valid.ValidatorLength;
 import fun.utils.api.core.valid.ValidatorUrl;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.slf4j.MDC;
 

@@ -31,6 +31,10 @@
             "levelExpand": 4,
             "source": "@cast(data('content'),'JSONObject');"
           },
+          "markdown": {
+            "type": "markdown",
+            "value": "@{:content}"
+          },
           "code": {
             "type": "form",
             "data": {

@@ -407,6 +407,33 @@
             "className": "p-sm",
             "schemaApi": "./document_list.jpage?parent_type=application&parent_id=@{:context.application.id}"
           }
+        },
+        {
+          "title": "配置",
+          "reload": true,
+          "body": {
+            "type": "form",
+            "title": "",
+            "initApi": "application_home.japi?_mode=config",
+            "name": "config",
+            "mode": "normal",
+            "autoFocus": true,
+            "canAccessSuperData": false,
+            "trimValues": true,
+            "controls": [
+              {
+                "type": "hidden",
+                "name": "id"
+              },
+              {
+                "type": "editor",
+                "name": "config",
+                "language": "json",
+                "size": "600"
+              }
+            ],
+            "actions": []
+          }
         }
       ]
     }

@@ -31,7 +31,7 @@ public class PublicController extends BaseController {
 
         String uri = StringUtils.substringAfter(uc.getPath(), appConfig.getPubPath()).replaceFirst("^/", "");
 
-        writeStatusResponse(classPath + uri,response);
+        writeStaticResponse(classPath + uri,response);
 
     }
 

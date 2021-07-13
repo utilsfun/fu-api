@@ -10,8 +10,6 @@ import org.springframework.http.MediaTypeFactory;
 
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FreeTest {
     @Test

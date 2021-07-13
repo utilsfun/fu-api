@@ -4,7 +4,7 @@ package fun.utils.api.core.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import fun.utils.api.core.common.MyJdbcTemplate;
-import fun.utils.api.core.common.WebUtils;
+import fun.utils.common.WebUtils;
 import fun.utils.api.core.persistence.ApplicationDO;
 import fun.utils.jsontemplate.ApiJsonBean;
 import fun.utils.jsontemplate.GroovyConverter;
@@ -81,7 +81,7 @@ public class DesignController extends BaseController {
 
         } else {
 
-            writeStatusResponse(classPath + uri,response);
+            writeStaticResponse(classPath + uri,response);
 
         }
 

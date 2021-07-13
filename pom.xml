@@ -20,6 +20,16 @@
         <module>core</module>
     </modules>
 
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-boot.version>2.4.1</spring-boot.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -127,12 +137,6 @@
                 <version>3.4.1</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>30.1-jre</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -159,11 +163,7 @@
                 <version>3.15.3</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.github.APIJSON</groupId>
-                <artifactId>apijson-framework</artifactId>
-                <version>LATEST</version>
-            </dependency>
+
 
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -197,6 +197,7 @@
     </build>
 
     <repositories>
+
         <repository>
             <id>spring-snapshots</id>
             <url>https://repo.spring.io/snapshot</url>
@@ -204,14 +205,17 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+
         <repository>
             <id>spring-milestones</id>
             <url>https://repo.spring.io/milestone</url>
         </repository>
+
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+
     </repositories>
 
 </project>

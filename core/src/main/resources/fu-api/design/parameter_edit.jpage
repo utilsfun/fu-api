@@ -12,7 +12,24 @@
       "&": "$$"
     }
   },
-
+  "submitText": "submit",
+  "actions": [
+    {
+      "type": "submit",
+      "level": "primary",
+      "label": "提交"
+    },
+    {
+      "type": "action",
+      "actionType": "reset",
+      "label": "重置"
+    },
+    {
+      "type": "action",
+      "actionType": "close",
+      "label": "关闭"
+    }
+  ],
   "name": "parameter_edit",
   "title": "",
   "#mode": "horizontal",
@@ -254,7 +271,8 @@
               "type": "text"
             }
           ]
-        },{
+        },
+        {
           "type": "divider"
         },
         {

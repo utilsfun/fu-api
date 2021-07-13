@@ -2,10 +2,9 @@
   "type": "wrapper",
   "size": "none",
   "body": {
-
     "type": "form",
     "debug": "@{:parameters._debug}",
-    "initApi":{
+    "initApi": {
       "url": "document.japi?_act=get&_for=@{:parameters._for}&id=@{:body.params.id}",
       "responseData": {
         "_for": "@{:parameters._for}",
@@ -20,14 +19,12 @@
         "&": "$$"
       }
     },
-
     "redirect": {
       "@func": "@switch",
       "select": "@{:parameters.parent_type}",
       "application": "/application/document/list",
       "interface": "/application/interface/@{:body.params.parent_id}/document"
     },
-
     "name": "document_edit",
     "title": "",
     "mode": "horizontal",
@@ -64,6 +61,10 @@
           {
             "label": "html",
             "value": "html"
+          },
+          {
+            "label": "markdown",
+            "value": "markdown"
           },
           {
             "label": "code/json",
@@ -140,6 +141,23 @@
           "lineNumbers": 0
         },
         "visibleOn": "this.format == 'code/java'"
+      },
+      {
+        "type": "group",
+        "controls": [
+          {
+            "type": "editor",
+            "label": "内容",
+            "name": "content",
+            "language": "markdown"
+          },
+          {
+            "type": "markdown",
+            "label": "预览",
+            "name": "content"
+          }
+        ],
+        "visibleOn": "this.format == 'markdown'"
       },
       {
         "name": "content",

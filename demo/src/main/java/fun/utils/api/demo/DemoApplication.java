@@ -1,23 +1,19 @@
 package fun.utils.api.demo;
 
 
-import fun.utils.api.core.services.DoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootApplication
-@ComponentScan(value="fun.utils.api.core.controller")
-@ComponentScan(value="fun.utils.image")
-@ComponentScan(value="fun.utils.api.demo")
+@ComponentScan({"fun.utils.api.core.controller","fun.utils.api.demo"})
 @Configuration
 @Slf4j
 public class DemoApplication {

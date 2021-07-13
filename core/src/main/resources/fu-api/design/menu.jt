@@ -157,7 +157,7 @@
 
       {
         "label": "修改应用文档",
-        "url": "/application/document/edit/:id",
+        "url": "/application/:parent_id/document/edit/:id",
         "visible": false,
         "schema": {
           "type": "service",
@@ -177,12 +177,12 @@
       },
       {
         "label": "修改接口文档",
-        "url": "/interface/document/edit/:id",
+        "url": "/interface/:parent_id/document/edit/:id",
         "visible": false,
         "schema": {
           "type": "service",
           "className": "p-sm",
-          "schemaApi": "./document_edit.jpage?_for=update&parent_type=interface&id=${id}"
+          "schemaApi": "./document_edit.jpage?_for=update&parent_type=interface"
         }
       },
       {
@@ -205,7 +205,16 @@
           },
           {
             "label": "apijson",
-            "link": "https://gitee.com/Tencent/APIJSON/blob/master/%E8%AF%A6%E7%BB%86%E7%9A%84%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md"
+            "children": [
+              {
+                "label": "readme",
+                "link": "https://gitee.com/Tencent/APIJSON/blob/master/%E8%AF%A6%E7%BB%86%E7%9A%84%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md"
+              },
+              {
+                "label": "document",
+                "link": "https://vincentcheng.github.io/apijson-doc/zh/"
+              }
+            ]
           }
         ]
       }

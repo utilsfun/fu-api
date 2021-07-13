@@ -5,7 +5,7 @@
     "method": "get",
     "request": {
       "API_APPLICATION": {
-        "id": "@data('context.application.id');",
+        "id": "@{:context.application.id}",
         "@column": "id,config",
         "@json": "config"
       }
@@ -41,6 +41,23 @@
           "id": "@",
           "error_codes": "@{cast(data.error_codes,'String')}"
         }
+      }
+    },
+    "config": {
+      "@func#": "apijson",
+      "datasource": "default",
+      "method": "get",
+      "request": {
+        "API_APPLICATION": {
+          "id": "@{:context.application.id}",
+          "@column": "id,config",
+          "@json": "config"
+        }
+      },
+      "template#": {
+        "data": "@{:API_APPLICATION}",
+        "msg": "@",
+        "code": "@"
       }
     },
     "config_qos": {
@@ -111,6 +128,7 @@
   "*": {
     "@": "@{$result}",
     "msg": "@",
+    "data": "@",
     "status": "@{ data.code==200 ? 0 : data.code }"
   }
 }
