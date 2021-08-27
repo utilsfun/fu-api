@@ -1,0 +1,48 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "service",
+    "data": {
+      "@": "@{:context.application}",
+      "application": {
+        "documentIds": "@",
+        "filterIds": "@",
+        "errorCodes": "@",
+        "gmtModified": "@",
+        "interfaceNames": "@",
+        "name": "@",
+        "note": "@",
+        "owner": "@",
+        "parameterIds": "@",
+        "title": "@",
+        "version": "@"
+      }
+    },
+    "body": {
+      "type": "nav",
+      "stacked": true,
+      "className": "w-md",
+      "links": [
+        {
+          "label": "应用",
+          "to": "?"
+        },
+        {
+          "label": "接口",
+          "unfolded": true,
+          "children": [
+            {
+              "@func": "@each",
+              "select": "@{:context.application.interfaceNames}",
+              "for": {
+                "label": "@{StringUtils.split($item,'@@')[2] + '\\r\\n' + StringUtils.split($item,'@@')[3]}",
+                "to": "@{'?interface=' + StringUtils.split($item,'@@')[1] + ',' + StringUtils.split($item,'@@')[2]}"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

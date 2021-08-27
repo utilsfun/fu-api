@@ -1,0 +1,103 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "service",
+    "data": {
+      "@": "@{:context.application}",
+      "application": {
+        "documentIds": "@",
+        "filterIds": "@",
+        "errorCodes": "@",
+        "gmtModified": "@",
+        "interfaceNames": "@",
+        "name": "@",
+        "note": "@",
+        "owner": "@",
+        "parameterIds": "@",
+        "title": "@",
+        "version": "@"
+      }
+    },
+    "body": [
+      {
+        "type": "wrapper",
+        "body": [
+          {
+            "type": "tpl",
+            "tpl": "作者: ${application.owner}",
+            "className": "m-r p-r"
+          },
+          {
+            "type": "tpl",
+            "tpl": "版本: ${application.version}",
+            "className": "m-r p-r"
+          },
+          {
+            "type": "tpl",
+            "tpl": "更新时间: ${application.gmtModified|date:YYYY-MM-DD:YYYY-MM-DD}",
+            "className": "m-r p-r"
+          }
+        ],
+        "size": "xs",
+        "className": "text-right"
+      },
+      {
+        "type": "tpl",
+        "tpl": "${application.note}",
+        "inline": false
+      },
+      {
+        "type": "each",
+        "name": "application.documentIds",
+        "visibleOn": "application.documentIds != null && application.documentIds.length > 0",
+        "items": [
+          {
+            "type": "service",
+            "initFetchSchema": true,
+            "schemaApi": "document.jpage?id=${item}"
+          }
+        ]
+      },
+      {
+        "type": "collapse",
+        "title": "公共参数",
+        "headingClassName": "font-bold no-border b-info text-base text-info",
+        "visibleOn": "application.parameterIds != null && application.parameterIds.length > 0",
+        "body": {
+          "type": "service",
+          "initFetchSchema": true,
+          "schemaApi": "parameters.jpage?ids=${application.parameterIds|join}"
+        }
+      },
+      {
+        "type": "collapse",
+        "title": "错误码",
+        "headingClassName": "font-bold no-border b-info text-base text-info",
+        "visibleOn": "application.errorCodes != null && application.errorCodes.length > 0",
+        "body": {
+          "type": "table",
+          "affixHeader": false,
+          "source": "${application.errorCodes}",
+          "columns": [
+            {
+              "name": "code",
+              "label": "<b>编码</b>"
+            },
+            {
+              "name": "message",
+              "label": "<b>说明</b>"
+            }
+          ]
+        }
+      },
+      {
+        "type": "collapse",
+        "title": "更新日志",
+        "headingClassName": "font-bold no-border b-info text-base text-info",
+        "body": [
+        ]
+      }
+    ]
+  }
+}

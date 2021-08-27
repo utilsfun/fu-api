@@ -1,7 +1,6 @@
 {
   "type": "wrapper",
   "size": "xs",
-  "className": "b-t b-b b-1x",
   "body": [
     {
       "type": "service",
@@ -76,6 +75,7 @@
         {
           "type": "each",
           "name": "interface.documentIds",
+          "visibleOn": "interface.documentIds != null && interface.documentIds.length > 0",
           "items": [
             {
               "type": "service",
@@ -143,6 +143,7 @@
           "visibleOn": "interface.errorCodes != null && interface.errorCodes.length > 0",
           "body": {
             "type": "table",
+            "affixHeader": false,
             "source": "${interface.errorCodes}",
             "columns": [
               {

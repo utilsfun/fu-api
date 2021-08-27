@@ -148,6 +148,7 @@
         "visibleOn": "application.errorCodes != null && application.errorCodes.length > 0",
         "body": {
           "type": "table",
+          "affixHeader": false,
           "source": "${application.errorCodes}",
           "columns": [
             {

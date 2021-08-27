@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+
+    <link type="image/x-icon" rel="shortcut icon" href="../public/favicon.ico">
+
+
+
+    <!--
+        <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="../public/amis/sdk/helper.css"/>
+     -->
+
+
+    <link rel="stylesheet" href="../public/amis/sdk1.1.7/sdk.css"/>
+
+
+    <script src="../public/amis/sdk1.1.7/sdk.js"></script>
+
+
+
+
+
+</head>
+<body>
+
+<div class="app-wrapper">
+    <div id="root"></div>
+</div>
+
+<script type="text/javascript">
+
+    const pageUrl = window.location.href.replace("\.html",".jpage");
+    let amisConfig = {
+
+        // 全局 api 适配器。
+        // api 自己也可以配置适配器，这里最好只处理通用逻辑。
+        responseAdpater: function(api, response, query, request) {
+          console.log(api);
+          console.log(response);
+          console.log(query);
+          console.log(request);
+          return response;
+        }
+      };
+
+    let page = {
+          "type": "page",
+          "body": {
+              "type": "page",
+              "body": {
+                "type": "markdown",
+                "value": "# title\r\n```java\r\n int a= 210;\r\n```"
+              }
+          }
+        };
+
+   let amisEmbed = amisRequire('amis/embed');
+   let amisLib = amisRequire('amis');
+   let React = amisRequire('react');
+   let amisScoped = amisEmbed.embed("#root", page ,{},amisConfig );
+
+
+</script>
+
+</body>
+</html>

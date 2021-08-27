@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="info">
+<Configuration>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout charset="utf-8"
-                           pattern="[%5p]%d{HH:mm:ss.SSS}|%t|%X|%l%n%m%n"/>
+            <PatternLayout charset="utf-8" pattern="[%5p]%d{HH:mm:ss.SSS}|%t|%X|%l%n%m%n"/>
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="Console"/>
         </Root>
-        <logger name="fun.utils" level="info"></logger>
     </Loggers>
 </Configuration>

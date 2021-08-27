@@ -1,0 +1,22 @@
+{
+  "type": "wrapper",
+  "size": "none",
+  "body": {
+    "type": "service",
+    "data": {
+      "@": "@{:context.application}",
+      "application": {
+        "name": "@",
+        "title": "@",
+        "version": "@"
+      }
+    },
+    "body":
+      {
+        "type": "tpl",
+        "tpl": "《${application.title}(${application.name})接口文档》",
+        "inline": false,
+        "className": "font-bold text-lg text-center"
+      }
+  }
+}
