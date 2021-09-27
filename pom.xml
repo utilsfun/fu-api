@@ -183,6 +183,35 @@
                 <version>1.7</version>
             </dependency>
 
+            <dependency>
+                <groupId>fun.utils</groupId>
+                <artifactId>fu-jsontemplate-core</artifactId>
+                <version>0.0.11</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>spring-web</artifactId>
+                        <groupId>org.springframework</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>fastjson</artifactId>
+                        <groupId>com.alibaba</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-lang3</artifactId>
+                        <groupId>org.apache.commons</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>snakeyaml</artifactId>
+                        <groupId>org.yaml</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>groovy-datetime</artifactId>
+                        <groupId>org.codehaus.groovy</groupId>
+                    </exclusion>
+
+                </exclusions>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

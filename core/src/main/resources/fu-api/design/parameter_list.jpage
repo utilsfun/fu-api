@@ -5,12 +5,12 @@
     {
       "type": "crud",
       "syncLocation": false,
-      "columnsTogglable": true,
       "data": {
         "rows": []
       },
       "api": "./parameter.japi?_act=query&parent_type=@{:parameters.parent_type}&parent_id=@{:parameters.parent_id}",
       "loadDataOnce": true,
+      "columnsTogglable": true,
       "footable": {
         "expand": "all"
       },
@@ -153,7 +153,7 @@
         {
           "type": "operation",
           "label": "操作",
-          "width": 100,
+          "width": 80,
           "buttons": [
             {
               "type": "button",
@@ -222,14 +222,36 @@
               }
             },
             {
+              "type": "button",
               "label": "",
               "icon": "fa fa-trash text-danger",
-              "type": "button",
               "actionType": "ajax",
               "level": "link",
               "className": "text-danger",
               "confirmText": "确认要删除参数${name}:${title}？",
               "api": "post:./parameter.api?_act=delete&id=${id}"
+            }
+          ]
+        },        {
+          "type": "operation",
+          "label": "调序",
+          "width": 60,
+          "buttons": [
+            {
+              "type": "button",
+              "icon": "fa fa-arrow-up",
+              "label": "",
+              "actionType": "ajax",
+              "api": "./parameter.japi?_act=move&_arrow=up&parent_type=${parent_type}&parent_id=${parent_id}&id=${id}",
+              "level": "link"
+            },
+            {
+              "type": "button",
+              "icon": "fa fa-arrow-down",
+              "label": "",
+              "actionType": "ajax",
+              "api": "./parameter.japi?_act=move&_arrow=down&parent_type=${parent_type}&parent_id=${parent_id}&id=${id}",
+              "level": "link"
             }
           ]
         }

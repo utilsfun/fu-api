@@ -7,7 +7,10 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
-import javax.script.*;
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.IOException;
 
 public class GroovySpeedTest {

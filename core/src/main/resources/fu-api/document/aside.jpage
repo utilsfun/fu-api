@@ -26,7 +26,7 @@
       "links": [
         {
           "label": "应用",
-          "to": "?"
+          "to": "?body=application"
         },
         {
           "label": "接口",
@@ -37,7 +37,7 @@
               "select": "@{:context.application.interfaceNames}",
               "for": {
                 "label": "@{StringUtils.split($item,'@@')[2] + '\\r\\n' + StringUtils.split($item,'@@')[3]}",
-                "to": "@{'?interface=' + StringUtils.split($item,'@@')[1] + ',' + StringUtils.split($item,'@@')[2]}"
+                "to": "@{'?body=interface&interface=' + StringUtils.split($item,'@@')[1] + ',' + StringUtils.split($item,'@@')[2]}"
               }
             }
           ]

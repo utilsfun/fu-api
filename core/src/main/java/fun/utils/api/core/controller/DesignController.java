@@ -4,11 +4,11 @@ package fun.utils.api.core.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import fun.utils.api.core.common.MyJdbcTemplate;
-import fun.utils.common.WebUtils;
 import fun.utils.api.core.persistence.ApplicationDO;
-import fun.utils.jsontemplate.ApiJsonBean;
-import fun.utils.jsontemplate.GroovyConverter;
-import fun.utils.jsontemplate.JdbcTemplateBean;
+import fun.utils.common.WebUtils;
+import fun.utils.jsontemplate.beans.ApiJsonBean;
+import fun.utils.jsontemplate.beans.JdbcTemplateBean;
+import fun.utils.jsontemplate.core.GroovyConverter;
 import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -53,12 +53,9 @@ public class DesignController extends BaseController {
         converter.setRestTemplate(appBean.getRestTemplate());
 
 
-        converter.withBean("apijson",new ApiJsonBean(converter, new Callback<String, DataSource>() {
-            @Override
-            public DataSource call(String param) {
-                return doService.getDataSource();
-            }
-        }));
+        Callback<String, DataSource> dataSourceCallBack = param -> doService.getDataSource();
+
+        converter.withBean("apijson",new ApiJsonBean(converter, dataSourceCallBack));
 
         converter.withBean("jdbcTemplate",new JdbcTemplateBean(converter, new Callback<String, JdbcTemplate>() {
             @Override

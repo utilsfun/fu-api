@@ -3,7 +3,6 @@
   "select": "@data('parameters._act');",
   "query": {
     "@func#": "apijson",
-    "datasource": "default",
     "method": "get_tree",
     "request": {
       "[]": {
@@ -41,10 +40,65 @@
       }
     }
   },
+  "move": {
+    "$list": {
+      "@func#": "apijson",
+      "method": "get",
+      "request": {
+        "[]": {
+          "API_PARAMETER": {
+            "parent_type": "@{:parameters.parent_type}",
+            "parent_id": "@{:parameters.parent_id}",
+            "@column": "id",
+            "@order": "sort"
+          },
+          "query": 2
+        },
+        "total@": "/[]/total",
+        "info@": "/[]/info"
+      },
+      "template#": {
+        "ids": "@data('\\\\[\\\\].API_PARAMETER',[]);"
+      }
+    },
+    "$ids": {
+      "@func": "@program",
+      "select":[
+        "LinkedList<String> ids = new LinkedList<>();",
+        "for (obj in $list.ids) {ids.add(String.valueOf(obj.id))};",
+        "String id = data.parameters.id;",
+        "int idx = ids.indexOf(id);",
+        "int newIdx = 'up' == data.parameters._arrow ? (idx > 0 ? idx - 1 : 0) : (idx < ids.size() - 1 ? idx + 1 : idx);",
+        "ids.remove(id);ids.add(newIdx,id);",
+        "System.out.println('script _arrow');",
+        "System.out.println(JSON.toJSONString(ids));",
+        "return ids;"
+      ]
+    },
+    "$result": {
+      "@func#": "apijson",
+      "method": "put",
+      "request": {
+        "API_PARAMETER[]": {
+          "@func": "@each",
+          "select": "@{$ids}",
+          "for": {
+            "id": "@{$item}",
+            "sort": "@{$key + 1}"
+          }
+        }
+      }
+    },
+    "*": {
+      "@": "@{$result}",
+      "msg": "@",
+      "status": "@{ data.code==200 ? 0 : data.code }",
+      "detail": "@{:.}"
+    }
+  },
   "sort": {
     "$result": {
       "@func#": "apijson",
-      "datasource": "default",
       "method": "put",
       "request": {
         "API_PARAMETER[]": {
@@ -69,12 +123,11 @@
     "select": "@data('parameters._for');",
     "update": {
       "@func#": "apijson",
-      "datasource": "default",
       "method": "get",
       "request": {
         "API_PARAMETER": {
           "id": "@{:parameters.id}",
-          "@json":"validations"
+          "@json": "validations"
         }
       },
       "template#": {
@@ -160,7 +213,6 @@
     "@func": "@if",
     "select": {
       "@func#": "apijson",
-      "datasource": "default",
       "method": "get",
       "request": {
         "[]": {
@@ -178,7 +230,6 @@
     },
     "true": {
       "@func#": "apijson",
-      "datasource": "default",
       "method": "delete",
       "request": {
         "@": "@{:parameters}",

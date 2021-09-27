@@ -6,7 +6,7 @@ import fun.utils.api.core.valid.AbstractValidator;
 import fun.utils.api.core.valid.CustomValidatorCreator;
 import fun.utils.api.core.valid.DefaultValidatorCreator;
 import fun.utils.api.core.valid.ValidatorCreator;
-import fun.utils.common.DataUtils;
+import fun.utils.jsontemplate.common.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.WebApplicationContext;
 

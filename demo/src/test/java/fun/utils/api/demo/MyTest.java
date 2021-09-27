@@ -2,14 +2,17 @@ package fun.utils.api.demo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.common.DataUtils;
 import fun.utils.api.core.script.*;
+import fun.utils.jsontemplate.common.DataUtils;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MyTest {
 

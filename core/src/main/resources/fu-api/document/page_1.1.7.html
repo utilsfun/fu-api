@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,20 +9,28 @@
     <meta name="renderer" content="webkit" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
 
+    <link type="image/x-icon" rel="shortcut icon" href="../public/favicon.ico">
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!--
+        <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="../public/amis/sdk/helper.css"/>
+     -->
+
+    <link rel="stylesheet" href="../public/amis/sdk1.1.7/cxd.css" title="cxd"/>
+    <link rel="stylesheet" href="../public/amis/sdk1.1.7/helper.css"/>
+    <link rel="stylesheet" href="../public/amis/sdk1.1.7/sdk.css"/>
 
 
-    <link rel="stylesheet" href="http://ldx4joss.oss-cn-shenzhen.aliyuncs.com/common/html/amis/sdk1.2.3/cxd.css" title="cxd"/>
-    <link rel="stylesheet" href="http://ldx4joss.oss-cn-shenzhen.aliyuncs.com/common/html/amis/sdk1.2.3/helper.css"/>
-    <link rel="stylesheet" href="http://ldx4joss.oss-cn-shenzhen.aliyuncs.com/common/html/amis/sdk1.2.3/sdk.css"/>
-    <link rel="stylesheet" href="http://ldx4joss.oss-cn-shenzhen.aliyuncs.com/common/html/amis/my.css"/>
+    <link rel="stylesheet" href="../public/amis/my.css"/>
 
-<!--    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+    <script src="../public/amis/sdk1.1.7/sdk.js"></script>
+    <script src="../public/amis/sdk1.1.7/markdown.js"></script>
 
-    <script src="http://ldx4joss.oss-cn-shenzhen.aliyuncs.com/common/html/amis/sdk1.2.3/sdk.js"></script>
-
-<!--    <script src="http://ldx4joss.oss-cn-shenzhen.aliyuncs.com/common/html/amis/sdk1.2.3/markdown.js"></script>-->
-<!--    <script src="http://ldx4joss.oss-cn-shenzhen.aliyuncs.com/common/html/vue2.js"></script>-->
-<!--    <script src="http://ldx4joss.oss-cn-shenzhen.aliyuncs.com/common/html/unsupported-ie.js"></script>-->
+    <script src="../public/vue2.js"></script>
+    <script src="../public/unsupported-ie.js"></script>
 
 
     <style>
@@ -80,14 +89,14 @@
           {
             type: "service",
             className: "p",
-            visibleOn: "body == 'interface' && interface.length > 0",
+            visibleOn: "interface != null && interface.length > 0",
             schemaApi: {
                url: "interface.jpage?method=${interface|split:,|nth:0}&name=${interface|split:,|nth:1}"
             }
           },{
             type: "service",
             className: "p",
-            hiddenOn: "body == null || body == 'application'",
+            hiddenOn: "interface",
             schemaApi: {
                url: "application.jpage"
             }

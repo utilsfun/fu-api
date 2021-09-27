@@ -2,12 +2,11 @@ package fun.utils.api.demo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import fun.utils.common.ClassUtils;
-import fun.utils.common.DataUtils;
+import fun.utils.jsontemplate.common.ClassUtils;
+import fun.utils.jsontemplate.common.DataUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.http.MediaTypeFactory;
-
 
 import java.io.IOException;
 

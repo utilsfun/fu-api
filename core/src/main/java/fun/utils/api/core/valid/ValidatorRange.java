@@ -1,6 +1,6 @@
 package fun.utils.api.core.valid;
 
-import fun.utils.common.ClassUtils;
+import fun.utils.jsontemplate.common.ClassUtils;
 import org.apache.commons.validator.GenericValidator;
 
 import java.util.Date;

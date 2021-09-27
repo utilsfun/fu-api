@@ -100,11 +100,6 @@
             <artifactId>httpcore</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.APIJSON</groupId>
-            <artifactId>apijson-framework</artifactId>
-            <version>LATEST</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -135,6 +130,11 @@
             <artifactId>commons-validator</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>fun.utils</groupId>
+            <artifactId>fu-jsontemplate-core</artifactId>
+        </dependency>
+        
     </dependencies>
 
     <build>

@@ -3,9 +3,8 @@ package fun.utils.api.demo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
 import com.alibaba.fastjson.JSONPath;
-import fun.utils.common.ClassUtils;
+import fun.utils.jsontemplate.common.ClassUtils;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 import groovy.util.GroovyScriptEngine;
